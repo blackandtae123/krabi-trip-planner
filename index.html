@@ -139,16 +139,32 @@
   
   .place-image{
     height:200px;
-    background:linear-gradient(135deg, #D4C4B0, #B8A68E);
+    background:linear-gradient(135deg, #EAF7F5, #DCEEE9);
     display:flex;
+    flex-direction:column;
     align-items:center;
     justify-content:center;
-    color:var(--text-muted);
+    gap:8px;
+    color:var(--turquoise-dark);
     overflow:hidden;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    position:relative;
   }
-  .place-image svg{ width:48px; height:48px; opacity:.4; }
+  .place-image svg{ width:34px; height:34px; opacity:.55; }
+  .place-image .no-image-label{ font-size:11.5px; font-weight:600; color:var(--turquoise-dark); opacity:.75; text-align:center; padding:0 16px; }
   .place-image img{ width:100%; height:100%; object-fit:cover; }
+  .illustrative-badge{
+    position:absolute;
+    bottom:8px;
+    right:8px;
+    background:rgba(46,59,58,0.72);
+    color:#fff;
+    font-size:10px;
+    font-weight:600;
+    padding:4px 9px;
+    border-radius:20px;
+    backdrop-filter: blur(2px);
+  }
 
   .place-info{
     flex:1;
@@ -589,6 +605,68 @@
     .ai-steps-container{ max-width:550px; }
     .results-container{ max-width:800px; }
   }
+
+  /* ---------- QR code modal ---------- */
+  .qr-modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(46,59,58,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    z-index:999;
+    animation: fadeIn .2s ease;
+  }
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+  .qr-modal-card{
+    background:#fff;
+    border-radius:var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding:28px;
+    max-width:320px;
+    width:100%;
+    text-align:center;
+  }
+  .qr-modal-card h3{ font-size:17px; font-weight:700; color:var(--text); margin-bottom:6px; }
+  .qr-modal-card p{ font-size:12.5px; color:var(--text-muted); margin-bottom:18px; line-height:1.5; }
+  .qr-modal-canvas-wrap{
+    background:#fff;
+    border:1.5px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:14px;
+    display:inline-flex;
+    margin-bottom:18px;
+  }
+  .qr-modal-close{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:var(--radius-md);
+    background:linear-gradient(135deg, var(--turquoise) 0%, var(--green) 100%);
+    color:#fff;
+    font-weight:600;
+    font-size:13.5px;
+    cursor:pointer;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ---------- print (real PDF export via browser print dialog) ---------- */
+  @media print{
+    .lang-switch-home, .ai-filter-banner, .step-buttons, .step-progress,
+    .back-btn-results, .share-buttons, #placeDetailBack, #aiStatusBanner,
+    .accordion-icon{ display:none !important; }
+    body{ background:#fff !important; }
+    .home-header{ background:#fff !important; color:var(--text) !important; box-shadow:none !important; border-radius:0 !important; }
+    .recommendations-section, .itinerary-section, .recommendation-card{
+      box-shadow:none !important;
+      border:1px solid #ccc !important;
+      break-inside: avoid;
+    }
+    .accordion-body{ max-height:none !important; }
+    .accordion-header{ cursor:default; }
+    .screen{ display:block !important; }
+  }
 </style>
 </head>
 <body>
@@ -663,6 +741,7 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 /* ========== DATA & TRANSLATIONS ========== */
 const PLACES = [
@@ -758,7 +837,8 @@ const PLACES = [
     budget: "low",
     pier: null,
     parkFee: { thAdult: 20, thChild: 10, enAdult: 160, enChild: 80 },
-    images: [], // TODO: ยังไม่พบรูปน้ำตกร้อน (Namtok Ron Khlong Thom) ที่ยืนยันได้ตรงจุดจริงๆ บน Wikimedia Commons — แนะนำให้อัปโหลดรูปที่ถ่ายเองแทน หรือค้นหาเพิ่มเติมที่ commons.wikimedia.org/wiki/Category:Khao_Phra_Bang_Khram_Nature_Reserve
+    images: ["https://images.unsplash.com/photo-1414510451013-d0a41fea512e?fm=jpg&q=80&w=1200&auto=format&fit=crop"],
+    imagesIllustrative: true, // ภาพประกอบบรรยากาศจาก Unsplash ไม่ใช่ภาพถ่ายจริงของน้ำตกร้อนคลองท่อม (หาภาพยืนยันตรงจุดไม่ได้)
     costDetail: {
       th: "ค่าเข้าชมน้ำตกร้อน คนไทยผู้ใหญ่ 20 บาท เด็ก 10 บาท ชาวต่างชาติผู้ใหญ่ 160 บาท เด็ก 80 บาท บวกค่าจอดรถประมาณ 10 บาท/คัน อุณหภูมิน้ำ 40-50 องศา เปิด 08.30-17.00 น. — ราคาอาจเปลี่ยนแปลง แนะนำเช็คก่อนเดินทาง",
       en: "Hot Spring entrance: Thai adult ฿20, child ฿10; foreigner adult ฿160, child ฿80. Plus ~฿10 parking. Water temp 40-50°C. Open 08:30-17:00 — prices subject to change, check before visiting"
@@ -1049,22 +1129,24 @@ function showScreen(screenId){
   document.getElementById(screenId).classList.add("active");
 }
 
-function placeImageFallbackSVG(){
+function placeImageFallbackSVG(labelText){
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
     <path d="M3 16l5-5 4 4 5-6 4 5M3 4h18v16H3z"/>
-  </svg>`;
+  </svg><div class="no-image-label">${labelText}</div>`;
 }
 
 function renderCarousel(){
   const carousel = document.getElementById("carouselPlaces");
+  const noImageLabel = currentLang === "th" ? "ยังไม่มีรูปภาพ" : "No photo yet";
   carousel.innerHTML = PLACES.map(place => {
     const hasImg = place.images && place.images.length > 0;
+    const fallback = placeImageFallbackSVG(noImageLabel).replace(/'/g, "\\'").replace(/"/g, "&quot;");
     return `
     <div class="place-card" onclick="app.goToDetail('${place.id}')">
       <div class="place-image">
         ${hasImg
-          ? `<img src="${place.images[0]}" alt="${place.name[currentLang]}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML+='${placeImageFallbackSVG().replace(/'/g, "\\'")}';">`
-          : placeImageFallbackSVG()}
+          ? `<img src="${place.images[0]}" alt="${place.name[currentLang]}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='${fallback}';">${place.imagesIllustrative ? `<span class="illustrative-badge">${currentLang === "th" ? "ภาพประกอบ" : "Illustrative"}</span>` : ""}`
+          : placeImageFallbackSVG(noImageLabel)}
       </div>
       <div class="place-info">
         <div class="place-region">${place.region[currentLang]}</div>
@@ -1182,9 +1264,16 @@ function filterPlaces(){
     return { place, score, matchedReasons };
   });
 
-  // เรียงตามคะแนนสูงสุดก่อน แล้วเลือก 3 อันดับแรกเสมอ
+  // เรียงตามคะแนนสูงสุดก่อน
   scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, 3).map(s => s.place);
+
+  // จำนวนสถานที่ที่แนะนำ ต้อง "ไม่น้อยกว่าจำนวนวันเดินทาง" ไม่งั้นโปรแกรมหลายวันจะซ้ำสถานที่เดิม
+  // (เช่น ทริป 4 วัน แต่แนะนำแค่ 3 ที่ วันที่ 4 จะวนกลับไปใช้ที่เดียวกับวันที่ 1)
+  const durationDaysMap = { daytrip: 1, "2d1n": 2, "3d2n": 3, "4plus": 4 };
+  const neededDays = durationDaysMap[formData.duration] || 2;
+  const count = Math.min(PLACES.length, Math.max(3, neededDays));
+
+  return scored.slice(0, count).map(s => s.place);
 }
 
 function generateItinerary(places){
@@ -1456,7 +1545,11 @@ function renderPlaceDetail(place){
         <img src="${url}" alt="${place.name[currentLang]}" loading="lazy" onerror="this.style.display='none'">
       `).join("")}
     </div>
-    <div class="image-credit">${currentLang === "th" ? "ภาพจาก Wikimedia Commons" : "Photos via Wikimedia Commons"}</div>
+    <div class="image-credit">${
+      place.imagesIllustrative
+        ? (currentLang === "th" ? "ภาพประกอบบรรยากาศจาก Unsplash — ไม่ใช่ภาพถ่ายจริงของสถานที่นี้" : "Illustrative photo via Unsplash — not an actual photo of this location")
+        : (currentLang === "th" ? "ภาพจาก Wikimedia Commons" : "Photos via Wikimedia Commons")
+    }</div>
     ` : ""}
 
     ${aiNote ? `
@@ -1649,16 +1742,46 @@ const app = {
     alert(currentLang === "th" ? "บันทึกสำเร็จ!" : "Saved successfully!");
   },
   downloadPDF(){
-    alert(currentLang === "th" ? "ฟีเจอร์ดาวน์โหลด PDF กำลังพัฒนา" : "PDF download feature coming soon");
+    // ใช้กล่องโต้ตอบพิมพ์ของเบราว์เซอร์ (Print > Save as PDF) — ทำงานได้จริง ไม่มีค่าใช้จ่าย ไม่ต้องพึ่ง library ภายนอก
+    // สไตล์ @media print จะซ่อนปุ่ม/แถบที่ไม่จำเป็นและกางทุก accordion ออกให้เห็นโปรแกรมทั้งหมด
+    window.print();
   },
   shareLink(){
     const data = btoa(JSON.stringify(formData));
     const link = `${window.location.origin}?itinerary=${data}`;
-    navigator.clipboard.writeText(link);
-    alert(currentLang === "th" ? "Copy link สำเร็จ!" : "Link copied!");
+    navigator.clipboard.writeText(link).then(() => {
+      alert(currentLang === "th" ? "Copy link สำเร็จ!" : "Link copied!");
+    }).catch(() => {
+      alert(currentLang === "th" ? `คัดลอกลิงก์ไม่สำเร็จ นี่คือลิงก์: ${link}` : `Couldn't copy automatically. Here's the link: ${link}`);
+    });
   },
   showQRCode(){
-    alert(currentLang === "th" ? "ฟีเจอร์ QR Code กำลังพัฒนา" : "QR Code feature coming soon");
+    const data = btoa(JSON.stringify(formData));
+    const link = `${window.location.origin}?itinerary=${data}`;
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "qr-modal-backdrop";
+    backdrop.innerHTML = `
+      <div class="qr-modal-card">
+        <h3>${currentLang === "th" ? "QR Code สำหรับโปรแกรมนี้" : "QR Code for this itinerary"}</h3>
+        <p>${currentLang === "th" ? "สแกนเพื่อเปิดโปรแกรมทริปนี้บนมือถือเครื่องอื่น" : "Scan to open this itinerary on another device"}</p>
+        <div class="qr-modal-canvas-wrap" id="qrCanvasWrap"></div>
+        <button class="qr-modal-close" id="qrModalCloseBtn">${currentLang === "th" ? "ปิด" : "Close"}</button>
+      </div>
+    `;
+    document.body.appendChild(backdrop);
+
+    const closeModal = () => backdrop.remove();
+    document.getElementById("qrModalCloseBtn").addEventListener("click", closeModal);
+    backdrop.addEventListener("click", (e) => { if(e.target === backdrop) closeModal(); });
+
+    const wrap = document.getElementById("qrCanvasWrap");
+    if(typeof QRCode !== "undefined"){
+      new QRCode(wrap, { text: link, width: 200, height: 200, colorDark: "#2E3B3A", colorLight: "#ffffff" });
+    } else {
+      // ถ้าโหลด library จาก CDN ไม่สำเร็จ (เช่น ไม่มีอินเทอร์เน็ตตอนนั้น) ให้ fallback เป็นลิงก์ให้คัดลอกแทน ไม่ปล่อยว่างเปล่า
+      wrap.innerHTML = `<div style="width:200px; padding:20px; font-size:12px; color:var(--text-muted); line-height:1.5;">${currentLang === "th" ? "โหลด QR ไม่สำเร็จ (ต้องมีอินเทอร์เน็ต) — คัดลอกลิงก์แทนได้:" : "QR failed to load (needs internet) — copy the link instead:"}<br><br><code style="word-break:break-all; font-size:10px;">${link}</code></div>`;
+    }
   }
 };
 
