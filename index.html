@@ -1746,9 +1746,12 @@ function filterPlaces(){
     // 50+: เลี่ยงสถานที่ที่ต้องเดิน/ปีนบันไดเยอะ (เช่น 1,237 ขั้นวัดถ้ำเสือ) เพิ่มน้ำหนักที่ผ่อนคลายกว่า
     // 36-50: ปรับแบบเบาลง ไม่สุดขั้วเท่า 50+
     // 18-25: ให้น้ำหนักบวกเล็กน้อยกับสถานที่ผจญภัย/หนักกว่า เพราะกลุ่มนี้มักมองหาความท้าทาย
+    // ข้อยกเว้นสำคัญ: ถ้าผู้ใช้เลือก subStyle "hiking" หรือ style "adventure" ตรงๆ แปลว่าตั้งใจอยากได้กิจกรรมหนักอยู่แล้ว
+    // ความตั้งใจที่ระบุชัดเจนต้องชนะการสันนิษฐานจากอายุ จึงยกเว้นการหักคะแนนสถานที่ physicalDemand สูงในกรณีนี้
+    const explicitAdventureIntent = formData.style.includes("adventure") || formData.subStyle === "hiking";
     const ageAdjust = {
-      "50+":   { low: 2, medium: 0, high: -3 },
-      "36-50": { low: 1, medium: 0, high: -1 },
+      "50+":   { low: 2, medium: 0, high: explicitAdventureIntent ? 0 : -3 },
+      "36-50": { low: 1, medium: 0, high: explicitAdventureIntent ? 0 : -1 },
       "26-35": { low: 0, medium: 0, high: 0 },
       "18-25": { low: 0, medium: 0, high: 1 }
     };
@@ -2098,6 +2101,15 @@ function renderPlaceDetail(place){
     <div class="ai-warning-card">
       <strong>${currentLang === "th" ? "⚠️ ข้อควรพิจารณาสำหรับกลุ่มของคุณ" : "⚠️ Something to consider for your group"}</strong>
       <div class="rec-reason" style="margin-top:6px;">${aiNote}</div>
+    </div>
+    ` : ""}
+
+    ${(formData.age === "50+" && place.physicalDemand === "high") ? `
+    <div class="ai-warning-card">
+      <strong>${currentLang === "th" ? "⚠️ ข้อควรระวังเรื่องความเหนื่อย" : "⚠️ Physical demand notice"}</strong>
+      <div class="rec-reason" style="margin-top:6px;">${currentLang === "th"
+        ? "สถานที่นี้ต้องใช้แรงเดิน/ปีนค่อนข้างมาก ระบบยังแนะนำให้เพราะตรงกับความสนใจที่คุณเลือกไว้ (ผจญภัย/hiking) แต่อยากให้เตรียมร่างกาย น้ำดื่ม และพักเป็นระยะระหว่างทาง"
+        : "This spot involves a fair amount of walking/climbing. It's still recommended because it matches your chosen interest (adventure/hiking) — just come prepared with water, good shoes, and plan for rest breaks along the way."}</div>
     </div>
     ` : ""}
 
