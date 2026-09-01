@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด</title>
+<meta name="description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด">
+<meta property="og:description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
+<meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=1200">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด">
+<meta name="twitter:description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
+<meta name="twitter:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=1200">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -136,6 +146,10 @@
     flex-direction:column;
   }
   .place-card:hover{ box-shadow: var(--shadow-lg); transform: translateY(-5px); border-color: rgba(47,169,164,0.3); }
+  .place-card:focus-visible, .recommendation-card:focus-visible{
+    outline: 3px solid var(--turquoise);
+    outline-offset: 2px;
+  }
   
   .place-image{
     height:200px;
@@ -751,9 +765,9 @@
 <!-- ========== HOME SCREEN ========== -->
 <div class="screen home-screen active" id="homeScreen">
   <div class="home-header">
-    <div class="lang-switch-home">
-      <button class="lang-btn active" data-lang="th">TH</button>
-      <button class="lang-btn" data-lang="en">EN</button>
+    <div class="lang-switch-home" role="group" aria-label="Language / ภาษา">
+      <button class="lang-btn active" data-lang="th" aria-pressed="true">TH</button>
+      <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
     </div>
     <h1 data-i18n="homeTitle">Krabi Trip Planner</h1>
     <p data-i18n="homeSubtitle">ค้นหาสถานที่ที่เหมาะสมกับคุณ หรือให้เอไอช่วยจัดโปรแกรมตามที่ต้องการ</p>
@@ -794,7 +808,7 @@
   </div>
 
   <div class="results-container">
-    <div id="aiStatusBanner"></div>
+    <div id="aiStatusBanner" aria-live="polite"></div>
     <div class="recommendations-section" id="recommendationsSection"></div>
     <div class="itinerary-section" id="itinerarySection"></div>
     <div class="budget-summary-section" id="budgetSummarySection"></div>
@@ -806,7 +820,7 @@
 <!-- ========== PLACE DETAIL SCREEN (reached from recommendation cards) ========== -->
 <div class="screen place-detail-screen" id="placeDetailScreen">
   <div class="results-header" style="display:flex; align-items:center; gap:12px; text-align:left; padding-left:20px; padding-right:20px;">
-    <button id="placeDetailBack" style="flex-shrink:0; width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--turquoise-dark); box-shadow: var(--shadow-sm);">←</button>
+    <button id="placeDetailBack" aria-label="กลับ" style="flex-shrink:0; width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--turquoise-dark); box-shadow: var(--shadow-sm);">←</button>
     <div>
       <h2 id="placeDetailTitle" style="font-size:20px; text-align:left;"></h2>
       <p id="placeDetailRegion" style="text-align:left; margin-top:2px;"></p>
@@ -825,6 +839,7 @@
 const PLACES = [
   {
     id: "thale-waek",
+    physicalDemand: "low",
     lat: 7.9610, lng: 98.8100,
     activityCostPerPerson: 700,
     region: { th: "อ่าวนาง", en: "Ao Nang" },
@@ -856,6 +871,7 @@ const PLACES = [
   },
   {
     id: "railay",
+    physicalDemand: "low",
     lat: 8.0126, lng: 98.8372,
     activityCostPerPerson: 200,
     region: { th: "อ่าวไร่เลย์", en: "Railay" },
@@ -888,6 +904,7 @@ const PLACES = [
   },
   {
     id: "sa-morakot",
+    physicalDemand: "low",
     lat: 7.9263, lng: 99.2668,
     activityCostPerPerson: 0,
     region: { th: "คลองท่อม", en: "Khlong Thom" },
@@ -920,6 +937,7 @@ const PLACES = [
   },
   {
     id: "hot-spring",
+    physicalDemand: "low",
     lat: 7.9054, lng: 99.1083,
     activityCostPerPerson: 10,
     region: { th: "คลองท่อม", en: "Khlong Thom" },
@@ -952,6 +970,7 @@ const PLACES = [
   },
   {
     id: "tiger-cave",
+    physicalDemand: "high",
     lat: 8.1128, lng: 98.9232,
     activityCostPerPerson: 0,
     region: { th: "เมืองกระบี่", en: "Krabi Town" },
@@ -983,6 +1002,7 @@ const PLACES = [
   },
   {
     id: "phi-phi",
+    physicalDemand: "low",
     lat: 7.7407, lng: 98.7784,
     activityCostPerPerson: 1290,
     region: { th: "เกาะพีพี", en: "Phi Phi" },
@@ -1015,6 +1035,7 @@ const PLACES = [
   },
   {
     id: "nopparat-thara",
+    physicalDemand: "low",
     lat: 8.0512, lng: 98.8034,
     activityCostPerPerson: 0,
     region: { th: "อ่าวนาง", en: "Ao Nang" },
@@ -1045,6 +1066,7 @@ const PLACES = [
   },
   {
     id: "wat-kaew",
+    physicalDemand: "medium",
     lat: 8.0622, lng: 98.9135,
     activityCostPerPerson: 0,
     region: { th: "เมืองกระบี่", en: "Krabi Town" },
@@ -1075,6 +1097,7 @@ const PLACES = [
   },
   {
     id: "krabi-night-market",
+    physicalDemand: "low",
     lat: 8.0645, lng: 98.9161,
     activityCostPerPerson: 0,
     region: { th: "เมืองกระบี่", en: "Krabi Town" },
@@ -1105,6 +1128,7 @@ const PLACES = [
   },
   {
     id: "khao-ngon-nak",
+    physicalDemand: "high",
     lat: 8.1064, lng: 98.7808,
     activityCostPerPerson: 0,
     region: { th: "ทับแขก", en: "Tub Kaek" },
@@ -1136,6 +1160,7 @@ const PLACES = [
   },
   {
     id: "ao-thalane-kayak",
+    physicalDemand: "medium",
     lat: 8.1219, lng: 98.7502,
     activityCostPerPerson: 850,
     region: { th: "อ่าวท่าเลน", en: "Ao Thalane" },
@@ -1165,6 +1190,7 @@ const PLACES = [
   },
   {
     id: "lae-lay-cafe",
+    physicalDemand: "low",
     lat: 8.0398, lng: 98.8156,
     activityCostPerPerson: 0,
     region: { th: "อ่าวนาง", en: "Ao Nang" },
@@ -1442,6 +1468,8 @@ function setLanguage(lang){
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
     el.placeholder = t(el.dataset.i18nPlaceholder);
   });
+  const backBtn = document.getElementById("placeDetailBack");
+  if(backBtn) backBtn.setAttribute("aria-label", lang === "th" ? "กลับ" : "Back");
   renderScreen();
 }
 
@@ -1449,6 +1477,54 @@ function showScreen(screenId){
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(screenId).classList.add("active");
 }
+
+/* ========== HISTORY API — ให้ปุ่ม back ของเครื่อง/เบราว์เซอร์ถอยทีละขั้นตอนในแอปได้จริง ==========
+   แนวคิด: ทุกครั้งที่ "เดินหน้า" ไปหน้า/ขั้นตอนใหม่ (เปิดฟอร์ม AI filter, ไปขั้นตอนถัดไป, เปิดผลลัพธ์,
+   เปิดรายละเอียดสถานที่) จะ pushState เก็บสถานะไว้ 1 ชั้นในประวัติเบราว์เซอร์เสมอ
+   เมื่อผู้ใช้กด back (ปุ่มเครื่อง/เบราว์เซอร์/swipe) เบราว์เซอร์จะยิง popstate event มาให้เอง
+   applyHistoryState() จะอ่านสถานะที่ pushState ไว้ แล้ว "แสดงผล" หน้าจอนั้นโดยไม่ push ซ้ำ
+   (ป้องกัน loop) — ทำให้ปุ่มย้อนกลับในแอปกับปุ่ม back จริงพฤติกรรมตรงกันเป๊ะ เพราะใช้ระบบเดียวกัน */
+function pushHistoryState(state){
+  history.pushState(state, "");
+}
+function replaceHistoryState(state){
+  history.replaceState(state, "");
+}
+
+function applyHistoryState(state){
+  if(!state || state.screen === "home"){
+    showScreen("homeScreen");
+    renderCarousel();
+    return;
+  }
+  if(state.screen === "aiFilter"){
+    currentStep = state.step || 0;
+    showScreen("aiFilterScreen");
+    renderAIFilterSteps();
+    return;
+  }
+  if(state.screen === "results"){
+    showScreen("resultsScreen");
+    renderResults();
+    return;
+  }
+  if(state.screen === "placeDetail"){
+    const place = PLACES.find(p => p.id === state.placeId);
+    if(!place){ applyHistoryState({ screen: "home" }); return; }
+    placeDetailOrigin = state.origin || "resultsScreen";
+    renderPlaceDetail(place);
+    showScreen("placeDetailScreen");
+    return;
+  }
+  // ไม่รู้จัก state นี้ กลับหน้าแรกไว้ก่อนเป็นค่าปลอดภัยสุด
+  showScreen("homeScreen");
+  renderCarousel();
+}
+
+window.addEventListener("popstate", (e) => {
+  applyHistoryState(e.state);
+  window.scrollTo(0, 0);
+});
 
 function placeImageFallbackSVG(labelText){
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -1463,7 +1539,7 @@ function renderCarousel(){
     const hasImg = place.images && place.images.length > 0;
     const fallback = placeImageFallbackSVG(noImageLabel).replace(/'/g, "\\'").replace(/"/g, "&quot;");
     return `
-    <div class="place-card" onclick="app.openPlaceDetail('${place.id}')">
+    <div class="place-card" role="button" tabindex="0" aria-label="${place.name[currentLang]}" onclick="app.openPlaceDetail('${place.id}')">
       <div class="place-image">
         ${hasImg
           ? `<img src="${place.images[0]}" alt="${place.name[currentLang]}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='${fallback}';">${place.imagesIllustrative ? `<span class="illustrative-badge">${currentLang === "th" ? "ภาพประกอบ" : "Illustrative"}</span>` : ""}`
@@ -1666,6 +1742,20 @@ function filterPlaces(){
       matchedReasons.push("transport");
     }
 
+    // ปรับคะแนนตามช่วงอายุ (step แรก) เทียบกับความหนักของกิจกรรมสถานที่นั้น (physicalDemand)
+    // 50+: เลี่ยงสถานที่ที่ต้องเดิน/ปีนบันไดเยอะ (เช่น 1,237 ขั้นวัดถ้ำเสือ) เพิ่มน้ำหนักที่ผ่อนคลายกว่า
+    // 36-50: ปรับแบบเบาลง ไม่สุดขั้วเท่า 50+
+    // 18-25: ให้น้ำหนักบวกเล็กน้อยกับสถานที่ผจญภัย/หนักกว่า เพราะกลุ่มนี้มักมองหาความท้าทาย
+    const ageAdjust = {
+      "50+":   { low: 2, medium: 0, high: -3 },
+      "36-50": { low: 1, medium: 0, high: -1 },
+      "26-35": { low: 0, medium: 0, high: 0 },
+      "18-25": { low: 0, medium: 0, high: 1 }
+    };
+    if(formData.age && ageAdjust[formData.age]){
+      score += ageAdjust[formData.age][place.physicalDemand] || 0;
+    }
+
     return { place, score, matchedReasons };
   });
 
@@ -1821,7 +1911,7 @@ function renderRecommendations(places){
     ${places.map(place => {
       const warn = aiAnalysis && aiAnalysis.placeNotes && aiAnalysis.placeNotes[place.id];
       return `
-      <div class="recommendation-card" style="cursor:pointer;" onclick="app.openPlaceDetail('${place.id}')">
+      <div class="recommendation-card" style="cursor:pointer;" role="button" tabindex="0" aria-label="${place.name[currentLang]}" onclick="app.openPlaceDetail('${place.id}')">
         <div class="rec-name">${place.name[currentLang]} <span style="float:right; color:var(--green); font-weight:400;">→</span></div>
         <div class="rec-reason">${place.desc[currentLang]}</div>
         ${place.pier ? `<div class="rec-reason" style="margin-top:6px;">📍 ${currentLang === "th" ? "ขึ้นเรือที่" : "Board at"}: ${place.pier[currentLang]}</div>` : ""}
@@ -2134,6 +2224,7 @@ const app = {
   goToHome(){
     currentStep = 0;
     formData = { age: null, style: [], subStyle: null, budget: null, transport: null, duration: null, notes: "" };
+    pushHistoryState({ screen: "home" });
     showScreen("homeScreen");
     renderCarousel();
   },
@@ -2143,18 +2234,20 @@ const app = {
     // จำหน้าปัจจุบันไว้ก่อนเปลี่ยนหน้า (เช่น หน้าแรก หรือหน้าผลลัพธ์) เพื่อให้ปุ่มย้อนกลับพากลับไปหน้านั้นจริงๆ
     const activeScreen = document.querySelector(".screen.active");
     placeDetailOrigin = activeScreen ? activeScreen.id : "resultsScreen";
+    pushHistoryState({ screen: "placeDetail", placeId, origin: placeDetailOrigin });
     renderPlaceDetail(place);
     showScreen("placeDetailScreen");
     window.scrollTo(0, 0);
   },
   closePlaceDetail(){
-    // ย้อนกลับไปหน้าที่เปิดรายละเอียดนี้มา (หน้าแรก หรือหน้าผลลัพธ์) โดยข้อมูลฟอร์ม (formData) ยังคงอยู่ครบ ไม่ถูกล้าง
-    showScreen(placeDetailOrigin || "resultsScreen");
-    window.scrollTo(0, 0);
+    // ใช้ history.back() แทนการสั่งเปลี่ยนหน้าตรงๆ เพื่อให้ปุ่มนี้กับปุ่ม back ของเครื่อง/เบราว์เซอร์
+    // พฤติกรรมตรงกันเป๊ะเสมอ (ทั้งคู่วิ่งผ่านระบบ popstate เดียวกัน)
+    history.back();
   },
   startAIFilter(){
     currentStep = 0;
     formData = { age: null, style: [], subStyle: null, budget: null, transport: null, duration: null, notes: "" };
+    pushHistoryState({ screen: "aiFilter", step: 0 });
     showScreen("aiFilterScreen");
     renderAIFilterSteps();
   },
@@ -2179,9 +2272,11 @@ const app = {
   nextStep(){
     if(currentStep < STEPS_CONFIG.length - 1){
       currentStep++;
+      pushHistoryState({ screen: "aiFilter", step: currentStep });
       renderAIFilterSteps();
       window.scrollTo(0, 0);
     } else {
+      pushHistoryState({ screen: "results" });
       showScreen("resultsScreen");
       renderResults();
       window.scrollTo(0, 0);
@@ -2189,11 +2284,9 @@ const app = {
     }
   },
   prevStep(){
-    if(currentStep > 0){
-      currentStep--;
-      renderAIFilterSteps();
-      window.scrollTo(0, 0);
-    }
+    // ใช้ history.back() แทนการลด currentStep ตรงๆ เพื่อให้ปุ่ม "ย้อนกลับ" ในแอปกับปุ่ม back
+    // ของเครื่อง/เบราว์เซอร์ถอยทีละขั้นตอนเหมือนกันเป๊ะ (ผ่านระบบ popstate เดียวกัน)
+    history.back();
   },
   toggleAccordion(header){
     const body = header.nextElementSibling;
@@ -2262,16 +2355,12 @@ const app = {
 /* ========== EVENT LISTENERS ========== */
 document.querySelectorAll(".lang-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".lang-btn").forEach(b => {
+      b.classList.remove("active");
+      b.setAttribute("aria-pressed", "false");
+    });
     btn.classList.add("active");
-    setLanguage(btn.dataset.lang);
-  });
-});
-
-document.querySelectorAll(".lang-switch-home button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".lang-switch-home button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+    btn.setAttribute("aria-pressed", "true");
     setLanguage(btn.dataset.lang);
   });
 });
@@ -2290,9 +2379,23 @@ window.addEventListener("load", () => {
     try {
       const data = JSON.parse(atob(params.get("itinerary")));
       formData = data;
+      replaceHistoryState({ screen: "results" }); // แทนที่ entry แรกสุด ไม่ push ใหม่ เพราะเป็นจุดเริ่มต้นของ session นี้
       showScreen("resultsScreen");
       renderResults();
+      return;
     } catch(e) { console.log("Invalid itinerary data"); }
+  }
+  // กรณีปกติ (ไม่มี itinerary ใน URL): ตั้ง entry แรกสุดของ session ให้เป็นหน้าแรกเสมอ
+  // เพื่อให้ระบบ popstate มีสถานะอ้างอิงตั้งแต่ต้น ไม่ใช่ null
+  replaceHistoryState({ screen: "home" });
+});
+
+// การ์ดที่กดได้ (place-card / recommendation-card) เป็น <div role="button"> ไม่ใช่ <button>/<a> จริง
+// เบราว์เซอร์เลยไม่ auto-trigger click ให้ตอนกด Enter/Space จากคีย์บอร์ด ต้องดักเองเพื่อให้ใช้งานด้วยคีย์บอร์ดได้จริง
+document.addEventListener("keydown", (e) => {
+  if((e.key === "Enter" || e.key === " ") && e.target.getAttribute("role") === "button"){
+    e.preventDefault();
+    e.target.click();
   }
 });
 
