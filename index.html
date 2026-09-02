@@ -1449,6 +1449,7 @@ let currentStep = 0;
 let placeDetailOrigin = "resultsScreen"; // จำหน้าที่เปิดรายละเอียดสถานที่มา (หน้าแรก หรือหน้าผลลัพธ์) เพื่อย้อนกลับให้ถูกหน้า
 let aiAnalysis = null;       // ผลวิเคราะห์ข้อจำกัดจาก Claude API (null = ยังไม่ได้เรียก/เรียกไม่สำเร็จ)
 let aiAnalysisLoading = false;
+let lastUnplacedMustHave = []; // สถานที่ "ต้องมี" ที่ยัดใส่ทริปไม่ได้จริงๆ (เช่น จำนวนวันของทริปไม่พอ) — ใช้แจ้งเตือนผู้ใช้ ไม่ปล่อยให้หายไปเงียบๆ
 
 // AI_MODE:
 //   "demo" = จำลองผลวิเคราะห์ด้วย keyword matching ฝั่ง client ล้วนๆ ไม่เรียก Claude API จริง ไม่เสียเงินเลย
@@ -1828,21 +1829,38 @@ function filterPlaces(){
   const finalSequence = new Array(count).fill(null);
   const usedPlaceIds = new Set();
   const mustHaveList = getEffectiveMustHave();
+  lastUnplacedMustHave = []; // เก็บที่ "ต้องมี" ที่ยัดใส่ทริปไม่ได้จริงๆ (เช่น จำนวนวันไม่พอ) เพื่อแจ้งผู้ใช้ ไม่ใช่หายไปเงียบๆ
 
   // 1) วางที่ระบุวันเจาะจงก่อน (ความตั้งใจชัดเจนสุด) — ถ้าวันที่ระบุเกินจำนวนวันจริงของทริป จะหนีบให้อยู่ในช่วงที่มี
+  //    ถ้าวันที่ระบุชนกับสถานที่อื่นที่จองไปแล้ว (2 ที่ขอวันเดียวกัน) จะไม่ทับกันเงียบๆ แต่หาช่องว่างอื่นให้แทน
+  //    เพื่อไม่ให้สถานที่ที่ผู้ใช้ตั้งใจขอไว้หายไปจากทริปโดยไม่รู้ตัว
   mustHaveList.filter(m => m.day).forEach(m => {
     const place = PLACES.find(p => p.id === m.placeId);
     if(!place || usedPlaceIds.has(place.id)) return;
     const dayIdx = Math.min(Math.max(m.day - 1, 0), count - 1);
-    finalSequence[dayIdx] = place;
-    usedPlaceIds.add(place.id);
+    if(finalSequence[dayIdx] === null){
+      finalSequence[dayIdx] = place;
+      usedPlaceIds.add(place.id);
+    } else {
+      // วันที่ขอไว้ถูกจองไปแล้วโดยที่ "ต้องมี" อื่น — หาช่องว่างอื่นให้แทน ดีกว่าทับจนอีกที่หายไป
+      const emptyIdx = finalSequence.findIndex(s => s === null);
+      if(emptyIdx === -1){
+        lastUnplacedMustHave.push(place); // จำนวนวันไม่พอจริงๆ ใส่ไม่ได้เลย
+        return;
+      }
+      finalSequence[emptyIdx] = place;
+      usedPlaceIds.add(place.id);
+    }
   });
-  // 2) ที่ "ต้องมี" แต่ไม่ระบุวัน — ใส่ในช่องว่างแรกที่เจอ (ถ้าที่ว่างไม่พอ ข้ามไปเงียบๆ ดีกว่าทำให้พัง)
+  // 2) ที่ "ต้องมี" แต่ไม่ระบุวัน — ใส่ในช่องว่างแรกที่เจอ (ถ้าที่ว่างไม่พอ บันทึกไว้แจ้งผู้ใช้แทนที่จะหายไปเงียบๆ)
   mustHaveList.filter(m => !m.day).forEach(m => {
     const place = PLACES.find(p => p.id === m.placeId);
     if(!place || usedPlaceIds.has(place.id)) return;
     const emptyIdx = finalSequence.findIndex(s => s === null);
-    if(emptyIdx === -1) return;
+    if(emptyIdx === -1){
+      lastUnplacedMustHave.push(place);
+      return;
+    }
     finalSequence[emptyIdx] = place;
     usedPlaceIds.add(place.id);
   });
@@ -2022,8 +2040,19 @@ function generateItinerary(places){
 function renderRecommendations(places){
   const section = document.getElementById("recommendationsSection");
   const mustHaveIds = new Set(getEffectiveMustHave().map(m => m.placeId));
+  const unplacedNotice = lastUnplacedMustHave.length > 0 ? `
+    <div class="ai-warning-card" style="margin-bottom:14px;">
+      <strong>${currentLang === "th" ? "⚠️ ใส่ให้ไม่ได้ทั้งหมด" : "⚠️ Couldn't fit everything"}</strong>
+      <div class="rec-reason" style="margin-top:6px;">
+        ${currentLang === "th"
+          ? `จำนวนวันของทริปไม่พอใส่ทุกที่ที่ระบุว่า "ต้องมี" — ${lastUnplacedMustHave.map(p => p.name[currentLang]).join(", ")} เลยยังไม่ได้ถูกจัดลงโปรแกรม ลองเพิ่มจำนวนวัน หรือลดจำนวนสถานที่ที่ต้องมีดูค่ะ`
+          : `Your trip doesn't have enough days to fit every "must-visit" place — ${lastUnplacedMustHave.map(p => p.name[currentLang]).join(", ")} couldn't be scheduled. Try adding more days or requesting fewer must-visit places.`}
+      </div>
+    </div>
+  ` : "";
   section.innerHTML = `
     <h3 class="section-title" data-i18n="recommendationsTitle">${t("recommendationsTitle")}</h3>
+    ${unplacedNotice}
     ${places.map(place => {
       const warn = aiAnalysis && aiAnalysis.placeNotes && aiAnalysis.placeNotes[place.id];
       const isPinned = mustHaveIds.has(place.id);
