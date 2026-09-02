@@ -249,6 +249,16 @@
     flex-direction:column;
     gap:11px;
   }
+  .must-have-list{
+    display:flex;
+    flex-direction:column;
+    gap:11px;
+    max-height:360px;
+    overflow-y:auto;
+    padding-right:2px;
+  }
+  .must-have-item .checkbox-option{ margin-bottom:0; }
+  .must-have-item select.text-input{ font-size:13px; padding:10px 12px; }
   .range-option, .checkbox-option{
     display:flex;
     align-items:center;
@@ -1253,8 +1263,10 @@ const STRINGS = {
     step5Question: "คุณต้องการเดินทางด้วยวิธีไหนคะ",
     step6Label: "ระยะเวลา",
     step6Question: "คุณต้องการเที่ยวกี่วันกี่คืนคะ",
-    step7Label: "ข้อจำกัด/ข้อมูลเพิ่มเติม",
-    step7Question: "มีข้อจำกัดหรือข้อมูลเพิ่มเติมหรือไม่ (เช่น จำนวนคน มีเด็ก แพ้อาหาร)",
+    step7Label: "สถานที่ที่ต้องมี",
+    step7Question: "มีสถานที่ไหนที่อยากไปแน่ๆ ไหมคะ (ไม่บังคับ เลือกได้สูงสุด 3 ที่ จะระบุวันเจาะจงหรือให้ระบบจัดวันให้ก็ได้)",
+    step8Label: "ข้อจำกัด/ข้อมูลเพิ่มเติม",
+    step8Question: "มีข้อจำกัดหรือข้อมูลเพิ่มเติมหรือไม่ (เช่น จำนวนคน มีเด็ก แพ้อาหาร)",
     recommendationsTitle: "สถานที่ที่เหมาะสม",
     itineraryTitle: "โปรแกรมรายละเอียด",
     shareLabel: "แชร์โปรแกรมของคุณ",
@@ -1292,8 +1304,10 @@ const STRINGS = {
     step5Question: "How do you prefer to travel?",
     step6Label: "Duration",
     step6Question: "How many days and nights?",
-    step7Label: "Restrictions/Notes",
-    step7Question: "Any dietary restrictions or notes? (number of people, kids, vegetarian, etc.)",
+    step7Label: "Must-visit places",
+    step7Question: "Any places you're set on visiting? (Optional, pick up to 3 — assign a specific day or let us schedule it)",
+    step8Label: "Restrictions/Notes",
+    step8Question: "Any dietary restrictions or notes? (number of people, kids, vegetarian, etc.)",
     recommendationsTitle: "Perfect spots for you",
     itineraryTitle: "Detailed itinerary",
     shareLabel: "Share your itinerary",
@@ -1417,6 +1431,13 @@ const STEPS_CONFIG = [
     }
   },
   {
+    id: "mustHave",
+    type: "places",
+    // ให้ผู้ใช้เจาะจงสถานที่ที่ "ต้องมี" ในทริปได้สูงสุด 3 ที่ จะระบุวันที่แน่นอน (1/2/3...) หรือปล่อยให้ระบบจัดวันให้ก็ได้
+    // ไม่บังคับกรอก — ข้ามได้ถ้าอยากให้ระบบจัดเองทั้งหมดตามคะแนน/ความหลากหลายตามปกติ
+    maxSelect: 3
+  },
+  {
     id: "notes",
     type: "text",
     placeholder: { th: "เช่น 3 คน, มีเด็ก 1 คน, แพ้อาหารทะเล, มังสวิรัต", en: "E.g. 3 people, 1 child, allergic to seafood, vegetarian" }
@@ -1443,6 +1464,7 @@ let formData = {
   budget: null,
   transport: null,
   duration: null,
+  mustHave: [], // [{placeId, day}] — สถานที่ที่ผู้ใช้ระบุว่า "ต้องมี" ในทริป day = เลขวัน (1-based) หรือ null = ให้ระบบจัดวันให้
   notes: ""
 };
 
@@ -1582,6 +1604,36 @@ function renderAIFilterSteps(){
             style="min-height: 80px; resize: vertical;" onchange="app.handleStepInput('${config.id}', this.value, this)">${formData[config.id]}</textarea>
         </div>
       `;
+    } else if(config.type === "places"){
+      const durationDaysMap = { daytrip: 1, "2d1n": 2, "3d2n": 3, "4plus": 4 };
+      const dayCount = durationDaysMap[formData.duration] || 4;
+      content = `
+        <div class="must-have-list">
+          ${PLACES.map(place => {
+            const existing = (formData.mustHave || []).find(m => m.placeId === place.id);
+            const checked = !!existing;
+            return `
+            <div class="must-have-item">
+              <div class="checkbox-option" style="margin-bottom:${checked ? "8px" : "0"};">
+                <input type="checkbox" id="mustHave-${place.id}" ${checked ? "checked" : ""}
+                  onchange="app.toggleMustHave('${place.id}', this.checked)">
+                <label for="mustHave-${place.id}">${place.name[currentLang]}</label>
+              </div>
+              ${checked ? `
+              <select class="text-input" style="margin-bottom:14px;" onchange="app.setMustHaveDay('${place.id}', this.value)">
+                <option value="">${currentLang === "th" ? "ให้ระบบจัดวันให้อัตโนมัติ" : "Let the system pick the day"}</option>
+                ${Array.from({ length: dayCount }, (_, i) => i + 1).map(d => `
+                  <option value="${d}" ${existing && existing.day === d ? "selected" : ""}>${currentLang === "th" ? `วันที่ ${d}` : `Day ${d}`}</option>
+                `).join("")}
+              </select>
+              ` : ""}
+            </div>`;
+          }).join("")}
+        </div>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">
+          ${currentLang === "th" ? "เลือกได้สูงสุด 3 ที่ (ไม่บังคับ ข้ามได้ถ้าอยากให้ระบบจัดให้ทั้งหมด)" : "Select up to 3 (optional — skip to let the system plan everything)"}
+        </p>
+      `;
     }
 
     return `
@@ -1614,7 +1666,7 @@ function updateStepButtons(){
   const isStepFilled = formData[currentStepId];
 
   btnBack.disabled = isFirstStep;
-  btnNext.disabled = !isStepFilled && currentStepId !== "notes";
+  btnNext.disabled = !isStepFilled && currentStepId !== "notes" && currentStepId !== "mustHave";
   btnNext.textContent = isLastStep ? t("btnNext") : t("btnNext");
 
   if(isLastStep) btnNext.textContent = "สร้างโปรแกรม";
@@ -1771,30 +1823,55 @@ function filterPlaces(){
   const neededDays = durationDaysMap[formData.duration] || 2;
   const count = Math.min(PLACES.length, Math.max(3, neededDays));
 
-  // กฎการกระจายประเภทกิจกรรม (Diversity Constraint) แบบ "บังคับ": สถานที่แต่ละแห่งถูกจัดกลุ่มเป็น 2 แกน
-  // (axis) คือ "water" (Water-Activity/Island) กับ "land" (Landmark/Culture/Viewpoint/Hiking/Cafe/Sport-บนบก)
-  // ห้ามเลือกสถานที่ที่ axis ซ้ำกับวันก่อนหน้าโดยเด็ดขาด เช่น วันนี้เป็นสาย Water วันถัดไปต้องสลับ
-  // ไปสาย Land เท่านั้น ทั้งนี้ยังให้น้ำหนักคะแนนความตรงความต้องการด้านบนเป็นตัวเลือกภายใน axis นั้นๆ ก่อนเสมอ
-  const { sequence, fellBackOnce } = buildDiverseSequence(scored, count);
+  // ========== จองช่องให้สถานที่ "ต้องมี" ก่อนเป็นอันดับแรก (สำคัญกว่าคะแนน/diversity ทั้งหมด) ==========
+  // ตำแหน่งในอาเรย์ finalSequence ตรงกับวันของทริป (index 0 = วันที่ 1, index 1 = วันที่ 2, ...)
+  const finalSequence = new Array(count).fill(null);
+  const usedPlaceIds = new Set();
+  const mustHaveList = getEffectiveMustHave();
+
+  // 1) วางที่ระบุวันเจาะจงก่อน (ความตั้งใจชัดเจนสุด) — ถ้าวันที่ระบุเกินจำนวนวันจริงของทริป จะหนีบให้อยู่ในช่วงที่มี
+  mustHaveList.filter(m => m.day).forEach(m => {
+    const place = PLACES.find(p => p.id === m.placeId);
+    if(!place || usedPlaceIds.has(place.id)) return;
+    const dayIdx = Math.min(Math.max(m.day - 1, 0), count - 1);
+    finalSequence[dayIdx] = place;
+    usedPlaceIds.add(place.id);
+  });
+  // 2) ที่ "ต้องมี" แต่ไม่ระบุวัน — ใส่ในช่องว่างแรกที่เจอ (ถ้าที่ว่างไม่พอ ข้ามไปเงียบๆ ดีกว่าทำให้พัง)
+  mustHaveList.filter(m => !m.day).forEach(m => {
+    const place = PLACES.find(p => p.id === m.placeId);
+    if(!place || usedPlaceIds.has(place.id)) return;
+    const emptyIdx = finalSequence.findIndex(s => s === null);
+    if(emptyIdx === -1) return;
+    finalSequence[emptyIdx] = place;
+    usedPlaceIds.add(place.id);
+  });
+
+  // กฎการกระจายประเภทกิจกรรม (Diversity Constraint): เติมช่องที่เหลือ (ที่ไม่ถูกจองจาก mustHave)
+  // ด้วยสถานที่คะแนนสูงสุดที่ยังไม่ถูกใช้ พยายามสลับ axis (water/land) กับวันข้างเคียงเท่าที่ทำได้
+  const remainingPool = scored.filter(s => !usedPlaceIds.has(s.place.id));
+  const { sequence, fellBackOnce } = buildDiverseSequence(remainingPool, finalSequence);
   if(fellBackOnce){
-    // ในทางทฤษฎีไม่ควรเกิดขึ้นกับจำนวนสถานที่/จำนวนวันสูงสุดในระบบตอนนี้ (water 7 / land 5, บังคับสูงสุด 4 วัน)
-    // แต่ log ไว้เผื่ออนาคตมีการเพิ่มจำนวนวันสูงสุดหรือกรองสถานที่ออกเพิ่มจนไม่พอสลับ axis จริงๆ
+    // เกิดขึ้นได้บ่อยขึ้นถ้ามีการจอง mustHave หลายที่ติดกันจน pool เหลือน้อย/ไม่พอสลับ axis จริงๆ — ไม่ใช่บั๊ก แค่ log ไว้เฉยๆ
     console.warn("Diversity constraint fallback triggered: not enough places left to alternate axis without repeating.");
   }
 
   return sequence;
 }
 
-// สร้างลำดับสถานที่ทีละวัน โดยบังคับสลับ axis (water/land) ระหว่างวันติดกันเสมอ
+// สร้างลำดับสถานที่ทีละวัน โดยบังคับสลับ axis (water/land) ระหว่างวันติดกันเสมอ (เท่าที่ทำได้)
 // ภายใน axis เดียวกัน จะเลือกสถานที่คะแนนสูงสุดที่ยังเหลืออยู่ก่อน (คะแนนจาก filterPlaces ด้านบน)
-function buildDiverseSequence(scored, count){
+// รองรับ "finalSequence" ที่มีบางช่องถูกจองไว้แล้วล่วงหน้า (ไม่ใช่ null) จากสถานที่ที่ผู้ใช้ระบุว่า "ต้องมี"
+// — ฟังก์ชันนี้จะเติมเฉพาะช่องที่ยังเป็น null เท่านั้น โดยพยายามสลับ axis กับเพื่อนบ้านที่ถูกจองไว้ด้วย
+function buildDiverseSequence(scored, finalSequence){
   const pool = [...scored];
-  const sequence = [];
   let fellBackOnce = false;
 
-  while(sequence.length < count){
-    const lastAxis = sequence.length ? sequence[sequence.length - 1].axis : null;
-    let idx = pool.findIndex(c => c.place.axis !== lastAxis);
+  for(let i = 0; i < finalSequence.length; i++){
+    if(finalSequence[i] !== null) continue; // ช่องนี้ถูกจองไว้แล้ว (มาจาก mustHave) ข้ามไปเลย
+
+    const prevAxis = i > 0 && finalSequence[i - 1] ? finalSequence[i - 1].axis : null;
+    let idx = pool.findIndex(c => c.place.axis !== prevAxis);
 
     if(idx === -1){
       // pool ที่เหลือมี axis เดียวกับวันก่อนหน้าทั้งหมด (หรือหมด pool ไปแล้ว) — กันไม่ให้ค้าง/พัง
@@ -1805,10 +1882,45 @@ function buildDiverseSequence(scored, count){
     }
 
     const [chosen] = pool.splice(idx, 1);
-    sequence.push(chosen.place);
+    finalSequence[i] = chosen.place;
   }
 
-  return { sequence, fellBackOnce };
+  return { sequence: finalSequence, fellBackOnce };
+}
+
+// รวมสถานที่ "ต้องมี" จาก 2 แหล่ง: (1) ที่เลือกตรงๆ ในฟอร์ม step "สถานที่ที่ต้องมี" (2) ที่จับได้จากข้อความในช่อง
+// "ข้อจำกัด/ข้อมูลเพิ่มเติม" แบบ keyword matching เบื้องต้น (เช่น พิมพ์ "อยากไปวัดถ้ำเสือวันที่ 2" ก็จับได้)
+// ถ้าสถานที่เดียวกันถูกระบุทั้งสองทาง ให้ใช้ค่าจากฟอร์มเป็นหลัก (ตั้งใจกรอกตรงๆ น่าเชื่อถือกว่าการเดาจากข้อความ)
+function getEffectiveMustHave(){
+  const fromForm = formData.mustHave || [];
+  const fromNotes = detectMustHaveFromNotes(formData.notes || "");
+  const merged = [...fromForm];
+  fromNotes.forEach(n => {
+    if(!merged.some(m => m.placeId === n.placeId)) merged.push(n);
+  });
+  return merged.slice(0, 3); // จำกัดไม่เกิน 3 ที่รวมกันทั้งสองแหล่ง กันจำนวนเกินจำนวนวันที่มี
+}
+
+// จับชื่อสถานที่ (ไทย/อังกฤษ) ที่ถูกพิมพ์ถึงตรงๆ ในช่องข้อความอิสระ พร้อมมองหาเลขวันใกล้เคียง
+// (เช่น "วันที่ 2" หรือ "day 2") ถ้าไม่เจอเลขวันใกล้ๆ ถือว่าไม่ระบุวัน ให้ระบบจัดวันให้เอง
+// หมายเหตุ: เป็น keyword matching ง่ายๆ ฝั่ง client ล้วนๆ ไม่ใช่การเข้าใจภาษาธรรมชาติจริง แม่นยำน้อยกว่าเลือกในฟอร์มตรงๆ
+function detectMustHaveFromNotes(notesText){
+  if(!notesText || !notesText.trim()) return [];
+  const detected = [];
+  PLACES.forEach(place => {
+    const namesToCheck = [place.name.th, place.name.en];
+    let foundIdx = -1;
+    for(const name of namesToCheck){
+      const i = notesText.toLowerCase().indexOf(name.toLowerCase());
+      if(i !== -1){ foundIdx = i; break; }
+    }
+    if(foundIdx === -1) return;
+
+    const windowText = notesText.slice(Math.max(0, foundIdx - 15), foundIdx + 30);
+    const dayMatch = windowText.match(/(?:วันที่|day)\s*(\d)/i);
+    detected.push({ placeId: place.id, day: dayMatch ? parseInt(dayMatch[1], 10) : null });
+  });
+  return detected;
 }
 
 function generateItinerary(places){
@@ -1909,16 +2021,19 @@ function generateItinerary(places){
 
 function renderRecommendations(places){
   const section = document.getElementById("recommendationsSection");
+  const mustHaveIds = new Set(getEffectiveMustHave().map(m => m.placeId));
   section.innerHTML = `
     <h3 class="section-title" data-i18n="recommendationsTitle">${t("recommendationsTitle")}</h3>
     ${places.map(place => {
       const warn = aiAnalysis && aiAnalysis.placeNotes && aiAnalysis.placeNotes[place.id];
+      const isPinned = mustHaveIds.has(place.id);
       return `
       <div class="recommendation-card" style="cursor:pointer;" role="button" tabindex="0" aria-label="${place.name[currentLang]}" onclick="app.openPlaceDetail('${place.id}')">
-        <div class="rec-name">${place.name[currentLang]} <span style="float:right; color:var(--green); font-weight:400;">→</span></div>
+        <div class="rec-name">${isPinned ? "📌 " : ""}${place.name[currentLang]} <span style="float:right; color:var(--green); font-weight:400;">→</span></div>
         <div class="rec-reason">${place.desc[currentLang]}</div>
         ${place.pier ? `<div class="rec-reason" style="margin-top:6px;">📍 ${currentLang === "th" ? "ขึ้นเรือที่" : "Board at"}: ${place.pier[currentLang]}</div>` : ""}
         <div class="rec-reason" style="margin-top:6px; color: var(--brown); font-weight:600;">${place.cost[currentLang]}</div>
+        ${isPinned ? `<div class="rec-reason" style="margin-top:8px; color:var(--turquoise-dark); font-weight:600;">📌 ${currentLang === "th" ? "ตามที่คุณระบุว่าต้องมี" : "As you specifically requested"}</div>` : ""}
         ${warn ? `<div class="rec-reason" style="margin-top:8px; color:#B94B30; font-weight:600;">⚠️ ${warn}</div>` : ""}
       </div>
     `;}).join("")}
@@ -2235,7 +2350,7 @@ function renderScreen(){
 const app = {
   goToHome(){
     currentStep = 0;
-    formData = { age: null, style: [], subStyle: null, budget: null, transport: null, duration: null, notes: "" };
+    formData = { age: null, style: [], subStyle: null, budget: null, transport: null, duration: null, mustHave: [], notes: "" };
     pushHistoryState({ screen: "home" });
     showScreen("homeScreen");
     renderCarousel();
@@ -2258,7 +2373,7 @@ const app = {
   },
   startAIFilter(){
     currentStep = 0;
-    formData = { age: null, style: [], subStyle: null, budget: null, transport: null, duration: null, notes: "" };
+    formData = { age: null, style: [], subStyle: null, budget: null, transport: null, duration: null, mustHave: [], notes: "" };
     pushHistoryState({ screen: "aiFilter", step: 0 });
     showScreen("aiFilterScreen");
     renderAIFilterSteps();
@@ -2280,6 +2395,24 @@ const app = {
       formData[stepId] = value;
     }
     updateStepButtons();
+  },
+  toggleMustHave(placeId, checked){
+    formData.mustHave = formData.mustHave || [];
+    if(checked){
+      if(formData.mustHave.length >= 3){
+        alert(currentLang === "th" ? "เลือกได้สูงสุด 3 ที่เท่านั้น" : "You can select up to 3 places only");
+        renderAIFilterSteps(); // re-render เพื่อคืนสถานะ checkbox กลับ เพราะ formData ไม่ได้ถูกเพิ่มจริง
+        return;
+      }
+      formData.mustHave.push({ placeId, day: null });
+    } else {
+      formData.mustHave = formData.mustHave.filter(m => m.placeId !== placeId);
+    }
+    renderAIFilterSteps();
+  },
+  setMustHaveDay(placeId, dayValue){
+    const entry = (formData.mustHave || []).find(m => m.placeId === placeId);
+    if(entry) entry.day = dayValue ? parseInt(dayValue, 10) : null;
   },
   nextStep(){
     if(currentStep < STEPS_CONFIG.length - 1){
