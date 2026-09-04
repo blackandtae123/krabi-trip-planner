@@ -1762,12 +1762,14 @@ function renderAIFilterSteps(){
 function updateStepButtons(){
   const btnBack = document.getElementById("btnBack");
   const btnNext = document.getElementById("btnNext");
-  const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === STEPS_CONFIG.length - 1;
   const currentStepId = STEPS_CONFIG[currentStep].id;
   const isStepFilled = formData[currentStepId];
 
-  btnBack.disabled = isFirstStep;
+  // ปุ่ม "ย้อนกลับ" ไม่ต้อง disable ที่ step แรกอีกต่อไป เพราะ prevStep() ใช้ history.back() แล้ว
+  // ซึ่งจะพากลับไปหน้าแรก (Home) ได้ถูกต้องเองตามลำดับ history stack ที่แท้จริง — การ disable ไว้แบบเดิม
+  // (จากตอนที่ prevStep() ยังลด currentStep ตรงๆ) ทำให้ผู้ใช้กดย้อนกลับจาก step แรกไม่ได้เลย เป็นบั๊กที่ต้องแก้
+  btnBack.disabled = false;
   btnNext.disabled = !isStepFilled && currentStepId !== "notes" && currentStepId !== "mustHave";
   btnNext.textContent = isLastStep ? t("btnNext") : t("btnNext");
 
