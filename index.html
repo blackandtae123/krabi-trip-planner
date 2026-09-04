@@ -293,6 +293,84 @@
     color:var(--turquoise-dark);
   }
 
+  /* ---------- chip-style filter options (age/style/subStyle/budget/transport/duration) ---------- */
+  .chip-row{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding:4px 2px 12px;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .chip-row::-webkit-scrollbar{ display:none; }
+  .chip-option{
+    flex:0 0 auto;
+    position:relative;
+  }
+  .chip-option input{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    width:100%;
+    height:100%;
+    margin:0;
+    cursor:pointer;
+  }
+  .chip-option label{
+    display:inline-flex;
+    align-items:center;
+    white-space:nowrap;
+    padding:12px 20px;
+    border-radius:999px;
+    border:1.5px solid var(--border);
+    background:var(--cream);
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--text);
+    cursor:pointer;
+    transition: all .2s ease;
+  }
+  .chip-option label:hover{
+    border-color:var(--turquoise);
+    background:#fff;
+  }
+  .chip-option input:checked + label{
+    background:linear-gradient(135deg, var(--turquoise) 0%, var(--green) 100%);
+    border-color:transparent;
+    color:#fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .chip-row-hint{
+    font-size:11.5px;
+    color:var(--text-muted);
+    margin-top:-4px;
+    margin-bottom:4px;
+  }
+
+  /* ---------- badges on place cards (ยอดนิยม / เหมาะเด็ก / ต้องมี) ---------- */
+  .place-badges{
+    position:absolute;
+    top:10px;
+    left:10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    z-index:2;
+  }
+  .place-badge{
+    padding:5px 11px;
+    border-radius:999px;
+    font-size:10.5px;
+    font-weight:700;
+    color:#fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    backdrop-filter: blur(2px);
+    white-space:nowrap;
+  }
+  .place-badge.badge-popular{ background:linear-gradient(135deg, #E8A33D, #D9822A); }
+  .place-badge.badge-kid{ background:linear-gradient(135deg, var(--turquoise), var(--turquoise-dark)); }
+  .place-badge.badge-pinned{ background:linear-gradient(135deg, var(--green), #4E7A5E); }
+
   .text-input{
     width:100%;
     padding:14px 16px;
@@ -1555,6 +1633,25 @@ function placeImageFallbackSVG(labelText){
   </svg><div class="no-image-label">${labelText}</div>`;
 }
 
+// สถานที่ยอดนิยม/เป็นที่รู้จักที่สุดของกระบี่ (คัดมือ ใช้แสดง badge "ยอดนิยม" บนการ์ด)
+const POPULAR_PLACE_IDS = new Set(["phi-phi", "railay", "thale-waek", "tiger-cave"]);
+
+// สร้าง badge มุมการ์ดสถานที่ (ยอดนิยม / เหมาะกับเด็ก / ต้องมี) — ใช้ร่วมกันทั้งการ์ดหน้าแรกและหน้าผลลัพธ์
+function getPlaceBadgesHTML(place, { pinned = false } = {}){
+  const badges = [];
+  if(pinned){
+    badges.push(`<span class="place-badge badge-pinned">📌 ${currentLang === "th" ? "ต้องมี" : "Must-visit"}</span>`);
+  }
+  if(POPULAR_PLACE_IDS.has(place.id)){
+    badges.push(`<span class="place-badge badge-popular">⭐ ${currentLang === "th" ? "ยอดนิยม" : "Popular"}</span>`);
+  }
+  if(place.physicalDemand === "low"){
+    badges.push(`<span class="place-badge badge-kid">${currentLang === "th" ? "เหมาะกับเด็ก" : "Kid-friendly"}</span>`);
+  }
+  if(badges.length === 0) return "";
+  return `<div class="place-badges">${badges.join("")}</div>`;
+}
+
 function renderCarousel(){
   const carousel = document.getElementById("carouselPlaces");
   const noImageLabel = currentLang === "th" ? "ยังไม่มีรูปภาพ" : "No photo yet";
@@ -1564,6 +1661,7 @@ function renderCarousel(){
     return `
     <div class="place-card" role="button" tabindex="0" aria-label="${place.name[currentLang]}" onclick="app.openPlaceDetail('${place.id}')">
       <div class="place-image">
+        ${getPlaceBadgesHTML(place)}
         ${hasImg
           ? `<img src="${place.images[0]}" alt="${place.name[currentLang]}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='${fallback}';">${place.imagesIllustrative ? `<span class="illustrative-badge">${currentLang === "th" ? "ภาพประกอบ" : "Illustrative"}</span>` : ""}`
           : placeImageFallbackSVG(noImageLabel)}
@@ -1590,7 +1688,7 @@ function renderAIFilterSteps(){
     if(config.type === "radio" || config.type === "checkbox"){
       const optionsForLang = config.options[currentLang];
       content = optionsForLang.map(opt => `
-        <div class="range-option">
+        <div class="chip-option">
           <input type="${config.type}" name="${config.id}" value="${opt.value}" id="${config.id}-${opt.value}" 
             ${config.type === "radio" ? (formData[config.id] === opt.value ? "checked" : "") : (formData[config.id]?.includes(opt.value) ? "checked" : "")}
             onchange="app.handleStepInput('${config.id}', '${opt.value}', this)">
@@ -1643,7 +1741,10 @@ function renderAIFilterSteps(){
         <h3 data-i18n="step${stepNumber}Question">${t(`step${stepNumber}Question`)}</h3>
         <div class="subtitle"></div>
         <div class="input-group">
-          ${config.type === "radio" || config.type === "checkbox" ? `<div class="${config.type === "checkbox" ? "checkbox-group" : "range-options"}">${content}</div>` : content}
+          ${config.type === "radio" || config.type === "checkbox" ? `
+            <div class="chip-row">${content}</div>
+            ${config.type === "checkbox" ? `<div class="chip-row-hint">${currentLang === "th" ? "← เลื่อนดูตัวเลือกทั้งหมด เลือกได้สูงสุด 2 อย่าง →" : "← Scroll for more, pick up to 2 →"}</div>` : `<div class="chip-row-hint">${currentLang === "th" ? "← เลื่อนดูตัวเลือกทั้งหมด →" : "← Scroll to see all options →"}</div>`}
+          ` : content}
         </div>
         <div class="step-progress">
           <div class="progress-bar">
