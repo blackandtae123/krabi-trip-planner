@@ -927,6 +927,8 @@
 const PLACES = [
   {
     id: "thale-waek",
+    visitWindow: { open: "08:00", close: "16:00" },
+    fullDayActivity: true,
     physicalDemand: "low",
     lat: 7.9610, lng: 98.8100,
     activityCostPerPerson: 700,
@@ -959,6 +961,7 @@ const PLACES = [
   },
   {
     id: "railay",
+    visitWindow: { open: "08:00", close: "17:00" },
     physicalDemand: "low",
     lat: 8.0126, lng: 98.8372,
     activityCostPerPerson: 200,
@@ -992,6 +995,7 @@ const PLACES = [
   },
   {
     id: "sa-morakot",
+    visitWindow: { open: "08:30", close: "17:00" },
     physicalDemand: "low",
     lat: 7.9263, lng: 99.2668,
     activityCostPerPerson: 0,
@@ -1025,6 +1029,7 @@ const PLACES = [
   },
   {
     id: "hot-spring",
+    visitWindow: { open: "08:30", close: "17:00" },
     physicalDemand: "low",
     lat: 7.9054, lng: 99.1083,
     activityCostPerPerson: 10,
@@ -1058,6 +1063,7 @@ const PLACES = [
   },
   {
     id: "tiger-cave",
+    visitWindow: { open: "07:00", close: "17:00" },
     physicalDemand: "high",
     lat: 8.1128, lng: 98.9232,
     activityCostPerPerson: 0,
@@ -1090,6 +1096,8 @@ const PLACES = [
   },
   {
     id: "phi-phi",
+    visitWindow: { open: "08:00", close: "17:00" },
+    fullDayActivity: true,
     physicalDemand: "low",
     lat: 7.7407, lng: 98.7784,
     activityCostPerPerson: 1290,
@@ -1123,6 +1131,7 @@ const PLACES = [
   },
   {
     id: "nopparat-thara",
+    visitWindow: { open: "07:00", close: "18:00" },
     physicalDemand: "low",
     lat: 8.0512, lng: 98.8034,
     activityCostPerPerson: 0,
@@ -1154,6 +1163,7 @@ const PLACES = [
   },
   {
     id: "wat-kaew",
+    visitWindow: { open: "08:00", close: "17:00" },
     physicalDemand: "medium",
     lat: 8.0622, lng: 98.9135,
     activityCostPerPerson: 0,
@@ -1185,6 +1195,7 @@ const PLACES = [
   },
   {
     id: "krabi-night-market",
+    visitWindow: { open: "17:00", close: "22:00" },
     physicalDemand: "low",
     lat: 8.0645, lng: 98.9161,
     activityCostPerPerson: 0,
@@ -1216,6 +1227,8 @@ const PLACES = [
   },
   {
     id: "khao-ngon-nak",
+    visitWindow: { open: "08:00", close: "18:00" },
+    lastEntry: "14:00",
     physicalDemand: "high",
     lat: 8.1064, lng: 98.7808,
     activityCostPerPerson: 0,
@@ -1248,6 +1261,7 @@ const PLACES = [
   },
   {
     id: "ao-thalane-kayak",
+    visitWindow: { open: "08:00", close: "12:00" },
     physicalDemand: "medium",
     lat: 8.1219, lng: 98.7502,
     activityCostPerPerson: 850,
@@ -1278,6 +1292,7 @@ const PLACES = [
   },
   {
     id: "lae-lay-cafe",
+    visitWindow: { open: "10:00", close: "20:00" },
     physicalDemand: "low",
     lat: 8.0398, lng: 98.8156,
     activityCostPerPerson: 0,
@@ -1308,7 +1323,495 @@ const PLACES = [
       { name: "The Mango Garden", cuisine: { th: "คาเฟ่/บรันช์", en: "Café/Brunch" }, rating: 4.8, lat: 7.738676, lng: 98.771294 }
     ],
     source: { name: "byklo.rent", url: "https://blog.byklo.rent/best-coffee-shops-in-krabi/" }
+  },
+  {
+    id: "ao-nang-beach",
+    physicalDemand: "low",
+    lat: 8.0369, lng: 98.8225,
+    activityCostPerPerson: 0,
+    region: { th: "อ่าวนาง", en: "Ao Nang" },
+    name: { th: "หาดอ่าวนาง", en: "Ao Nang Beach" },
+    desc: { th: "หาดหลักของอ่าวนาง คึกคักด้วยร้านอาหาร บาร์ริมหาด และจุดขึ้นเรือไปเกาะต่างๆ", en: "Ao Nang's main beach — lined with restaurants, beach bars, and the longtail pier to nearby islands" },
+    season: { th: "พ.ย. – เม.ย.", en: "Nov – Apr" },
+    cost: { th: "ไม่มีค่าเข้า", en: "Free entry" },
+    categories: ["sea", "relax"],
+    tags: ["water-activity"],
+    axis: "water",
+    transport: ["car", "bike"],
+    budget: "low",
+    pier: null,
+    visitWindow: { open: "07:00", close: "19:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Ao%20Nang%20beach%20panorama%201.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Ao+Nang+Beach+Krabi&tbm=isch",
+    costDetail: {
+      th: "หาดอ่าวนางไม่มีค่าเข้า เดินเล่น เล่นน้ำ หรือนั่งร้านอาหารริมหาดได้ฟรี ค่าใช้จ่ายจะเกิดจากกิจกรรม/อาหารที่สั่งเท่านั้น — เหมาะเป็นกิจกรรมช่วงเช้าหรือเย็นแบบชิลๆ",
+      en: "Ao Nang Beach itself is free — walk, swim, or relax at a beachfront restaurant at no charge. Costs only come from whatever activities or food you choose. A relaxed morning or sunset stop."
+    },
+    restaurants: [
+      { name: "Sea Salt Krabi", cuisine: { th: "ซีฟู้ด/นานาชาติ (รูฟท็อป)", en: "Seafood/International (rooftop)" }, rating: 4.7, lat: 8.033701, lng: 98.827812 },
+      { name: "GAIA Kitchen & Bar", cuisine: { th: "ไทยฟิวชัน/นานาชาติ", en: "Thai fusion/International" }, rating: 4.9, lat: 8.037908, lng: 98.819275 }
+    ]
+  },
+  {
+    id: "susan-hoi",
+    physicalDemand: "low",
+    lat: 7.9540, lng: 98.9690,
+    activityCostPerPerson: 0,
+    region: { th: "อ่าวน้ำเมา", en: "Ao Nam Mao" },
+    name: { th: "สุสานหอย 75 ล้านปี", en: "Fossil Shell Beach (Susan Hoi)" },
+    desc: { th: "แผ่นหินขนาดใหญ่ที่เกิดจากซากเปลือกหอยน้ำจืดทับถมกันนานนับล้านปี หนึ่งในไม่กี่แห่งของโลก", en: "Massive limestone slabs formed from compressed freshwater shell fossils millions of years old — one of only a few such sites on Earth" },
+    season: { th: "พ.ย. – เม.ย.", en: "Nov – Apr" },
+    cost: { th: "20 บาท/คน (โดยประมาณ)", en: "~฿20/person (approximate)" },
+    categories: ["nature", "culture"],
+    tags: ["cultural"],
+    axis: "land",
+    transport: ["car", "bike"],
+    budget: "low",
+    pier: null,
+    visitWindow: { open: "08:00", close: "17:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%2C%20Limestone%20karst%20landscape%2C%20Thailand.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Susan+Hoi+Fossil+Shell+Beach+Krabi&tbm=isch",
+    costDetail: {
+      th: "ค่าเข้าชมเล็กน้อยเพื่อดูแลสถานที่ (ราคาอาจเปลี่ยนแปลง) ใช้เวลาชมประมาณ 30-45 นาที เหมาะแวะระหว่างทางไปสระมรกต/น้ำตกร้อน เพราะอยู่ในเส้นทางเดียวกัน",
+      en: "A small entrance fee helps maintain the site (subject to change). Takes about 30-45 minutes to see — a good stop on the way to Emerald Pool/Hot Spring since it's along the same route."
+    },
+    restaurants: [
+      { name: "ไร่นฤมล", cuisine: { th: "อาหารไทยพื้นบ้าน", en: "Local Thai" }, rating: 4.9, lat: 7.947784, lng: 99.207431 },
+      { name: "ร้านธรรมรส", cuisine: { th: "อาหารไทยพื้นบ้าน", en: "Local Thai" }, rating: 4.5, lat: 7.938658, lng: 99.144450 }
+    ]
+  },
+  {
+    id: "koh-poda",
+    physicalDemand: "low",
+    lat: 8.0079, lng: 98.7719,
+    activityCostPerPerson: 700,
+    region: { th: "เกาะปอดะ", en: "Koh Poda" },
+    name: { th: "เกาะปอดะ", en: "Koh Poda" },
+    desc: { th: "เกาะหาดทรายขาวน้ำใส มักรวมอยู่ในทัวร์ 4 เกาะจากอ่าวนาง เหมาะเล่นน้ำ/ดำน้ำตื้น", en: "White-sand island with clear water, usually part of the Ao Nang 4-island tour — great for swimming and snorkeling" },
+    season: { th: "พ.ย. – เม.ย.", en: "Nov – Apr" },
+    cost: { th: "700 – 900 บาท/คน (รวมในทัวร์ 4 เกาะ)", en: "฿700 – 900/person (as part of 4-island tour)" },
+    categories: ["sea", "nature"],
+    tags: ["island", "water-activity"],
+    axis: "water",
+    transport: ["boat"],
+    budget: "medium",
+    pier: { th: "ท่าเรืออ่าวนาง", en: "Ao Nang Pier" },
+    visitWindow: { open: "08:00", close: "16:00" },
+    fullDayActivity: true,
+    parkFee: { thAdult: 40, thChild: 20, enAdult: 400, enChild: 200 },
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/2016-04-14%20Tup%20Island%2C%20Krabi%20Province%201.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Koh+Poda+Krabi&tbm=isch",
+    costDetail: {
+      th: "มักซื้อเป็นแพ็กเกจทัวร์ 4 เกาะร่วมกับทะเลแหวก/เกาะไก่/ถ้ำพระนาง ราคาประมาณ 700-900 บาท/คน รวมอุปกรณ์ดำน้ำตื้นและอาหารกลางวัน — ราคาอาจเปลี่ยนแปลงตามผู้ประกอบการ",
+      en: "Usually booked as part of the 4-island tour package along with Thale Waek/Chicken Island/Phra Nang Cave, around ฿700-900/person incl. snorkel gear and lunch — prices vary by operator."
+    },
+    restaurants: [
+      { name: "Kodam Kitchen", cuisine: { th: "อาหารไทยพื้นบ้าน", en: "Local Thai" }, rating: 4.7, lat: 8.038466, lng: 98.819674 },
+      { name: "GAIA Kitchen & Bar", cuisine: { th: "ไทยฟิวชัน/นานาชาติ", en: "Thai fusion/International" }, rating: 4.9, lat: 8.037908, lng: 98.819275 }
+    ]
+  },
+  {
+    id: "bamboo-island",
+    physicalDemand: "low",
+    lat: 7.7658, lng: 98.7856,
+    activityCostPerPerson: 1290,
+    region: { th: "เกาะพีพี", en: "Phi Phi" },
+    name: { th: "เกาะไผ่ (Bamboo Island)", en: "Bamboo Island" },
+    desc: { th: "เกาะเล็กน้ำใสอีกจุดในทัวร์พีพี เงียบกว่าเกาะพีพีดอน เหมาะดำน้ำตื้นและพักผ่อน", en: "A small, quieter island included in the Phi Phi day tour, with clear water — great for snorkeling and relaxing away from the main crowds" },
+    season: { th: "พ.ย. – เม.ย.", en: "Nov – Apr" },
+    cost: { th: "1,290 บาท/คน ขึ้นไป (รวมในทัวร์วันเดย์พีพี)", en: "฿1,290/person+ (as part of the Phi Phi day tour)" },
+    categories: ["sea", "relax"],
+    tags: ["island", "water-activity"],
+    axis: "water",
+    transport: ["boat"],
+    budget: "medium",
+    pier: { th: "ท่าเรือนพรัตน์ธารา หรือ ท่าเรืออ่าวนาง", en: "Noppharat Thara Pier or Ao Nang Pier" },
+    visitWindow: { open: "08:00", close: "16:00" },
+    fullDayActivity: true,
+    parkFee: { thAdult: 40, thChild: 20, enAdult: 400, enChild: 200 },
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Phi%20Phi%20Don%20Island%20-%20panoramio%20(1).jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Bamboo+Island+Koh+Mai+Phai+Krabi&tbm=isch",
+    costDetail: {
+      th: "มักรวมอยู่ในทัวร์วันเดย์เกาะพีพีเป็นจุดแวะเพิ่มเติม ไม่ค่อยขายทัวร์แยกเฉพาะเกาะไผ่ ราคาจึงอิงกับทัวร์พีพีที่เลือก",
+      en: "Usually included as an extra stop on the Phi Phi day tour rather than sold separately — price follows whichever Phi Phi tour package you book."
+    },
+    restaurants: [
+      { name: "ACQUA Restaurant", cuisine: { th: "อิตาเลียน/นานาชาติ", en: "Italian/International" }, rating: 4.7, lat: 7.738765, lng: 98.772566 },
+      { name: "The Mango Garden", cuisine: { th: "คาเฟ่/บรันช์", en: "Café/Brunch" }, rating: 4.8, lat: 7.738676, lng: 98.771294 }
+    ]
+  },
+  {
+    id: "hong-island",
+    physicalDemand: "low",
+    lat: 8.0980, lng: 98.6300,
+    activityCostPerPerson: 900,
+    region: { th: "อ่าวท่าเลน/เกาะฮ่อง", en: "Ao Thalane / Hong Island" },
+    name: { th: "เกาะฮ่อง", en: "Hong Island" },
+    desc: { th: "ลากูนหินปูนล้อมรอบ น้ำสีเทอร์ควอยซ์ใส ถือเป็นหนึ่งในทริปเกาะยอดนิยมของกระบี่", en: "A lagoon ringed by limestone cliffs with striking turquoise water — one of Krabi's most popular island trips" },
+    season: { th: "พ.ย. – เม.ย.", en: "Nov – Apr" },
+    cost: { th: "900 – 1,200 บาท/คน (ทัวร์เต็มวัน)", en: "฿900 – 1,200/person (full-day tour)" },
+    categories: ["sea", "nature"],
+    tags: ["island", "water-activity"],
+    axis: "water",
+    transport: ["boat"],
+    budget: "medium",
+    pier: { th: "ท่าเรืออ่าวท่าเลน หรือ ท่าเรือคลองม่วง", en: "Ao Thalane Pier or Klong Muang Pier" },
+    visitWindow: { open: "08:00", close: "16:00" },
+    fullDayActivity: true,
+    parkFee: { thAdult: 40, thChild: 20, enAdult: 300, enChild: 150 },
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%2C%20Limestone%20karst%20landscape%2C%20Thailand.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Hong+Island+Krabi&tbm=isch",
+    costDetail: {
+      th: "ทัวร์เต็มวันรวมเรือ ไกด์ อุปกรณ์ดำน้ำตื้น และอาหารกลางวัน ราคาประมาณ 900-1,200 บาท/คน ขึ้นอยู่กับผู้ประกอบการและว่าเป็นเรือหางยาวหรือสปีดโบ๊ท",
+      en: "Full-day tour incl. boat, guide, snorkel gear, and lunch, around ฿900-1,200/person depending on operator and whether it's a longtail or speedboat."
+    },
+    restaurants: [
+      { name: "ไร่นฤมล", cuisine: { th: "อาหารไทยพื้นบ้าน", en: "Local Thai" }, rating: 4.9, lat: 7.947784, lng: 99.207431 },
+      { name: "Mahutsachan Café", cuisine: { th: "คาเฟ่/เบเกอรี่", en: "Café/Bakery" }, rating: 4.8, lat: 7.907730, lng: 99.115217 }
+    ]
+  },
+  {
+    id: "phra-nang-cave",
+    physicalDemand: "low",
+    lat: 8.0069, lng: 98.8372,
+    activityCostPerPerson: 0,
+    region: { th: "อ่าวไร่เลย์", en: "Railay" },
+    name: { th: "ถ้ำพระนาง", en: "Phra Nang Cave" },
+    desc: { th: "ถ้ำศักดิ์สิทธิ์ปลายแหลมไร่เลย์ ชาวประมงมาสักการะขอพร หาดสวยหน้าถ้ำเหมาะเล่นน้ำ", en: "A sacred cave-shrine at the tip of the Railay peninsula where local fishermen leave offerings, fronted by a beautiful swimming beach" },
+    season: { th: "พ.ย. – เม.ย.", en: "Nov – Apr" },
+    cost: { th: "ไม่มีค่าเข้า (รวมในการเดินทางไปไร่เลย์)", en: "Free entry (reached as part of visiting Railay)" },
+    categories: ["culture", "sea"],
+    tags: ["cultural", "island"],
+    axis: "water",
+    transport: ["boat"],
+    budget: "low",
+    pier: { th: "ท่าเรืออ่าวนาง หรือ ท่าเรืออ่าวน้ำเมา", en: "Ao Nang Pier or Ao Nam Mao Pier" },
+    visitWindow: { open: "08:00", close: "17:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Phra+Nang+Cave+Railay+Krabi&tbm=isch",
+    costDetail: {
+      th: "เดินทางด้วยเรือแบบเดียวกับไปไร่เลย์ (200-250 บาท/คน ไป-กลับ) แล้วเดินต่อไปปลายแหลม ไม่มีค่าเข้าถ้ำเพิ่มเติม เหมาะแวะรวมกับการเที่ยวไร่เลย์ในวันเดียวกัน",
+      en: "Reached by the same boat as Railay (฿200-250/person round trip), then a short walk to the peninsula tip. No extra fee for the cave itself — a natural add-on to a Railay day."
+    },
+    restaurants: [
+      { name: "Railay Family Restaurant", cuisine: { th: "อาหารไทย/บาร์บีคิว", en: "Thai/BBQ" }, rating: 4.1, lat: 8.012084, lng: 98.840067 },
+      { name: "Tew Lay Bar", cuisine: { th: "อาหารเบาๆ/พิซซ่า วิวทะเล", en: "Light bites/pizza, sea view" }, rating: 4.4, lat: 8.013063, lng: 98.846688 }
+    ]
+  },
+  {
+    id: "bioluminescent-plankton-tour",
+    physicalDemand: "low",
+    lat: 8.0126, lng: 98.8372,
+    activityCostPerPerson: 2100,
+    region: { th: "อ่าวไร่เลย์", en: "Railay" },
+    name: { th: "ล่องคายัคใสชมแพลงก์ตอนเรืองแสงยามค่ำคืน", en: "Clear Kayak Night Tour — Bioluminescent Plankton" },
+    desc: { th: "พายคายัคใสยามค่ำคืนที่ไร่เลย์ ชมแพลงก์ตอนเรืองแสงเป็นประกายรอบตัวคายัคเมื่อโดนพาย บรรยากาศเงียบสงบ เห็นชัดสุดคืนเดือนมืด", en: "Paddle a clear kayak at night off Railay and watch bioluminescent plankton glow around the paddle strokes — calm and quiet, clearest on moonless nights" },
+    season: { th: "ตลอดปี (คืนเดือนมืดเห็นชัดสุด)", en: "Year-round (clearest on moonless nights)" },
+    cost: { th: "ประมาณ 1,900-2,500 บาท/คน", en: "~฿1,900-2,500/person" },
+    categories: ["nature", "adventure"],
+    tags: ["water-activity"],
+    axis: "water",
+    transport: ["boat"],
+    budget: "medium",
+    pier: { th: "ท่าเรืออ่าวนาง หรือ ท่าเรืออ่าวน้ำเมา (ต่อเรือไปไร่เลย์)", en: "Ao Nang Pier or Ao Nam Mao Pier (boat transfer to Railay)" },
+    visitWindow: { open: "19:00", close: "21:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%2C%20Limestone%20karst%20landscape%2C%20Thailand.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://travel-buddies.com/2-hour-clear-kayak-illuminated-night-tour-in-krabi/",
+    costDetail: {
+      th: "ออกตัวประมาณ 1 ชั่วโมงหลังพระอาทิตย์ตก (ราว 19:00 น.) ใช้เวลาทัวร์ประมาณ 2 ชั่วโมง เหมาะเป็นกิจกรรมปิดท้ายวัน มีเสื้อชูชีพให้ครบ กลุ่มไม่เกิน ~40 คน — ราคาอาจเปลี่ยนแปลง โปรดตรวจสอบก่อนเดินทาง คืนที่ไม่มีแสงจันทร์จะเห็นแพลงก์ตอนเรืองแสงชัดที่สุด",
+      en: "Departs about an hour after sunset (~19:00) and runs roughly 2 hours — a good way to close out the day. Life jackets provided, groups capped around 40 — prices may change, verify before visiting. Moonless nights show the glow best."
+    },
+    restaurants: [
+      { name: "Sea Salt Krabi", cuisine: { th: "ซีฟู้ด/นานาชาติ (รูฟท็อป)", en: "Seafood/International (rooftop)" }, rating: 4.7, lat: 8.033701, lng: 98.827812 },
+      { name: "GAIA Kitchen & Bar", cuisine: { th: "ไทยฟิวชัน/นานาชาติ", en: "Thai fusion/International" }, rating: 4.9, lat: 8.037908, lng: 98.819275 }
+    ],
+    source: { name: "travel-buddies.com", url: "https://travel-buddies.com/2-hour-clear-kayak-illuminated-night-tour-in-krabi/" }
+  },
+  {
+    id: "aonang-fiore-zipline",
+    physicalDemand: "medium",
+    lat: 8.0290, lng: 98.8215,
+    activityCostPerPerson: 1400,
+    region: { th: "อ่าวนาง", en: "Ao Nang" },
+    name: { th: "อ่าวนาง ฟิโอเร่ ซิปไลน์ (Ao Nang Fiore Zip Line)", en: "Ao Nang Fiore Zip Line Adventure Park" },
+    desc: { th: "สวนผจญภัยซิปไลน์ในบริเวณรีสอร์ทอ่าวนาง ฟิโอเร่ ห่างจากหาดอ่าวนางแค่ราว 5 นาที มีคอร์สง่าย-หนักให้เลือก รวมจุดซิปไลน์คู่ยาว 80 เมตร และสะพานเชือกสูงสุดในกระบี่", en: "A zipline adventure park on the grounds of Ao Nang Fiore Resort, about 5 minutes from Ao Nang Beach, with easy-to-extreme courses including an 80m double zipline and one of Krabi's highest rope bridges" },
+    season: { th: "ตลอดปี", en: "Year-round" },
+    cost: { th: "ประมาณ 1,150-1,700 บาท/คน แล้วแต่คอร์ส (ง่าย/หนัก/รวม)", en: "~฿1,150-1,700/person depending on course (easy/extreme/combined)" },
+    categories: ["adventure"],
+    tags: ["sport"],
+    axis: "land",
+    transport: ["car"],
+    budget: "medium",
+    pier: null,
+    visitWindow: { open: "09:00", close: "15:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%2C%20Limestone%20karst%20landscape%2C%20Thailand.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.aonangfiore.com/activities-excursion/",
+    costDetail: {
+      th: "คอร์สง่าย (20 เกม สูงสุด 5 ม. เด็กอายุ 4 ขวบขึ้นไปเล่นได้) ใช้เวลา ~45 นาที ราคาประมาณ 1,150 บาท/คน / คอร์สหนัก (29 เกม รวมซิปไลน์คู่ยาว 80 ม. สูง 23 ม. เด็กต้องอายุมากกว่า 11 ปี) ใช้เวลา ~1.5 ชม. ราคาประมาณ 1,600 บาท/คน / คอร์สรวม (49 เกม) ใช้เวลา ~2 ชม. ราคาประมาณ 1,700 บาท/คน ออกรอบทุกชั่วโมง 09:00-15:00 รวมรับส่งจากอ่าวนาง/อ่าวน้ำเมา — ราคาอาจเปลี่ยนแปลง โปรดตรวจสอบก่อนเดินทาง",
+      en: "Easy course (20 games, max 5m high, ages 4+) ~45 min, ~฿1,150/person. Extreme course (29 games incl. the 80m double zipline at 23m up, ages 11+) ~1.5hr, ~฿1,600/person. Combined course (49 games) ~2hr, ~฿1,700/person. Departures hourly 09:00-15:00; hotel pickup included from Ao Nang/Ao Nam Mao — prices may change, verify before visiting."
+    },
+    restaurants: [
+      { name: "Sea Salt Krabi", cuisine: { th: "ซีฟู้ด/นานาชาติ (รูฟท็อป)", en: "Seafood/International (rooftop)" }, rating: 4.7, lat: 8.033701, lng: 98.827812 },
+      { name: "GAIA Kitchen & Bar", cuisine: { th: "ไทยฟิวชัน/นานาชาติ", en: "Thai fusion/International" }, rating: 4.9, lat: 8.037908, lng: 98.819275 }
+    ],
+    source: { name: "aonangfiore.com", url: "https://www.aonangfiore.com/activities-excursion/" }
+  },
+  {
+    id: "railay-climbing",
+    physicalDemand: "high",
+    lat: 8.0126, lng: 98.8372,
+    activityCostPerPerson: 1800,
+    region: { th: "อ่าวไร่เลย์", en: "Railay" },
+    name: { th: "ปีนหน้าผาไร่เลย์", en: "Railay Rock Climbing" },
+    desc: { th: "ไร่เลย์เป็นหนึ่งในจุดปีนหน้าผาปูนที่มีชื่อเสียงระดับโลก มีเส้นทางสำหรับทั้งมือใหม่และมือโปร", en: "Railay is one of the world's renowned limestone climbing destinations, with routes for both first-timers and experienced climbers" },
+    season: { th: "พ.ย. – เม.ย.", en: "Nov – Apr" },
+    cost: { th: "ประมาณ 1,500-2,000 บาท/คน (คอร์สครึ่งวัน)", en: "~฿1,500-2,000/person (half-day course)" },
+    categories: ["adventure"],
+    tags: ["sport"],
+    axis: "water",
+    transport: ["boat"],
+    budget: "medium",
+    pier: { th: "ท่าเรืออ่าวนาง", en: "Ao Nang Pier" },
+    visitWindow: { open: "08:00", close: "16:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/View%20from%20East%20Rai%20Leh.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Railay+rock+climbing+Krabi&tbm=isch",
+    costDetail: {
+      th: "คอร์สครึ่งวันสำหรับมือใหม่รวมอุปกรณ์นิรภัยและผู้ฝึกสอนทั้งหมด ราคาประมาณ 1,500-2,000 บาท/คน ไม่จำเป็นต้องมีประสบการณ์มาก่อน แต่ควรมีสภาพร่างกายพร้อมออกแรงพอสมควร",
+      en: "Half-day beginner course incl. all safety gear and an instructor, around ฿1,500-2,000/person. No prior experience needed, but expect a fair amount of physical exertion."
+    },
+    restaurants: [
+      { name: "Mangrove Restaurant", cuisine: { th: "อาหารไทย (มีเมนูมังสวิรัติ)", en: "Thai (vegan options)" }, rating: 4.2, lat: 8.012230, lng: 98.840149 },
+      { name: "Railay Family Restaurant", cuisine: { th: "อาหารไทย/บาร์บีคิว", en: "Thai/BBQ" }, rating: 4.1, lat: 8.012084, lng: 98.840067 }
+    ]
+  },
+  {
+    id: "tubkaek-viewpoint",
+    physicalDemand: "low",
+    lat: 8.1250, lng: 98.7750,
+    activityCostPerPerson: 0,
+    region: { th: "ทับแขก", en: "Tub Kaek" },
+    name: { th: "หาดทับแขก (จุดชมพระอาทิตย์ตก)", en: "Tub Kaek Beach (Sunset Viewpoint)" },
+    desc: { th: "หาดเงียบสงบเหนืออ่าวนาง วิวเขาหินปูนและเกาะแก่งสวยงามยามเย็น คนน้อยกว่าหาดหลัก", en: "A quiet beach north of Ao Nang with beautiful limestone-and-island sunset views, far less crowded than the main beaches" },
+    season: { th: "พ.ย. – เม.ย.", en: "Nov – Apr" },
+    cost: { th: "ไม่มีค่าเข้า", en: "Free entry" },
+    categories: ["relax", "nature"],
+    tags: ["viewpoint"],
+    axis: "land",
+    transport: ["car", "bike"],
+    budget: "low",
+    pier: null,
+    visitWindow: { open: "16:00", close: "19:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%2C%20Limestone%20karst%20landscape%2C%20Thailand.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Tub+Kaek+Beach+sunset+Krabi&tbm=isch",
+    costDetail: {
+      th: "ไม่มีค่าเข้า เหมาะเป็นกิจกรรมช่วงบ่ายแก่ๆ ถึงเย็นต่อจากกิจกรรมกลางวันอื่น เพื่อชมพระอาทิตย์ตกแบบไม่พลุกพล่าน",
+      en: "Free to visit. Best as a late-afternoon-to-sunset stop after another daytime activity, for uncrowded sunset views."
+    },
+    restaurants: [
+      { name: "Sea Salt Krabi", cuisine: { th: "ซีฟู้ด/นานาชาติ (รูฟท็อป)", en: "Seafood/International (rooftop)" }, rating: 4.7, lat: 8.033701, lng: 98.827812 },
+      { name: "GAIA Kitchen & Bar", cuisine: { th: "ไทยฟิวชัน/นานาชาติ", en: "Thai fusion/International" }, rating: 4.9, lat: 8.037908, lng: 98.819275 }
+    ]
+  },
+  {
+    id: "krabi-atv",
+    physicalDemand: "medium",
+    lat: 8.0700, lng: 98.9500,
+    activityCostPerPerson: 1000,
+    region: { th: "เมืองกระบี่", en: "Krabi Town" },
+    name: { th: "ขับ ATV ลุยเส้นทางธรรมชาติ", en: "Krabi ATV Adventure" },
+    desc: { th: "ขับรถ ATV ลุยเส้นทางดิน สวนยาง และหมู่บ้านชนบทรอบเมืองกระบี่", en: "Ride an ATV through dirt trails, rubber plantations, and rural villages around Krabi Town" },
+    season: { th: "ตลอดปี (เลี่ยงวันฝนตกหนัก)", en: "Year-round (avoid heavy rain days)" },
+    cost: { th: "ประมาณ 800-1,200 บาท/คน", en: "~฿800-1,200/person" },
+    categories: ["adventure"],
+    tags: ["sport"],
+    axis: "land",
+    transport: ["car"],
+    budget: "medium",
+    pier: null,
+    visitWindow: { open: "09:00", close: "17:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%2C%20Limestone%20karst%20landscape%2C%20Thailand.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=ATV+adventure+Krabi&tbm=isch",
+    costDetail: {
+      th: "แพ็กเกจทั่วไปใช้เวลาประมาณ 1-2 ชั่วโมง รวมหมวกกันน็อคและไกด์นำทาง เหมาะเป็นกิจกรรมครึ่งวันคู่กับกิจกรรมอื่น ราคาอาจเปลี่ยนแปลงตามระยะเวลาขับ",
+      en: "Typical packages run 1-2 hours and include a helmet and a guide — a good half-day activity to pair with something else. Price varies with ride duration."
+    },
+    restaurants: [
+      { name: "RuenMai Krabi", cuisine: { th: "อาหารใต้แท้", en: "Authentic Southern Thai" }, rating: 4.7, lat: 8.088080, lng: 98.882336 },
+      { name: "Khaothong Hill", cuisine: { th: "อาหารไทย จุดชมวิวพระอาทิตย์ตก", en: "Thai, sunset viewpoint" }, rating: 4.6, lat: 8.172773, lng: 98.752572 }
+    ]
+  },
+  {
+    id: "koh-jum",
+    physicalDemand: "low",
+    lat: 7.4550, lng: 98.9700,
+    activityCostPerPerson: 1200,
+    region: { th: "เกาะจำ", en: "Koh Jum" },
+    name: { th: "เกาะจำ", en: "Koh Jum" },
+    desc: { th: "เกาะเล็กเงียบสงบระหว่างกระบี่กับเกาะลันตา ยังไม่พลุกพล่าน หาดทรายสวยและวิถีชาวประมง", en: "A quiet, less-developed island between Krabi and Koh Lanta, with lovely beaches and an easygoing fishing-village feel" },
+    season: { th: "พ.ย. – เม.ย.", en: "Nov – Apr" },
+    cost: { th: "ประมาณ 1,000-1,500 บาท/คน (ทัวร์เต็มวัน)", en: "~฿1,000-1,500/person (full-day tour)" },
+    categories: ["sea", "relax"],
+    tags: ["island"],
+    axis: "water",
+    transport: ["boat"],
+    budget: "medium",
+    pier: { th: "ท่าเรือแหลมกรวด", en: "Laem Kruat Pier" },
+    visitWindow: { open: "08:00", close: "16:00" },
+    fullDayActivity: true,
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%2C%20Limestone%20karst%20landscape%2C%20Thailand.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Koh+Jum+Krabi&tbm=isch",
+    costDetail: {
+      th: "อยู่ไกลกว่าเกาะยอดนิยมอื่นๆ เดินทางใช้เวลานานกว่า จึงเหมาะเป็นกิจกรรมเดียวของวัน ราคาทัวร์เต็มวันประมาณ 1,000-1,500 บาท/คน",
+      en: "Farther out than the more popular islands, so travel time is longer — best kept as the only activity for the day. Full-day tour around ฿1,000-1,500/person."
+    },
+    restaurants: [
+      { name: "ไร่นฤมล", cuisine: { th: "อาหารไทยพื้นบ้าน", en: "Local Thai" }, rating: 4.9, lat: 7.947784, lng: 99.207431 },
+      { name: "ร้านธรรมรส", cuisine: { th: "อาหารไทยพื้นบ้าน", en: "Local Thai" }, rating: 4.5, lat: 7.938658, lng: 99.144450 }
+    ]
+  },
+  {
+    id: "laem-sak-floating-village",
+    physicalDemand: "low",
+    lat: 8.2600, lng: 98.7100,
+    activityCostPerPerson: 1000,
+    region: { th: "แหลมสัก", en: "Laem Sak" },
+    name: { th: "หมู่บ้านลอยน้ำแหลมสัก", en: "Laem Sak Floating Village" },
+    desc: { th: "ชุมชนชาวประมงมุสลิมริมน้ำ ล่องเรือชมป่าโกงกางและวิถีชีวิตท้องถิ่นแบบไม่มีนักท่องเที่ยวเยอะ", en: "A Muslim fishing community on the water, with mangrove boat trips and everyday local life largely untouched by mass tourism" },
+    season: { th: "ตลอดปี (เลี่ยงช่วงมรสุม)", en: "Year-round (avoid monsoon season)" },
+    cost: { th: "ประมาณ 800-1,200 บาท/คน (ครึ่งวัน)", en: "~฿800-1,200/person (half-day)" },
+    categories: ["culture", "nature"],
+    tags: ["cultural", "water-activity"],
+    axis: "water",
+    transport: ["boat"],
+    budget: "medium",
+    pier: { th: "ท่าเรือแหลมสัก", en: "Laem Sak Pier" },
+    visitWindow: { open: "08:00", close: "15:00" },
+    fullDayActivity: true,
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%2C%20Limestone%20karst%20landscape%2C%20Thailand.jpg?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Laem+Sak+floating+village+Krabi&tbm=isch",
+    costDetail: {
+      th: "ทัวร์ครึ่งวันโดยเรือท้องถิ่น รวมล่องคลอง ชมป่าโกงกาง และแวะตลาดชุมชน ราคาประมาณ 800-1,200 บาท/คน — ค่อนข้างไกลจากอ่าวนาง/เมืองกระบี่ ควรเผื่อเวลาเดินทาง",
+      en: "Half-day tour by local boat covering the mangrove channels and a community market stop, around ฿800-1,200/person — fairly far from Ao Nang/Krabi Town, so allow travel time."
+    },
+    restaurants: [
+      { name: "ชานเรือน กระบี่", cuisine: { th: "อาหารไทย บรรยากาศริมบ่อ", en: "Thai, pond-side setting" }, rating: 4.6, lat: 7.938903, lng: 99.148324 },
+      { name: "ร้านธรรมรส", cuisine: { th: "อาหารไทยพื้นบ้าน", en: "Local Thai" }, rating: 4.5, lat: 7.938658, lng: 99.144450 }
+    ]
+  },
+  {
+    id: "sunset-dinner-cruise",
+    physicalDemand: "low",
+    lat: 8.0645, lng: 98.9161,
+    activityCostPerPerson: 1100,
+    region: { th: "แม่น้ำกระบี่", en: "Krabi River" },
+    name: { th: "ล่องเรือดินเนอร์ยามพระอาทิตย์ตก", en: "Sunset Dinner Cruise" },
+    desc: { th: "ล่องเรือชมพระอาทิตย์ตกริมแม่น้ำกระบี่ พร้อมมื้อค่ำ ชมภูเขาหินปูนเปลี่ยนสียามเย็น", en: "A relaxed river cruise with dinner, watching the limestone hills change color as the sun sets over Krabi" },
+    season: { th: "ตลอดปี", en: "Year-round" },
+    cost: { th: "ประมาณ 900-1,400 บาท/คน", en: "~฿900-1,400/person" },
+    categories: ["relax", "culture"],
+    tags: ["water-activity"],
+    axis: "water",
+    transport: ["car", "bike"],
+    budget: "medium",
+    pier: { th: "ท่าเรือแม่น้ำกระบี่ (ใกล้ตลาดคนเดิน)", en: "Krabi River Pier (near the Walking Street)" },
+    visitWindow: { open: "17:30", close: "20:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%20Night%20Market.JPG?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Krabi+river+sunset+dinner+cruise&tbm=isch",
+    costDetail: {
+      th: "เรือออกช่วงเย็นก่อนพระอาทิตย์ตกเล็กน้อย ใช้เวลาประมาณ 1.5-2 ชั่วโมง รวมมื้อค่ำแบบบุฟเฟต์หรือเซ็ตเมนู เหมาะจัดเป็นกิจกรรมสุดท้ายของวัน",
+      en: "Departs shortly before sunset and runs about 1.5-2 hours, including a buffet or set-menu dinner — a nice way to close out the day."
+    },
+    restaurants: [
+      { name: "RuenMai Krabi", cuisine: { th: "อาหารใต้แท้", en: "Authentic Southern Thai" }, rating: 4.7, lat: 8.088080, lng: 98.882336 },
+      { name: "Khaothong Hill", cuisine: { th: "อาหารไทย จุดชมวิวพระอาทิตย์ตก", en: "Thai, sunset viewpoint" }, rating: 4.6, lat: 8.172773, lng: 98.752572 }
+    ]
+  },
+  {
+    id: "chao-fah-park",
+    physicalDemand: "low",
+    lat: 8.0656, lng: 98.9155,
+    activityCostPerPerson: 0,
+    region: { th: "เมืองกระบี่", en: "Krabi Town" },
+    name: { th: "สวนสาธารณะเจ้าฟ้า", en: "Chao Fah Park" },
+    desc: { th: "สวนสาธารณะริมแม่น้ำกระบี่ จุดถ่ายรูปปูดำยักษ์ วิวแม่น้ำและป่าโกงกางยามเย็น", en: "A riverside public park in Krabi Town famous for its giant black crab statue, with pleasant river and mangrove views at sunset" },
+    season: { th: "ตลอดปี", en: "Year-round" },
+    cost: { th: "ไม่มีค่าเข้า", en: "Free entry" },
+    categories: ["relax", "culture"],
+    tags: ["cultural"],
+    axis: "land",
+    transport: ["car", "bike"],
+    budget: "low",
+    pier: null,
+    visitWindow: { open: "06:00", close: "21:00" },
+    parkFee: null,
+    imagesIllustrative: true,
+    images: [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Krabi%20Night%20Market.JPG?width=800"
+    ],
+    photoReferenceUrl: "https://www.google.com/search?q=Chao+Fah+Park+Krabi&tbm=isch",
+    costDetail: {
+      th: "สวนสาธารณะฟรี เดินเล่นได้ทั้งวัน อยู่ใกล้ตลาดคนเดินกระบี่ (เดินถึงกันได้) เหมาะเป็นกิจกรรมสั้นๆ ก่อน/หลังตลาดคนเดินในวันศุกร์-อาทิตย์",
+      en: "Free public park, open to walk around all day. It's within walking distance of the Krabi Weekend Night Market — a nice short stop before/after the market on Fri-Sun."
+    },
+    restaurants: [
+      { name: "RuenMai Krabi", cuisine: { th: "อาหารใต้แท้", en: "Authentic Southern Thai" }, rating: 4.7, lat: 8.088080, lng: 98.882336 },
+      { name: "Khaothong Hill", cuisine: { th: "อาหารไทย จุดชมวิวพระอาทิตย์ตก", en: "Thai, sunset viewpoint" }, rating: 4.6, lat: 8.172773, lng: 98.752572 }
+    ]
   }
+
 ];
 
 const STRINGS = {
@@ -1334,24 +1837,32 @@ const STRINGS = {
     step2Label: "สไตล์การเที่ยว",
     step2Question: "คุณต้องการท่องเที่ยวแบบไหน (เลือกได้ 2 อย่าง)",
     step3Label: "สไตล์เฉพาะทาง",
-    step3Question: "ถ้าให้เลือกสาย คุณเป็นสายไหนมากที่สุด (ช่วยจัดสัดส่วนสถานที่ให้ตรงใจขึ้น)",
+    step3Question: "คุณเป็นสายไหนบ้าง (เลือกได้สูงสุด 2 สาย เรียงตามความสนใจ อันแรกที่เลือกจะถูกให้น้ำหนักมากกว่า)",
     step4Label: "งบประมาณ",
     step4Question: "งบประมาณของคุณอยู่ในช่วงไหนคะ (ต่อวัน)",
     step5Label: "วิธีเดินทาง",
     step5Question: "คุณต้องการเดินทางด้วยวิธีไหนคะ",
     step6Label: "ระยะเวลา",
     step6Question: "คุณต้องการเที่ยวกี่วันกี่คืนคะ",
-    step7Label: "สถานที่ที่ต้องมี",
-    step7Question: "มีสถานที่ไหนที่อยากไปแน่ๆ ไหมคะ (ไม่บังคับ เลือกได้สูงสุด 3 ที่ จะระบุวันเจาะจงหรือให้ระบบจัดวันให้ก็ได้)",
-    step8Label: "ข้อจำกัด/ข้อมูลเพิ่มเติม",
-    step8Question: "มีข้อจำกัดหรือข้อมูลเพิ่มเติมหรือไม่ (เช่น จำนวนคน มีเด็ก แพ้อาหาร)",
+    step7Label: "ช่วงเวลาที่จะไปเที่ยว",
+    step7Question: "วางแผนจะไปกระบี่ช่วงไหนคะ (ช่วยเตือนล่วงหน้าถ้าโปรแกรมมีกิจกรรมทางเรือเยอะในช่วงมรสุม)",
+    step8Label: "สถานที่ที่ต้องมี",
+    step8Question: "มีสถานที่ไหนที่อยากไปแน่ๆ ไหมคะ (ไม่บังคับ เลือกได้สูงสุด 3 ที่ จะระบุวันเจาะจงหรือให้ระบบจัดวันให้ก็ได้)",
+    step9Label: "ข้อจำกัด/ข้อมูลเพิ่มเติม",
+    step9Question: "มีข้อจำกัดหรือข้อมูลเพิ่มเติมหรือไม่ (เช่น จำนวนคน มีเด็ก แพ้อาหาร)",
     recommendationsTitle: "สถานที่ที่เหมาะสม",
     itineraryTitle: "โปรแกรมรายละเอียด",
     shareLabel: "แชร์โปรแกรมของคุณ",
     btnSave: "บันทึก",
     btnDownloadPDF: "ดาวน์โหลด PDF",
     btnShareLink: "แชร์ Link",
-    btnQRCode: "QR Code"
+    btnQRCode: "QR Code",
+    monsoonWarnTitle: "⚠️ ช่วงที่เลือกอยู่ในฤดูมรสุม",
+    monsoonWarnShoulder: "เดือนที่เลือกอยู่ในช่วงมรสุม (พ.ค.-ต.ค.) ทัวร์เรือ/สปีดโบ๊ทไปเกาะต่างๆ มีโอกาสถูกยกเลิกหรือเลื่อนบ้างเมื่อคลื่นลมแรง (ผู้ประกอบการบางรายเลื่อนเที่ยวประมาณ 1 ใน 5 วันในช่วงนี้) แนะนำให้จองแบบยกเลิก/เปลี่ยนวันได้ฟรี และเผื่อวันสำรองไว้ถ้าเป็นไปได้",
+    monsoonWarnPeak: "เดือนที่เลือกอยู่ในช่วงมรสุมหนักที่สุดของปี (ก.ย.-ต.ค.) คลื่นลมแรงและฝนตกหนักบ่อยที่สุด ทัวร์เรือมีโอกาสถูกยกเลิกสูง ระบบจึงปรับโปรแกรมบางวันให้เป็นกิจกรรมบนบกแทนกิจกรรมทางเรือ เพื่อลดความเสี่ยงที่ทริปจะเสียวันไปกับทัวร์ที่ถูกยกเลิก",
+    monsoonSwapNote: "สลับจาก \"{old}\" เป็น \"{new}\" เพราะ {old} ต้องขึ้นเรือ และช่วงที่คุณเลือกไปเที่ยวมีความเสี่ยงสูงที่ทัวร์เรือจะถูกยกเลิก",
+    monsoonStillBoat: "โปรแกรมยังมีกิจกรรมที่ต้องขึ้นเรืออยู่บางวัน หากทัวร์ถูกยกเลิกเพราะคลื่นลม แนะนำให้ติดต่อผู้ประกอบการเพื่อขอเลื่อนวันหรือคืนเงิน",
+    travelTightWarn: "โปรแกรมวันนี้ค่อนข้างแน่น: เดินทางจาก \"{from}\" ไป \"{to}\" ใช้เวลาประมาณ {minutes} นาที (ระยะทางโดยประมาณ) ลองเผื่อเวลาให้มากขึ้นหรือสลับเป็นวันอื่นได้ถ้าต้องการความสบายมากขึ้น"
   },
   en: {
     homeTitle: "Krabi Trip Planner",
@@ -1375,24 +1886,32 @@ const STRINGS = {
     step2Label: "Travel style",
     step2Question: "What's your travel style? (choose 2)",
     step3Label: "Specific vibe",
-    step3Question: "If you had to pick one, which type of traveler are you? (helps us fine-tune the mix of places)",
+    step3Question: "What's your vibe? (choose up to 2, in order of interest — the first pick is weighted more)",
     step4Label: "Budget",
     step4Question: "What's your daily budget?",
     step5Label: "Transportation",
     step5Question: "How do you prefer to travel?",
     step6Label: "Duration",
     step6Question: "How many days and nights?",
-    step7Label: "Must-visit places",
-    step7Question: "Any places you're set on visiting? (Optional, pick up to 3 — assign a specific day or let us schedule it)",
-    step8Label: "Restrictions/Notes",
-    step8Question: "Any dietary restrictions or notes? (number of people, kids, vegetarian, etc.)",
+    step7Label: "When are you traveling",
+    step7Question: "When are you planning to visit Krabi? (helps us warn you ahead if your itinerary leans heavily on boat trips during monsoon season)",
+    step8Label: "Must-visit places",
+    step8Question: "Any places you're set on visiting? (Optional, pick up to 3 — assign a specific day or let us schedule it)",
+    step9Label: "Restrictions/Notes",
+    step9Question: "Any dietary restrictions or notes? (number of people, kids, vegetarian, etc.)",
     recommendationsTitle: "Perfect spots for you",
     itineraryTitle: "Detailed itinerary",
     shareLabel: "Share your itinerary",
     btnSave: "Save",
     btnDownloadPDF: "Download PDF",
     btnShareLink: "Share Link",
-    btnQRCode: "QR Code"
+    btnQRCode: "QR Code",
+    monsoonWarnTitle: "⚠️ Your dates fall in monsoon season",
+    monsoonWarnShoulder: "The month you picked falls in the monsoon window (May-Oct). Boat and speedboat tours to the islands can occasionally get cancelled or delayed on rough-sea days (some operators cancel roughly 1 in 5 days in this window). Book with free cancellation/rescheduling where you can, and build in a buffer day if possible.",
+    monsoonWarnPeak: "The month you picked falls in Krabi's heaviest monsoon stretch (Sep-Oct), when seas are roughest and rain is heaviest. Boat tours have a high chance of being cancelled, so we've swapped some days to land-based activities instead of boat trips, to reduce the risk of losing a day to a cancelled tour.",
+    monsoonSwapNote: "Swapped \"{old}\" for \"{new}\" because {old} requires a boat, and your travel dates carry a high risk of boat tours being cancelled.",
+    monsoonStillBoat: "Your itinerary still has some boat-based activities. If a tour gets cancelled due to weather, contact the operator to reschedule or get a refund.",
+    travelTightWarn: "This day is a bit tight: getting from \"{from}\" to \"{to}\" takes roughly {minutes} minutes (estimated distance). Consider padding extra time, or moving one of these to a different day if you'd prefer a more relaxed pace."
   }
 };
 
@@ -1438,8 +1957,11 @@ const STEPS_CONFIG = [
   },
   {
     id: "subStyle",
-    type: "radio",
-    // สไตล์เฉพาะทาง ใช้ทำคะแนนเพิ่มเติมกับ tag ของแต่ละสถานที่ (ดูใน filterPlaces)
+    type: "checkbox",
+    maxSelect: 2,
+    // สไตล์เฉพาะทาง ใช้ทำคะแนนเพิ่มเติมกับ tag ของแต่ละสถานที่ (ดูใน filterPlaces) — เลือกได้สูงสุด 2 สาย
+    // อันที่เลือกก่อนจะถูกถือว่าเป็นความสนใจหลัก (น้ำหนักคะแนนสูงกว่า) อันที่สองเป็นความสนใจรอง
+    // "any" (ไม่มีสายเฉพาะ) เป็นตัวเลือกพิเศษ: เลือกแล้วจะเคลียร์ตัวเลือกอื่นทั้งหมดทันที (ดู handleStepInput)
     // เพื่อจัดสัดส่วนสถานที่ให้ตรงกับความสนใจเฉพาะทางมากขึ้น นอกเหนือจากสไตล์กว้างๆ ด้านบน
     options: {
       th: [
@@ -1509,6 +2031,26 @@ const STEPS_CONFIG = [
     }
   },
   {
+    id: "travelMonth",
+    type: "radio",
+    // ช่วงเวลาที่จะเดินทาง ใช้เตือนความเสี่ยงทัวร์เรือถูกยกเลิกช่วงมรสุม (ดู applyMonsoonAdjustment)
+    // แบ่งเป็น 3 ช่วงกว้างๆ แทนเลือกเป็นรายเดือน เพื่อให้เลือกง่ายแบบ chip เดียวกับคำถามอื่นๆ ในฟอร์ม
+    options: {
+      th: [
+        { label: "พ.ย. – เม.ย. (ฤดูแล้ง คลื่นลมสงบ)", value: "high" },
+        { label: "พ.ค. – ส.ค. (เริ่มเข้าฤดูฝน)", value: "shoulder" },
+        { label: "ก.ย. – ต.ค. (มรสุมหนักสุด)", value: "peak-monsoon" },
+        { label: "ยังไม่แน่ใจ/ไม่ระบุ", value: "unsure" }
+      ],
+      en: [
+        { label: "Nov – Apr (dry season, calm seas)", value: "high" },
+        { label: "May – Aug (early monsoon)", value: "shoulder" },
+        { label: "Sep – Oct (peak monsoon)", value: "peak-monsoon" },
+        { label: "Not sure yet", value: "unsure" }
+      ]
+    }
+  },
+  {
     id: "mustHave",
     type: "places",
     // ให้ผู้ใช้เจาะจงสถานที่ที่ "ต้องมี" ในทริปได้สูงสุด 3 ที่ จะระบุวันที่แน่นอน (1/2/3...) หรือปล่อยให้ระบบจัดวันให้ก็ได้
@@ -1528,6 +2070,10 @@ let placeDetailOrigin = "resultsScreen"; // จำหน้าที่เปิ
 let aiAnalysis = null;       // ผลวิเคราะห์ข้อจำกัดจาก Claude API (null = ยังไม่ได้เรียก/เรียกไม่สำเร็จ)
 let aiAnalysisLoading = false;
 let lastUnplacedMustHave = []; // สถานที่ "ต้องมี" ที่ยัดใส่ทริปไม่ได้จริงๆ (เช่น จำนวนวันของทริปไม่พอ) — ใช้แจ้งเตือนผู้ใช้ ไม่ปล่อยให้หายไปเงียบๆ
+let lastMonsoonSwaps = [];     // [{oldPlace, newPlace}] — วันที่ถูกสลับจากกิจกรรมทางเรือเป็นกิจกรรมบนบก เพราะช่วงที่เลือกเสี่ยงมรสุมสูง
+let lastMonsoonRisk = null;    // "shoulder" | "peak-monsoon" | null — ใช้โชว์ banner เตือนแม้ไม่ได้สลับอะไร
+let lastMonsoonStillHasBoat = false; // true = สลับหมดเท่าที่ทำได้แล้วแต่ยังมีกิจกรรมทางเรือเหลืออยู่ (land pool ไม่พอสลับหมด) — ใช้โชว์คำเตือนเพิ่มเติม
+let lastTravelWarnings = [];   // [{day, from, to, minutes}] — วันที่ระยะเดินทางระหว่าง 2 สถานที่ในวันเดียวกันค่อนข้างแน่น (>60 นาทีโดยประมาณ)
 
 // AI_MODE:
 //   "demo" = จำลองผลวิเคราะห์ด้วย keyword matching ฝั่ง client ล้วนๆ ไม่เรียก Claude API จริง ไม่เสียเงินเลย
@@ -1539,16 +2085,65 @@ const AI_MODE = "demo";
 let formData = {
   age: null,
   style: [],
-  subStyle: null,
+  subStyle: [], // เลือกได้สูงสุด 2 สาย เรียงตามลำดับที่เลือก (index 0 = ความสนใจหลัก, index 1 = รอง) — ดูการให้คะแนนใน filterPlaces
   budget: null,
   transport: null,
   duration: null,
+  travelMonth: null, // "high" | "shoulder" | "peak-monsoon" | "unsure" | null — ใช้เตือนความเสี่ยงทัวร์เรือถูกยกเลิกช่วงมรสุม
   mustHave: [], // [{placeId, day}] — สถานที่ที่ผู้ใช้ระบุว่า "ต้องมี" ในทริป day = เลขวัน (1-based) หรือ null = ให้ระบบจัดวันให้
   notes: ""
 };
 
 /* ========== UTILS ========== */
 function t(key){ return STRINGS[currentLang][key] || key; }
+
+/* ---- ระยะทาง/เวลาเดินทางโดยประมาณระหว่าง 2 สถานที่ (ใช้พิกัด lat/lng ที่มีอยู่แล้วในข้อมูล) ----
+   คำนวณฟรีจากพิกัดตรงๆ ไม่ต้องพึ่ง API ภายนอก (Google Maps Distance Matrix ฯลฯ) จึงไม่มีค่าใช้จ่ายและใช้งานได้ทันที
+   ตามที่ตกลงกันไว้ — แลกกับความแม่นยำที่ต่ำกว่าการเรียก API จริง (เป็นค่าประมาณ ไม่ใช่ระยะทางถนน/เส้นทางเรือจริง) */
+function haversineKm(lat1, lng1, lat2, lng2){
+  const toRad = deg => deg * Math.PI / 180;
+  const R = 6371; // รัศมีโลกโดยประมาณ (กม.)
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ประเมินเวลาเดินทาง (นาที) ระหว่างสถานที่ 2 แห่ง จากระยะทางตรง (haversine) คูณตัวคูณความคดเคี้ยวของเส้นทางจริง
+// บวกเวลาเผื่อสำหรับขึ้น/ลงเรือหรือจอดรถ — เป็นค่าประมาณคร่าวๆ เพื่อใช้เตือนโปรแกรมที่แน่นเกินไป ไม่ใช่เวลาที่แม่นยำ
+function estimateTravelMinutes(placeA, placeB){
+  if(!placeA || !placeB || placeA.lat == null || placeB.lat == null) return null;
+  const distanceKm = haversineKm(placeA.lat, placeA.lng, placeB.lat, placeB.lng);
+  const byBoat = (placeA.pier || placeB.pier) && placeA.axis === "water" && placeB.axis === "water";
+  // ทางเรือในกระบี่ค่อนข้างตรงกว่าถนน (ไม่มีทางโค้งตามภูมิประเทศ) แต่ต้องรอขึ้น/ลงเรือ
+  // ทางถนนคดเคี้ยวตามแนวเขาหินปูน จึงคูณระยะทางตรงด้วยตัวคูณที่สูงกว่าทางเรือ
+  const routeFactor = byBoat ? 1.15 : 1.35;
+  const speedKmh = byBoat ? 28 : 32;
+  const overheadMinutes = byBoat ? 20 : 10; // เวลาเผื่อขึ้น/ลงเรือ หรือหาที่จอดรถ/เดินเข้าสถานที่
+  return Math.round((distanceKm * routeFactor / speedKmh) * 60 + overheadMinutes);
+}
+
+// ลบเวลาออกจากเวลาแบบ "HH:MM" (string) กี่นาที คืนผลลัพธ์เป็น "HH:MM" — ใช้หาเวลาที่ควรออกเดินทาง/ขึ้นเรือ
+// ก่อนเวลาเปิดจริงของสถานที่ ปัดลงที่ 00:00 กันเวลาติดลบ (ไม่ควรเกิดขึ้นจริงในข้อมูลที่มี แต่กันไว้เพื่อความปลอดภัย)
+function subtractMinutesFromTime(timeStr, minutesToSubtract){
+  const [h, m] = timeStr.split(":").map(Number);
+  let totalMinutes = h * 60 + m - minutesToSubtract;
+  if(totalMinutes < 0) totalMinutes = 0;
+  const newH = Math.floor(totalMinutes / 60);
+  const newM = totalMinutes % 60;
+  return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
+}
+
+// เทียบว่าเวลา a มาก่อนหรือหลังเวลา b แบบ "HH:MM" (ใช้ sort กิจกรรม/มื้ออาหารในแต่ละวันตามเวลาจริง)
+function compareTimeStrings(a, b){ return a.localeCompare(b); }
+
+// คืนเวลาที่ "ช้ากว่า" ระหว่าง 2 เวลาแบบ "HH:MM" — ใช้ตอนจัดเวลากิจกรรมที่สองของวัน
+// (ต้องไม่เร็วกว่าเวลาปกติที่วางแผนไว้ 14:00 แต่ก็ต้องไม่เร็วกว่าเวลาที่สถานที่นั้นเปิดจริงด้วย)
+function maxTimeString(a, b){ return a.localeCompare(b) >= 0 ? a : b; }
+
+// คืนเวลาที่ "เร็วกว่า" ระหว่าง 2 เวลาแบบ "HH:MM" — ใช้เมื่อสถานที่มี lastEntry (เวลาปิดรับเข้าครั้งสุดท้าย เช่น เขางอนนากที่ปิดรับ 14:00
+// แม้อุทยานจะปิดจริง 18:00) เพื่อไม่ให้ระบบจัดเวลาเริ่มกิจกรรมช้ากว่าเวลาที่เข้าได้จริง
+function minTimeString(a, b){ return a.localeCompare(b) <= 0 ? a : b; }
 
 function getParkFeeText(place){
   if(!place.parkFee) return currentLang === "th" ? "ไม่มีค่าธรรมเนียมอุทยาน" : "No park fee";
@@ -1657,7 +2252,11 @@ function renderCarousel(){
   const noImageLabel = currentLang === "th" ? "ยังไม่มีรูปภาพ" : "No photo yet";
   carousel.innerHTML = PLACES.map(place => {
     const hasImg = place.images && place.images.length > 0;
-    const fallback = placeImageFallbackSVG(noImageLabel).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    const fallback = placeImageFallbackSVG(noImageLabel)
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'")
+      .replace(/"/g, "&quot;")
+      .replace(/[\r\n]+/g, " "); // เดิมเป็นบั๊ก: string ที่มี newline จริงฝังใน single-quoted JS string ทำให้ onerror พังทุกครั้ง (SyntaxError) — fallback "ยังไม่มีรูปภาพ" เลยไม่เคยแสดงจริง
     return `
     <div class="place-card" role="button" tabindex="0" aria-label="${place.name[currentLang]}" onclick="app.openPlaceDetail('${place.id}')">
       <div class="place-image">
@@ -1764,7 +2363,10 @@ function updateStepButtons(){
   const btnNext = document.getElementById("btnNext");
   const isLastStep = currentStep === STEPS_CONFIG.length - 1;
   const currentStepId = STEPS_CONFIG[currentStep].id;
-  const isStepFilled = formData[currentStepId];
+  const currentVal = formData[currentStepId];
+  // อาเรย์ (style/subStyle) เป็น object เสมอ ดังนั้น `!!currentVal` จะ true แม้เลือกไว้ 0 อย่าง (อาเรย์ว่างก็ truthy ใน JS)
+  // ต้องเช็คความยาวแทน ไม่งั้นปุ่ม "ถัดไป" จะกดผ่านได้ทั้งที่ยังไม่ได้เลือกอะไรเลยในสอง step นี้ — เป็นบั๊กเดิมที่ต้องแก้
+  const isStepFilled = Array.isArray(currentVal) ? currentVal.length > 0 : !!currentVal;
 
   // ปุ่ม "ย้อนกลับ" ไม่ต้อง disable ที่ step แรกอีกต่อไป เพราะ prevStep() ใช้ history.back() แล้ว
   // ซึ่งจะพากลับไปหน้าแรก (Home) ได้ถูกต้องเองตามลำดับ history stack ที่แท้จริง — การ disable ไว้แบบเดิม
@@ -1780,7 +2382,7 @@ function renderResults(){
   const recommended = filterPlaces();
   const itinerary = generateItinerary(recommended);
 
-  renderRecommendations(recommended);
+  renderRecommendations(recommended.sequence);
   renderItinerary(itinerary);
   renderBudgetSummary(itinerary);
   renderShareButtons();
@@ -1871,15 +2473,18 @@ function filterPlaces(){
     score += matchingStyles.length * 3;
     if(matchingStyles.length > 0) matchedReasons.push("style");
 
-    // คะแนนสไตล์เฉพาะทาง (step 3 - subStyle): น้ำหนักสูงสุด เพราะเป็นสัญญาณที่ผู้ใช้ตั้งใจเจาะจง
-    // มากกว่าสไตล์กว้างด้านบน ใช้ tag ของสถานที่ (ไม่ใช่ categories เดิม) ในการจับคู่
-    if(formData.subStyle && formData.subStyle !== "any"){
-      const targetTags = subStyleTagMap[formData.subStyle] || [];
+    // คะแนนสไตล์เฉพาะทาง (step 3 - subStyle): เลือกได้สูงสุด 2 สาย เรียงตามลำดับที่เลือก
+    // อันแรก (ความสนใจหลัก) ให้น้ำหนัก 4, อันรอง (ความสนใจรอง) ให้น้ำหนัก 2 — ยังคงเป็นน้ำหนักสูงสุดในระบบ
+    // เพราะเป็นสัญญาณที่ผู้ใช้ตั้งใจเจาะจงมากกว่าสไตล์กว้างด้านบน ใช้ tag ของสถานที่ (ไม่ใช่ categories เดิม) ในการจับคู่
+    const subStyleList = (formData.subStyle || []).filter(s => s && s !== "any");
+    const subStyleWeights = [4, 2];
+    subStyleList.forEach((sub, idx) => {
+      const targetTags = subStyleTagMap[sub] || [];
       if(place.tags.some(tg => targetTags.includes(tg))){
-        score += 4;
+        score += subStyleWeights[idx] != null ? subStyleWeights[idx] : 1;
         matchedReasons.push("subStyle");
       }
-    }
+    });
 
     // คะแนนงบประมาณ: ตรงเป๊ะได้คะแนนเต็ม ใกล้เคียงได้คะแนนบางส่วน
     const budgetOrder = ["low", "medium", "high"];
@@ -1899,12 +2504,9 @@ function filterPlaces(){
     }
 
     // ปรับคะแนนตามช่วงอายุ (step แรก) เทียบกับความหนักของกิจกรรมสถานที่นั้น (physicalDemand)
-    // 50+: เลี่ยงสถานที่ที่ต้องเดิน/ปีนบันไดเยอะ (เช่น 1,237 ขั้นวัดถ้ำเสือ) เพิ่มน้ำหนักที่ผ่อนคลายกว่า
-    // 36-50: ปรับแบบเบาลง ไม่สุดขั้วเท่า 50+
-    // 18-25: ให้น้ำหนักบวกเล็กน้อยกับสถานที่ผจญภัย/หนักกว่า เพราะกลุ่มนี้มักมองหาความท้าทาย
     // ข้อยกเว้นสำคัญ: ถ้าผู้ใช้เลือก subStyle "hiking" หรือ style "adventure" ตรงๆ แปลว่าตั้งใจอยากได้กิจกรรมหนักอยู่แล้ว
     // ความตั้งใจที่ระบุชัดเจนต้องชนะการสันนิษฐานจากอายุ จึงยกเว้นการหักคะแนนสถานที่ physicalDemand สูงในกรณีนี้
-    const explicitAdventureIntent = formData.style.includes("adventure") || formData.subStyle === "hiking";
+    const explicitAdventureIntent = formData.style.includes("adventure") || subStyleList.includes("hiking");
     const ageAdjust = {
       "50+":   { low: 2, medium: 0, high: explicitAdventureIntent ? 0 : -3 },
       "36-50": { low: 1, medium: 0, high: explicitAdventureIntent ? 0 : -1 },
@@ -1921,41 +2523,41 @@ function filterPlaces(){
   // เรียงตามคะแนนสูงสุดก่อน
   scored.sort((a, b) => b.score - a.score);
 
-  // จำนวนสถานที่ที่แนะนำ ต้อง "ไม่น้อยกว่าจำนวนวันเดินทาง" ไม่งั้นโปรแกรมหลายวันจะซ้ำสถานที่เดิม
-  // (เช่น ทริป 4 วัน แต่แนะนำแค่ 3 ที่ วันที่ 4 จะวนกลับไปใช้ที่เดียวกับวันที่ 1)
   const durationDaysMap = { daytrip: 1, "2d1n": 2, "3d2n": 3, "4plus": 4 };
   const neededDays = durationDaysMap[formData.duration] || 2;
-  const count = Math.min(PLACES.length, Math.max(3, neededDays));
 
-  // ========== จองช่องให้สถานที่ "ต้องมี" ก่อนเป็นอันดับแรก (สำคัญกว่าคะแนน/diversity ทั้งหมด) ==========
-  // ตำแหน่งในอาเรย์ finalSequence ตรงกับวันของทริป (index 0 = วันที่ 1, index 1 = วันที่ 2, ...)
-  const finalSequence = new Array(count).fill(null);
+  // แต่ละวันมีได้สูงสุด 2 "สถานที่หลัก" (เดิมมีแค่ 1 ที่/วัน ยกเว้นเดย์ทริป) เพื่อใช้ประโยชน์จาก catalog ที่ขยายเป็น 30 ที่
+  // ช่องที่สองของแต่ละวันจะถูกเติมจริงหรือไม่ ขึ้นกับว่ามีที่ที่ระยะทางเหมาะสมจะจับคู่ได้ไหม (ดู pickCompanionForAnchor ด้านล่าง)
+  const totalSlots = Math.min(PLACES.length, neededDays * 2);
+  const slotsForDay = dayNum => {
+    const s = [(dayNum - 1) * 2, (dayNum - 1) * 2 + 1];
+    return s.filter(i => i < totalSlots);
+  };
+
+  // ========== จองช่องให้สถานที่ "ต้องมี" ก่อนเป็นอันดับแรก (สำคัญกว่าคะแนน/diversity/ระยะทางทั้งหมด) ==========
+  const finalSequence = new Array(totalSlots).fill(null);
   const usedPlaceIds = new Set();
+  const pinnedPlaceIds = new Set(); // ที่ผู้ใช้ระบุว่า "ต้องมี" ตรงๆ — กฎปรับโปรแกรมช่วงมรสุมด้านล่างจะไม่แตะที่เหล่านี้
   const mustHaveList = getEffectiveMustHave();
-  lastUnplacedMustHave = []; // เก็บที่ "ต้องมี" ที่ยัดใส่ทริปไม่ได้จริงๆ (เช่น จำนวนวันไม่พอ) เพื่อแจ้งผู้ใช้ ไม่ใช่หายไปเงียบๆ
+  lastUnplacedMustHave = []; // เก็บที่ "ต้องมี" ที่ยัดใส่ทริปไม่ได้จริงๆ เพื่อแจ้งผู้ใช้ ไม่ใช่หายไปเงียบๆ
 
-  // 1) วางที่ระบุวันเจาะจงก่อน (ความตั้งใจชัดเจนสุด) — ถ้าวันที่ระบุเกินจำนวนวันจริงของทริป จะหนีบให้อยู่ในช่วงที่มี
-  //    ถ้าวันที่ระบุชนกับสถานที่อื่นที่จองไปแล้ว (2 ที่ขอวันเดียวกัน) จะไม่ทับกันเงียบๆ แต่หาช่องว่างอื่นให้แทน
-  //    เพื่อไม่ให้สถานที่ที่ผู้ใช้ตั้งใจขอไว้หายไปจากทริปโดยไม่รู้ตัว
+  // 1) วางที่ระบุวันเจาะจงก่อน — ลองช่องของวันนั้นก่อน (ช่องแรกของวันก่อน แล้วช่องที่สอง) ถ้าเต็มทั้งคู่ค่อยหาช่องว่างอื่น
   mustHaveList.filter(m => m.day).forEach(m => {
     const place = PLACES.find(p => p.id === m.placeId);
     if(!place || usedPlaceIds.has(place.id)) return;
-    const dayIdx = Math.min(Math.max(m.day - 1, 0), count - 1);
-    if(finalSequence[dayIdx] === null){
-      finalSequence[dayIdx] = place;
-      usedPlaceIds.add(place.id);
-    } else {
-      // วันที่ขอไว้ถูกจองไปแล้วโดยที่ "ต้องมี" อื่น — หาช่องว่างอื่นให้แทน ดีกว่าทับจนอีกที่หายไป
-      const emptyIdx = finalSequence.findIndex(s => s === null);
-      if(emptyIdx === -1){
-        lastUnplacedMustHave.push(place); // จำนวนวันไม่พอจริงๆ ใส่ไม่ได้เลย
-        return;
-      }
-      finalSequence[emptyIdx] = place;
-      usedPlaceIds.add(place.id);
+    const dayNum = Math.min(Math.max(m.day, 1), neededDays);
+    const candidateSlots = slotsForDay(dayNum);
+    let targetIdx = candidateSlots.find(i => finalSequence[i] === null);
+    if(targetIdx === undefined) targetIdx = finalSequence.findIndex(s => s === null);
+    if(targetIdx === undefined || targetIdx === -1){
+      lastUnplacedMustHave.push(place); // จำนวนช่องไม่พอจริงๆ ใส่ไม่ได้เลย
+      return;
     }
+    finalSequence[targetIdx] = place;
+    usedPlaceIds.add(place.id);
+    pinnedPlaceIds.add(place.id);
   });
-  // 2) ที่ "ต้องมี" แต่ไม่ระบุวัน — ใส่ในช่องว่างแรกที่เจอ (ถ้าที่ว่างไม่พอ บันทึกไว้แจ้งผู้ใช้แทนที่จะหายไปเงียบๆ)
+  // 2) ที่ "ต้องมี" แต่ไม่ระบุวัน — ใส่ในช่องว่างแรกที่เจอ
   mustHaveList.filter(m => !m.day).forEach(m => {
     const place = PLACES.find(p => p.id === m.placeId);
     if(!place || usedPlaceIds.has(place.id)) return;
@@ -1966,18 +2568,125 @@ function filterPlaces(){
     }
     finalSequence[emptyIdx] = place;
     usedPlaceIds.add(place.id);
+    pinnedPlaceIds.add(place.id);
   });
 
-  // กฎการกระจายประเภทกิจกรรม (Diversity Constraint): เติมช่องที่เหลือ (ที่ไม่ถูกจองจาก mustHave)
-  // ด้วยสถานที่คะแนนสูงสุดที่ยังไม่ถูกใช้ พยายามสลับ axis (water/land) กับวันข้างเคียงเท่าที่ทำได้
-  const remainingPool = scored.filter(s => !usedPlaceIds.has(s.place.id));
-  const { sequence, fellBackOnce } = buildDiverseSequence(remainingPool, finalSequence);
+  // ========== ขั้นที่ 1: เลือก "สถานที่หลัก" (anchor) ของแต่ละวัน — สลับ axis (water/land) กับวันก่อนหน้าเท่าที่ทำได้ ==========
+  const dayAnchors = new Array(neededDays).fill(null);
+  for(let d = 1; d <= neededDays; d++){
+    const firstSlot = slotsForDay(d)[0];
+    if(firstSlot !== undefined) dayAnchors[d - 1] = finalSequence[firstSlot];
+  }
+  let remainingPool = scored.filter(s => !usedPlaceIds.has(s.place.id));
+  const { sequence: filledAnchors, fellBackOnce } = buildDiverseSequence(remainingPool, dayAnchors);
   if(fellBackOnce){
-    // เกิดขึ้นได้บ่อยขึ้นถ้ามีการจอง mustHave หลายที่ติดกันจน pool เหลือน้อย/ไม่พอสลับ axis จริงๆ — ไม่ใช่บั๊ก แค่ log ไว้เฉยๆ
     console.warn("Diversity constraint fallback triggered: not enough places left to alternate axis without repeating.");
   }
+  filledAnchors.forEach((place, idx) => {
+    const firstSlot = slotsForDay(idx + 1)[0];
+    if(firstSlot !== undefined && finalSequence[firstSlot] === null && place){
+      finalSequence[firstSlot] = place;
+      usedPlaceIds.add(place.id);
+    }
+  });
 
-  return sequence;
+  // ========== ขั้นที่ 2: เลือก "คู่หู" (companion) ของแต่ละวัน เฉพาะวันที่ยังมีช่องว่างที่ 2 ==========
+  // จับคู่เฉพาะเมื่อระยะเดินทางโดยประมาณจากสถานที่หลักของวันนั้น "สมเหตุสมผล" (ไม่เกิน PAIR_MAX_MINUTES)
+  // และทั้งคู่ไม่ใช่กิจกรรมที่ใช้เวลาเต็มวันอยู่แล้ว (fullDayActivity) เช่น ทัวร์เกาะพีพี/เกาะฮ่อง/เจมส์บอนด์
+  // ถ้าไม่เข้าเงื่อนไข ปล่อยวันนั้นมีที่เดียว แทนการยัดที่ไกลๆ เข้าไปแบบไม่สมเหตุสมผล (แก้ช่องว่างเดิมของระบบ)
+  remainingPool = scored.filter(s => !usedPlaceIds.has(s.place.id));
+  for(let d = 1; d <= neededDays; d++){
+    const [firstSlot, secondSlot] = slotsForDay(d);
+    if(secondSlot === undefined || finalSequence[secondSlot] !== null) continue;
+    const anchor = finalSequence[firstSlot];
+    const companion = pickCompanionForAnchor(anchor, remainingPool);
+    if(companion){
+      finalSequence[secondSlot] = companion;
+      usedPlaceIds.add(companion.id);
+    }
+  }
+
+  // ========== ขั้นที่ 3: ปรับโปรแกรมตามความเสี่ยงมรสุม (ถ้าเลือกช่วงเวลาเดินทางไว้ในฟอร์ม) ==========
+  applyMonsoonAdjustment(finalSequence, pinnedPlaceIds, usedPlaceIds, scored);
+
+  // รายการที่แนะนำสำหรับแสดงผล (recommendationsSection) อยากให้มีอย่างน้อย 3 ที่เสมอแม้ทริปสั้น (เช่น เดย์ทริปใช้จริงแค่ 2 ที่)
+  // เพื่อให้ผู้ใช้เห็นตัวเลือกสำรอง/ทางเลือกอื่นเพิ่มเติมนอกเหนือจากที่ถูกจัดลงโปรแกรมจริง — ไม่กระทบลำดับ/การจับคู่วันในโปรแกรมจริง
+  const displaySequence = finalSequence.filter(Boolean);
+  if(displaySequence.length < 3){
+    const usedNow = new Set(displaySequence.map(p => p.id));
+    const extras = scored.filter(s => !usedNow.has(s.place.id));
+    for(let i = 0; i < extras.length && displaySequence.length < 3; i++){
+      displaySequence.push(extras[i].place);
+    }
+  }
+
+  return {
+    sequence: displaySequence,
+    daySlots: finalSequence,
+    neededDays,
+    slotsForDay
+  };
+}
+
+// เลือกสถานที่ "คู่หู" ที่คะแนนสูงสุดในพูลที่เหลือ ซึ่งระยะเดินทางโดยประมาณจาก anchor ไม่เกิน PAIR_MAX_MINUTES
+// และไม่ใช่กิจกรรมเต็มวัน (ทั้ง anchor และ candidate) — เจอแล้วเอาออกจาก pool (mutate โดยตรง) แล้วคืนสถานที่นั้น ถ้าไม่เจอคืน null
+const PAIR_MAX_MINUTES = 100; // เกินกว่านี้ถือว่าไกลเกินจะจับคู่ในวันเดียวกันอย่างสมเหตุสมผล (ต่างจาก TRAVEL_TIGHT_MINUTES ใน generateItinerary ที่เป็นแค่คำเตือน ไม่ได้ห้ามจับคู่)
+function pickCompanionForAnchor(anchor, pool){
+  if(!anchor || anchor.fullDayActivity) return null;
+  for(let i = 0; i < pool.length; i++){
+    const candidate = pool[i].place;
+    if(candidate.fullDayActivity) continue;
+    const minutes = estimateTravelMinutes(anchor, candidate);
+    if(minutes !== null && minutes <= PAIR_MAX_MINUTES){
+      pool.splice(i, 1);
+      return candidate;
+    }
+  }
+  return null;
+}
+
+// ========== ปรับโปรแกรมตามความเสี่ยงมรสุม (แก้ช่องว่างเดิม: ระบบไม่เคยถามว่าจะไปเดือนไหนเลย) ==========
+// เก็บระดับความเสี่ยงไว้เสมอ (lastMonsoonRisk) ให้ renderRecommendations โชว์ banner เตือนแม้ไม่ได้สลับอะไร (ช่วง "shoulder")
+// ถ้าเป็น "peak-monsoon" (เสี่ยงสูงสุด ก.ย.-ต.ค.) จะลองสลับสถานที่ที่ต้องขึ้นเรือ (ที่ไม่ใช่ "ต้องมี" ที่ผู้ใช้ pin ไว้ตรงๆ) เป็นสถานที่บนบกแทน
+function applyMonsoonAdjustment(finalSequence, pinnedPlaceIds, usedPlaceIds, scored){
+  lastMonsoonSwaps = [];
+  lastMonsoonStillHasBoat = false;
+  lastMonsoonRisk = (formData.travelMonth === "shoulder" || formData.travelMonth === "peak-monsoon") ? formData.travelMonth : null;
+  if(formData.travelMonth !== "peak-monsoon") return;
+
+  const landPool = scored.filter(s => !usedPlaceIds.has(s.place.id) && !s.place.pier);
+
+  for(let i = 0; i < finalSequence.length; i++){
+    const place = finalSequence[i];
+    if(!place || !place.pier || pinnedPlaceIds.has(place.id)) continue; // ไม่ต้องขึ้นเรือ หรือเป็นที่ที่ผู้ใช้ pin ไว้ตรงๆ — ไม่แตะ
+    if(landPool.length === 0) break; // ไม่มีที่บนบกเหลือให้สลับแล้ว
+
+    // ที่ถูกจับคู่ไว้ในวันเดียวกัน (ช่องคู่ในวันนั้น) ถ้ามี — เลือกตัวแทนที่ระยะทางใกล้ที่นี่ก่อน คะแนนเป็นรอง
+    // กันปัญหา: ถ้าสลับโดยดูแค่คะแนนเฉยๆ อาจได้ที่ที่ไกลจากคู่เดิมมาก จนโปรแกรมวันนั้นแน่นเกินจริง (ระยะทางที่เคยเช็คไว้ตอนจับคู่ครั้งแรกจะเพี้ยนไป)
+    const partnerIdx = i % 2 === 0 ? i + 1 : i - 1;
+    const partner = partnerIdx >= 0 && partnerIdx < finalSequence.length ? finalSequence[partnerIdx] : null;
+
+    let replacementEntry;
+    if(partner){
+      let bestIdx = -1, bestMinutes = Infinity;
+      landPool.forEach((entry, idx) => {
+        const minutes = estimateTravelMinutes(partner, entry.place);
+        if(minutes !== null && minutes < bestMinutes){ bestMinutes = minutes; bestIdx = idx; }
+      });
+      replacementEntry = bestIdx !== -1 ? landPool.splice(bestIdx, 1)[0] : landPool.shift();
+    } else {
+      replacementEntry = landPool.shift();
+    }
+
+    const replacement = replacementEntry.place;
+    finalSequence[i] = replacement;
+    usedPlaceIds.delete(place.id);
+    usedPlaceIds.add(replacement.id);
+    lastMonsoonSwaps.push({ oldPlace: place, newPlace: replacement });
+  }
+
+  // หลังพยายามสลับเท่าที่ทำได้แล้ว เช็คว่ายังมีสถานที่ที่ต้องขึ้นเรือเหลืออยู่ไหม (รวมทั้งที่ pin ไว้และที่สลับไม่ได้เพราะ land pool หมด)
+  lastMonsoonStillHasBoat = finalSequence.some(p => p && p.pier);
 }
 
 // สร้างลำดับสถานที่ทีละวัน โดยบังคับสลับ axis (water/land) ระหว่างวันติดกันเสมอ (เท่าที่ทำได้)
@@ -2044,56 +2753,57 @@ function detectMustHaveFromNotes(notesText){
   return detected;
 }
 
-function generateItinerary(places){
-  const durationMap = {
-    daytrip: 1,
-    "2d1n": 2,
-    "3d2n": 3,
-    "4plus": 4
-  };
-  const days = durationMap[formData.duration] || 2;
+function generateItinerary(recommended){
+  const { daySlots, neededDays, slotsForDay } = recommended;
+  const TRAVEL_TIGHT_MINUTES = 60; // เกินกว่านี้ถือว่า "ค่อนข้างแน่น" และควรเตือนผู้ใช้ (แต่ยังคงจับคู่ไว้ให้ — การห้ามจับคู่เลยใช้ PAIR_MAX_MINUTES ใน filterPlaces แทน)
   const itinerary = [];
+  lastTravelWarnings = []; // เก็บวันที่ระยะเดินทางระหว่าง 2 สถานที่ค่อนข้างแน่น ใช้โชว์ banner สรุปด้านบนของหน้าผลลัพธ์
 
-  // กระจายสถานที่ที่แนะนำไปตามแต่ละวัน (ใช้ที่ที่มีคะแนนสูงสุดก่อน)
-  for(let d = 1; d <= days; d++){
+  for(let d = 1; d <= neededDays; d++){
+    const [firstSlot, secondSlot] = slotsForDay(d);
+    const mainPlace = firstSlot !== undefined ? daySlots[firstSlot] : null;
+    const secondPlace = secondSlot !== undefined ? daySlots[secondSlot] : null;
+    // กรณีสุดขั้ว (catalog ไม่พอจริงๆ) วันนี้อาจไม่มีสถานที่เหลือเลย — ข้ามวันนี้แทนที่จะสร้างวันว่างเปล่าที่ดูเหมือนระบบพัง
+    if(!mainPlace && !secondPlace) continue;
+    const effectiveMain = mainPlace || secondPlace;
+    const effectiveSecond = mainPlace ? secondPlace : null;
+
     const dayItinerary = {
       day: d,
       activities: [],
       meals: [],
-      mainPlace: null,
-      secondPlace: null
+      mainPlace: effectiveMain,
+      secondPlace: effectiveSecond,
+      travelWarning: null
     };
 
-    // เลือกสถานที่หลักของวันนี้ (วนใช้ places ตามลำดับ ถ้าหมดให้ย้อนกลับมาใช้ที่แรก)
-    const placeIdx = (d - 1) % places.length;
-    const mainPlace = places[placeIdx];
-    const secondPlace = days === 1 && places.length > 1 ? places[(placeIdx + 1) % places.length] : null;
-    dayItinerary.mainPlace = mainPlace;
-    dayItinerary.secondPlace = secondPlace;
+    // เวลาเริ่มกิจกรรมหลัก: ใช้เวลาเปิดจริงของสถานที่นั้น (visitWindow) แทนการ hardcode 09:30/09:00 ตายตัวทุกที่แบบเดิม
+    // (บั๊กเดิม: ตลาดกลางคืนกระบี่ที่เปิดจริง ~17:00 น. เคยถูกจัดเป็นกิจกรรมเช้า 09:30 ถ้าสุ่มมาเป็นสถานที่หลักของวัน)
+    let mainStart = (effectiveMain.visitWindow && effectiveMain.visitWindow.open) || (effectiveMain.pier ? "09:00" : "09:30");
+    if(effectiveMain.lastEntry) mainStart = minTimeString(mainStart, effectiveMain.lastEntry); // เผื่อสถานที่ปิดรับเข้าก่อนเวลาปิดจริง (เช่น เขางอนนากปิดรับ 14:00 แม้อุทยานปิด 18:00)
 
-    // เช้า: ขึ้นเรือ/ออกเดินทาง (ถ้ามีท่าเรือ)
-    if(mainPlace.pier){
+    if(effectiveMain.pier){
+      const boardTime = subtractMinutesFromTime(mainStart, 60);
       dayItinerary.activities.push({
-        time: "08:00",
-        name: currentLang === "th" ? `ขึ้นเรือที่${mainPlace.pier.th}` : `Board boat at ${mainPlace.pier.en}`,
+        time: boardTime,
+        name: currentLang === "th" ? `ขึ้นเรือที่${effectiveMain.pier.th}` : `Board boat at ${effectiveMain.pier.en}`,
         details: currentLang === "th" ? "เช็คอิน เตรียมอุปกรณ์ ก่อนออกเรือ" : "Check-in and prepare gear before departure",
         cost: 0,
         costLabel: "-"
       });
     }
 
-    // กิจกรรมหลัก
     dayItinerary.activities.push({
-      time: mainPlace.pier ? "09:00" : "09:30",
-      name: mainPlace.name[currentLang],
-      details: mainPlace.desc[currentLang] + (mainPlace.costDetail ? " — " + mainPlace.costDetail[currentLang] : ""),
+      time: mainStart,
+      name: effectiveMain.name[currentLang],
+      details: effectiveMain.desc[currentLang] + (effectiveMain.costDetail ? " — " + effectiveMain.costDetail[currentLang] : ""),
       cost: null,
-      costLabel: mainPlace.cost[currentLang]
+      costLabel: effectiveMain.cost[currentLang]
     });
 
-    // อาหารกลางวัน จากร้านจริงใกล้สถานที่ (เลือกร้านอันดับ 1)
-    if(mainPlace.restaurants && mainPlace.restaurants[0]){
-      const r = mainPlace.restaurants[0];
+    // อาหารกลางวัน จากร้านจริงใกล้สถานที่หลัก (เลือกร้านอันดับ 1)
+    if(effectiveMain.restaurants && effectiveMain.restaurants[0]){
+      const r = effectiveMain.restaurants[0];
       dayItinerary.meals.push({
         time: "12:00",
         name: currentLang === "th" ? `มื้อเที่ยง: ${r.name}` : `Lunch: ${r.name}`,
@@ -2103,17 +2813,30 @@ function generateItinerary(places){
       });
     }
 
-    // ถ้ามีสถานที่ที่ 2 ในวันเดียว (กรณีวันเดย์ทริป)
-    if(secondPlace){
+    if(effectiveSecond){
+      // เวลาเริ่มกิจกรรมที่สอง: ใช้เวลาช้ากว่าระหว่าง 14:00 (ค่าเริ่มต้นเดิม) กับเวลาเปิดจริงของสถานที่นั้น
+      // เผื่อกรณีสถานที่ที่สองเปิดดึกกว่า 14:00 (เช่น ทัวร์หิ่งห้อยตอนพลบค่ำ) จะได้ไม่จัดเวลาก่อนเปิดจริง
+      // แล้วเช็คอีกชั้นว่าไม่เกิน lastEntry ถ้ามี (เช่น เขางอนนากปิดรับเข้าครั้งสุดท้าย 14:00)
+      let secondStart = maxTimeString("14:00", (effectiveSecond.visitWindow && effectiveSecond.visitWindow.open) || "14:00");
+      if(effectiveSecond.lastEntry) secondStart = minTimeString(secondStart, effectiveSecond.lastEntry);
+      if(effectiveSecond.pier){
+        dayItinerary.activities.push({
+          time: subtractMinutesFromTime(secondStart, 45),
+          name: currentLang === "th" ? `ขึ้นเรือที่${effectiveSecond.pier.th}` : `Board boat at ${effectiveSecond.pier.en}`,
+          details: currentLang === "th" ? "เช็คอิน เตรียมอุปกรณ์ ก่อนออกเรือ" : "Check-in and prepare gear before departure",
+          cost: 0,
+          costLabel: "-"
+        });
+      }
       dayItinerary.activities.push({
-        time: "14:00",
-        name: secondPlace.name[currentLang],
-        details: secondPlace.desc[currentLang] + (secondPlace.costDetail ? " — " + secondPlace.costDetail[currentLang] : ""),
+        time: secondStart,
+        name: effectiveSecond.name[currentLang],
+        details: effectiveSecond.desc[currentLang] + (effectiveSecond.costDetail ? " — " + effectiveSecond.costDetail[currentLang] : ""),
         cost: null,
-        costLabel: secondPlace.cost[currentLang]
+        costLabel: effectiveSecond.cost[currentLang]
       });
-      if(secondPlace.restaurants && secondPlace.restaurants[1]){
-        const r2 = secondPlace.restaurants[1];
+      if(effectiveSecond.restaurants && effectiveSecond.restaurants[1]){
+        const r2 = effectiveSecond.restaurants[1];
         dayItinerary.meals.push({
           time: "17:00",
           name: currentLang === "th" ? `ของว่าง/เย็น: ${r2.name}` : `Snack/Dinner: ${r2.name}`,
@@ -2122,9 +2845,18 @@ function generateItinerary(places){
           costRange: [150, 350]
         });
       }
-    } else if(mainPlace.restaurants && mainPlace.restaurants[1]){
+
+      // เช็คระยะทาง/เวลาเดินทางระหว่าง 2 สถานที่ในวันเดียวกัน (แก้ช่องว่างเดิม: ระบบไม่เคยเช็คเลย จับ 2 ที่ยัดวันเดียวกันได้
+      // โดยไม่ดูระยะทาง/เวลาเดินทางจริงระหว่างกันเลย) — ที่จับคู่กันมาแล้วผ่าน PAIR_MAX_MINUTES ใน filterPlaces
+      // แต่ยังอาจ "ค่อนข้างแน่น" ได้ถ้าเกิน TRAVEL_TIGHT_MINUTES จึงเตือนไว้แม้จะยังจับคู่อยู่ก็ตาม
+      const minutes = estimateTravelMinutes(effectiveMain, effectiveSecond);
+      if(minutes !== null && minutes > TRAVEL_TIGHT_MINUTES){
+        dayItinerary.travelWarning = { from: effectiveMain.name[currentLang], to: effectiveSecond.name[currentLang], minutes };
+        lastTravelWarnings.push({ day: d, from: effectiveMain, to: effectiveSecond, minutes });
+      }
+    } else if(effectiveMain.restaurants && effectiveMain.restaurants[1]){
       // วันที่มีสถานที่เดียว เพิ่มร้านอาหารเย็นจากอันดับ 2
-      const r2 = mainPlace.restaurants[1];
+      const r2 = effectiveMain.restaurants[1];
       dayItinerary.meals.push({
         time: "18:30",
         name: currentLang === "th" ? `มื้อเย็น: ${r2.name}` : `Dinner: ${r2.name}`,
@@ -2133,6 +2865,10 @@ function generateItinerary(places){
         costRange: [250, 500]
       });
     }
+
+    // เรียงกิจกรรม+มื้ออาหารตามเวลาจริง (ไม่ใช่ตามลำดับที่ push เข้ามา) เพื่อให้ timeline แสดงผลถูกต้องเสมอ
+    // แม้สถานที่หลักของวันจะเป็นกิจกรรมช่วงเย็น (เช่น ทัวร์หิ่งห้อย/ล่องเรือพระอาทิตย์ตก) มื้อเที่ยงก็ยังต้องโผล่ก่อนในตาราง
+    dayItinerary.timeline = [...dayItinerary.activities, ...dayItinerary.meals].sort((a, b) => compareTimeStrings(a.time, b.time));
 
     itinerary.push(dayItinerary);
   }
@@ -2153,8 +2889,46 @@ function renderRecommendations(places){
       </div>
     </div>
   ` : "";
+
+  // Banner เตือนความเสี่ยงมรสุม (แก้ช่องว่างเดิม: ระบบไม่เคยถามช่วงเวลาเดินทางเลย) — โชว์เฉพาะเมื่อผู้ใช้เลือกช่วง shoulder/peak-monsoon
+  let monsoonNotice = "";
+  if(lastMonsoonRisk === "shoulder"){
+    monsoonNotice = `
+    <div class="ai-warning-card" style="margin-bottom:14px;">
+      <strong>${t("monsoonWarnTitle")}</strong>
+      <div class="rec-reason" style="margin-top:6px;">${t("monsoonWarnShoulder")}</div>
+    </div>`;
+  } else if(lastMonsoonRisk === "peak-monsoon"){
+    const swapLines = lastMonsoonSwaps.map(s => t("monsoonSwapNote")
+      .replace(/{old}/g, s.oldPlace.name[currentLang])
+      .replace(/{new}/g, s.newPlace.name[currentLang])
+    ).map(line => `<div class="rec-reason" style="margin-top:4px;">🔄 ${line}</div>`).join("");
+    monsoonNotice = `
+    <div class="ai-warning-card" style="margin-bottom:14px;">
+      <strong>${t("monsoonWarnTitle")}</strong>
+      <div class="rec-reason" style="margin-top:6px;">${t("monsoonWarnPeak")}</div>
+      ${swapLines}
+      ${lastMonsoonStillHasBoat ? `<div class="rec-reason" style="margin-top:8px;">${t("monsoonStillBoat")}</div>` : ""}
+    </div>`;
+  }
+
+  // Banner เตือนวันที่ระยะเดินทางระหว่าง 2 สถานที่ค่อนข้างแน่น (แก้ช่องว่างเดิม: ไม่เคยเช็คระยะทางระหว่างสถานที่ในวันเดียวกันเลย)
+  const travelNotice = lastTravelWarnings.length > 0 ? `
+    <div class="ai-warning-card" style="margin-bottom:14px;">
+      <strong>${currentLang === "th" ? "⏱️ บางวันโปรแกรมค่อนข้างแน่น" : "⏱️ Some days are a bit tight"}</strong>
+      ${lastTravelWarnings.map(w => `
+        <div class="rec-reason" style="margin-top:6px;">${currentLang === "th" ? `วันที่ ${w.day}: ` : `Day ${w.day}: `}${t("travelTightWarn")
+          .replace("{from}", w.from.name[currentLang])
+          .replace("{to}", w.to.name[currentLang])
+          .replace("{minutes}", w.minutes)}</div>
+      `).join("")}
+    </div>
+  ` : "";
+
   section.innerHTML = `
     <h3 class="section-title" data-i18n="recommendationsTitle">${t("recommendationsTitle")}</h3>
+    ${monsoonNotice}
+    ${travelNotice}
     ${unplacedNotice}
     ${places.map(place => {
       const warn = aiAnalysis && aiAnalysis.placeNotes && aiAnalysis.placeNotes[place.id];
@@ -2206,7 +2980,7 @@ async function runAIConstraintAnalysis(){
     aiAnalysisLoading = false;
     renderAIStatusBanner();
     if(document.getElementById("resultsScreen").classList.contains("active")){
-      renderRecommendations(filterPlaces());
+      renderRecommendations(filterPlaces().sequence);
     }
     return;
   }
@@ -2238,7 +3012,7 @@ async function runAIConstraintAnalysis(){
     aiAnalysisLoading = false;
     renderAIStatusBanner();
     if(document.getElementById("resultsScreen").classList.contains("active")){
-      renderRecommendations(filterPlaces());
+      renderRecommendations(filterPlaces().sequence);
     }
   }
 }
@@ -2420,23 +3194,21 @@ function renderItinerary(itinerary){
         </button>
         <div class="accordion-body">
           <div class="accordion-content">
-            ${day.activities.map(act => `
-              <div class="timeline-item">
-                <div class="time-badge">${act.time}</div>
-                <div class="time-content">
-                  <div class="activity-name">${act.name}</div>
-                  <div class="activity-details">${act.details}</div>
-                  <div class="activity-cost">${act.costLabel}</div>
-                </div>
+            ${day.travelWarning ? `
+              <div class="ai-warning-card" style="margin-bottom:10px;">
+                ⏱️ ${t("travelTightWarn")
+                  .replace("{from}", day.travelWarning.from)
+                  .replace("{to}", day.travelWarning.to)
+                  .replace("{minutes}", day.travelWarning.minutes)}
               </div>
-            `).join("")}
-            ${day.meals.map(meal => `
+            ` : ""}
+            ${day.timeline.map(item => `
               <div class="timeline-item">
-                <div class="time-badge">${meal.time}</div>
+                <div class="time-badge">${item.time}</div>
                 <div class="time-content">
-                  <div class="activity-name">${meal.name}</div>
-                  <div class="activity-details">${meal.details}</div>
-                  <div class="activity-cost">${meal.costLabel}</div>
+                  <div class="activity-name">${item.name}</div>
+                  <div class="activity-details">${item.details}</div>
+                  <div class="activity-cost">${item.costLabel}</div>
                 </div>
               </div>
             `).join("")}
@@ -2482,7 +3254,7 @@ function renderScreen(){
 const app = {
   goToHome(){
     currentStep = 0;
-    formData = { age: null, style: [], subStyle: null, budget: null, transport: null, duration: null, mustHave: [], notes: "" };
+    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, travelMonth: null, mustHave: [], notes: "" };
     pushHistoryState({ screen: "home" });
     showScreen("homeScreen");
     renderCarousel();
@@ -2505,22 +3277,40 @@ const app = {
   },
   startAIFilter(){
     currentStep = 0;
-    formData = { age: null, style: [], subStyle: null, budget: null, transport: null, duration: null, mustHave: [], notes: "" };
+    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, travelMonth: null, mustHave: [], notes: "" };
     pushHistoryState({ screen: "aiFilter", step: 0 });
     showScreen("aiFilterScreen");
     renderAIFilterSteps();
   },
   handleStepInput(stepId, value, element){
-    if(stepId === "style"){
+    const stepConfig = STEPS_CONFIG.find(s => s.id === stepId);
+    if(stepConfig && stepConfig.type === "checkbox" && stepConfig.maxSelect){
+      // ตัวเลือกแบบเลือกได้หลายอัน (ปัจจุบันใช้กับ "style" และ "subStyle") — ใช้ logic ร่วมกัน แทนที่จะ hardcode ทีละ id
+      formData[stepId] = formData[stepId] || [];
+
+      // "any" (สำหรับ subStyle เท่านั้น) เป็นตัวเลือกพิเศษที่ตัดกับตัวเลือกอื่นทั้งหมด — เลือกแล้วต้องเคลียร์ตัวอื่น
+      // และถ้ามีตัวอื่นถูกเลือกอยู่ ต้องเคลียร์ "any" ออกด้วย เพื่อไม่ให้ทั้งสองฝั่งเลือกพร้อมกันแบบขัดแย้งกันเอง
+      const isExclusiveValue = value === "any";
+      const hasExclusiveSelected = formData[stepId].includes("any");
+
       if(element.checked){
-        if(formData.style.length < 2) formData.style.push(value);
-        else {
+        if(isExclusiveValue){
+          formData[stepId] = ["any"];
+        } else if(hasExclusiveSelected){
+          formData[stepId] = [value];
+        } else if(formData[stepId].length < stepConfig.maxSelect){
+          formData[stepId].push(value);
+        } else {
           element.checked = false;
-          alert(currentLang === "th" ? "เลือกได้ 2 อย่างเท่านั้น" : "Can select up to 2 only");
+          alert(currentLang === "th" ? `เลือกได้สูงสุด ${stepConfig.maxSelect} อย่างเท่านั้น` : `Can select up to ${stepConfig.maxSelect} only`);
+          return;
         }
       } else {
-        formData.style = formData.style.filter(s => s !== value);
+        formData[stepId] = formData[stepId].filter(v => v !== value);
       }
+      // re-render เพื่อให้ checkbox อื่นๆ ที่ถูกเคลียร์ไปพร้อมกัน (กรณี exclusive) อัปเดตสถานะ checked ให้ตรงกับ formData จริง
+      renderAIFilterSteps();
+      return;
     } else if(stepId === "notes"){
       formData.notes = value;
     } else {
@@ -2656,6 +3446,9 @@ window.addEventListener("load", () => {
     try {
       const data = JSON.parse(atob(params.get("itinerary")));
       formData = data;
+      // รองรับลิงก์เก่าที่แชร์ไว้ก่อนอัปเดต (ตอนนั้น subStyle ยังเป็น string เดี่ยว และยังไม่มี travelMonth) — กันไม่ให้เปิดลิงก์เก่าแล้วแอปพัง
+      if(!Array.isArray(formData.subStyle)) formData.subStyle = formData.subStyle ? [formData.subStyle] : [];
+      if(formData.travelMonth === undefined) formData.travelMonth = null;
       replaceHistoryState({ screen: "results" }); // แทนที่ entry แรกสุด ไม่ push ใหม่ เพราะเป็นจุดเริ่มต้นของ session นี้
       showScreen("resultsScreen");
       renderResults();
