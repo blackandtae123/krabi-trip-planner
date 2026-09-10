@@ -844,7 +844,10 @@
     }
     .accordion-body{ max-height:none !important; }
     .accordion-header{ cursor:default; }
-    .screen{ display:block !important; }
+    /* เดิม .screen{ display:block !important; } ทำให้ทุกหน้า (home/ai-filter/results/place-detail) โผล่ใน PDF พร้อมกัน
+       แก้ให้พิมพ์เฉพาะหน้าโปรแกรมทริป (#resultsScreen) เท่านั้น */
+    .screen{ display:none !important; }
+    #resultsScreen{ display:block !important; }
   }
 </style>
 </head>
@@ -2097,9 +2100,35 @@ let formData = {
 /* ========== UTILS ========== */
 function t(key){ return STRINGS[currentLang][key] || key; }
 
+// escape ข้อความก่อนใส่ผ่าน innerHTML — ป้องกัน XSS จากข้อมูลที่ไม่น่าเชื่อถือ (เช่น aiAnalysis.placeNotes
+// ที่ตอนใช้ AI_MODE = "live" จะมาจาก /api/analyze-constraints ซึ่งถือเป็น untrusted input)
+function escapeHtml(str){
+  if(str == null) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 /* ---- ระยะทาง/เวลาเดินทางโดยประมาณระหว่าง 2 สถานที่ (ใช้พิกัด lat/lng ที่มีอยู่แล้วในข้อมูล) ----
    คำนวณฟรีจากพิกัดตรงๆ ไม่ต้องพึ่ง API ภายนอก (Google Maps Distance Matrix ฯลฯ) จึงไม่มีค่าใช้จ่ายและใช้งานได้ทันที
    ตามที่ตกลงกันไว้ — แลกกับความแม่นยำที่ต่ำกว่าการเรียก API จริง (เป็นค่าประมาณ ไม่ใช่ระยะทางถนน/เส้นทางเรือจริง) */
+// เข้ารหัส/ถอดรหัส Base64 แบบรองรับ UTF-8 (ภาษาไทย, emoji ฯลฯ)
+// btoa()/atob() เดิมรองรับแค่ char code 0-255 เท่านั้น ถ้ามีอักขระไทยจะโยน InvalidCharacterError
+function utf8ToBase64(str){
+  const bytes = new TextEncoder().encode(str);
+  let binary = "";
+  bytes.forEach(b => { binary += String.fromCharCode(b); });
+  return btoa(binary);
+}
+function base64ToUtf8(base64Str){
+  const binary = atob(base64Str);
+  const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
 function haversineKm(lat1, lng1, lat2, lng2){
   const toRad = deg => deg * Math.PI / 180;
   const R = 6371; // รัศมีโลกโดยประมาณ (กม.)
@@ -2136,6 +2165,15 @@ function subtractMinutesFromTime(timeStr, minutesToSubtract){
 
 // เทียบว่าเวลา a มาก่อนหรือหลังเวลา b แบบ "HH:MM" (ใช้ sort กิจกรรม/มื้ออาหารในแต่ละวันตามเวลาจริง)
 function compareTimeStrings(a, b){ return a.localeCompare(b); }
+
+// บวกเวลาแบบ "HH:MM" (string) กี่นาที คืนผลลัพธ์เป็น "HH:MM" — ใช้เช็คว่ากิจกรรมจะจบก่อนเวลาปิดสถานที่ (visitWindow.close) ไหม
+function addMinutesToTime(timeStr, minutesToAdd){
+  const [h, m] = timeStr.split(":").map(Number);
+  const totalMinutes = h * 60 + m + minutesToAdd;
+  const newH = Math.floor(totalMinutes / 60) % 24;
+  const newM = totalMinutes % 60;
+  return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
+}
 
 // คืนเวลาที่ "ช้ากว่า" ระหว่าง 2 เวลาแบบ "HH:MM" — ใช้ตอนจัดเวลากิจกรรมที่สองของวัน
 // (ต้องไม่เร็วกว่าเวลาปกติที่วางแผนไว้ 14:00 แต่ก็ต้องไม่เร็วกว่าเวลาที่สถานที่นั้นเปิดจริงด้วย)
@@ -2464,7 +2502,7 @@ function filterPlaces(){
     sport: ["sport"]
   };
 
-  const scored = PLACES.map(place => {
+  let scored = PLACES.map(place => {
     let score = 0;
     let matchedReasons = [];
 
@@ -2519,6 +2557,14 @@ function filterPlaces(){
 
     return { place, score, matchedReasons };
   });
+
+  // constraint การเดินทาง (ไม่ใช่แค่คะแนน): ถ้าผู้ใช้เลือกพาหนะเป็น "รถ" หรือ "มอเตอร์ไซค์" (ไม่ใช่ "เรือ")
+  // ให้ตัดสถานที่ที่ "ต้องขึ้นเรือเท่านั้น" (transport มีแค่ ["boat"]) ออกจาก pool ที่ระบบเลือกอัตโนมัติไปเลย
+  // ไม่ใช่แค่ให้คะแนนน้อยแบบเดิม — ป้องกันกรณีเลือกรถ/มอเตอร์ไซค์แต่ยังได้โปรแกรมที่ต้องนั่งเรือ
+  // (สถานที่ที่ผู้ใช้ระบุเป็น "ต้องมี" (mustHave) ตรงๆ ไม่ผ่าน pool นี้ จึงยังใส่ได้ตามที่ผู้ใช้ตั้งใจเลือกเอง)
+  if(formData.transport && formData.transport !== "boat"){
+    scored = scored.filter(s => !(s.place.transport.length === 1 && s.place.transport[0] === "boat"));
+  }
 
   // เรียงตามคะแนนสูงสุดก่อน
   scored.sort((a, b) => b.score - a.score);
@@ -2631,11 +2677,24 @@ function filterPlaces(){
 // เลือกสถานที่ "คู่หู" ที่คะแนนสูงสุดในพูลที่เหลือ ซึ่งระยะเดินทางโดยประมาณจาก anchor ไม่เกิน PAIR_MAX_MINUTES
 // และไม่ใช่กิจกรรมเต็มวัน (ทั้ง anchor และ candidate) — เจอแล้วเอาออกจาก pool (mutate โดยตรง) แล้วคืนสถานที่นั้น ถ้าไม่เจอคืน null
 const PAIR_MAX_MINUTES = 100; // เกินกว่านี้ถือว่าไกลเกินจะจับคู่ในวันเดียวกันอย่างสมเหตุสมผล (ต่างจาก TRAVEL_TIGHT_MINUTES ใน generateItinerary ที่เป็นแค่คำเตือน ไม่ได้ห้ามจับคู่)
+const MIN_VISIT_MINUTES = 60; // เวลาเยี่ยมชมขั้นต่ำที่ควรมีก่อนสถานที่ปิด (ข้อมูลสถานที่ยังไม่มี field "duration" จริงจัง จึงประมาณแบบระมัดระวังไว้ก่อน)
+
+// เช็คว่าถ้าจัดสถานที่นี้เป็น "สถานที่ที่สอง/ช่วงบ่าย" ของวัน (เริ่มไม่ก่อน 14:00 ตามสูตรใน generateItinerary)
+// จะยังพอมีเวลาเยี่ยมชมอย่างน้อย MIN_VISIT_MINUTES ก่อนเวลาปิดจริง (visitWindow.close) ไหม — กันบั๊กที่จัดสถานที่ปิด 12:00
+// ไปเป็นกิจกรรมช่วงบ่ายซึ่งเปิดไปแล้วก็จริง แต่ปิดไปแล้วตอนที่ผู้ใช้จะไปถึง
+function canFitAsSecondSlot(place){
+  if(!place.visitWindow || !place.visitWindow.close) return true; // ไม่มีข้อมูลเวลาปิด ไม่ block (เท่าที่ตรวจได้จากไฟล์นี้)
+  let secondStart = maxTimeString("14:00", place.visitWindow.open || "14:00");
+  if(place.lastEntry) secondStart = minTimeString(secondStart, place.lastEntry);
+  return addMinutesToTime(secondStart, MIN_VISIT_MINUTES) <= place.visitWindow.close;
+}
+
 function pickCompanionForAnchor(anchor, pool){
   if(!anchor || anchor.fullDayActivity) return null;
   for(let i = 0; i < pool.length; i++){
     const candidate = pool[i].place;
     if(candidate.fullDayActivity) continue;
+    if(!canFitAsSecondSlot(candidate)) continue; // ปิดก่อนที่จะมีเวลาไปถึงจริงๆ ในฐานะที่ที่สองของวัน — ข้ามไปหาตัวถัดไป
     const minutes = estimateTravelMinutes(anchor, candidate);
     if(minutes !== null && minutes <= PAIR_MAX_MINUTES){
       pool.splice(i, 1);
@@ -2940,7 +2999,7 @@ function renderRecommendations(places){
         ${place.pier ? `<div class="rec-reason" style="margin-top:6px;">📍 ${currentLang === "th" ? "ขึ้นเรือที่" : "Board at"}: ${place.pier[currentLang]}</div>` : ""}
         <div class="rec-reason" style="margin-top:6px; color: var(--brown); font-weight:600;">${place.cost[currentLang]}</div>
         ${isPinned ? `<div class="rec-reason" style="margin-top:8px; color:var(--turquoise-dark); font-weight:600;">📌 ${currentLang === "th" ? "ตามที่คุณระบุว่าต้องมี" : "As you specifically requested"}</div>` : ""}
-        ${warn ? `<div class="rec-reason" style="margin-top:8px; color:#B94B30; font-weight:600;">⚠️ ${warn}</div>` : ""}
+        ${warn ? `<div class="rec-reason" style="margin-top:8px; color:#B94B30; font-weight:600;">⚠️ ${escapeHtml(warn)}</div>` : ""}
       </div>
     `;}).join("")}
   `;
@@ -3121,7 +3180,7 @@ function renderPlaceDetail(place){
     ${aiNote ? `
     <div class="ai-warning-card">
       <strong>${currentLang === "th" ? "⚠️ ข้อควรพิจารณาสำหรับกลุ่มของคุณ" : "⚠️ Something to consider for your group"}</strong>
-      <div class="rec-reason" style="margin-top:6px;">${aiNote}</div>
+      <div class="rec-reason" style="margin-top:6px;">${escapeHtml(aiNote)}</div>
     </div>
     ` : ""}
 
@@ -3150,7 +3209,7 @@ function renderPlaceDetail(place){
 
     <div class="recommendation-card" style="margin-top:14px;">
       <h3 class="section-title" style="margin-bottom:10px;">${t("placeDetailRestaurants")}</h3>
-      ${aiRestaurantAdvice ? `<div class="ai-restaurant-advice">🤖 ${aiRestaurantAdvice}</div>` : ""}
+      ${aiRestaurantAdvice ? `<div class="ai-restaurant-advice">🤖 ${escapeHtml(aiRestaurantAdvice)}</div>` : ""}
       ${(place.restaurants || []).map(r => `
         <div style="padding:10px 0; border-bottom:1px solid var(--border);">
           <div class="rec-name" style="font-size:14px;">${r.name} <span style="color: var(--brown);">★ ${r.rating}</span></div>
@@ -3381,7 +3440,7 @@ const app = {
     window.print();
   },
   shareLink(){
-    const data = btoa(JSON.stringify(formData));
+    const data = utf8ToBase64(JSON.stringify(formData));
     const link = `${window.location.origin}?itinerary=${data}`;
     navigator.clipboard.writeText(link).then(() => {
       alert(currentLang === "th" ? "Copy link สำเร็จ!" : "Link copied!");
@@ -3390,7 +3449,7 @@ const app = {
     });
   },
   showQRCode(){
-    const data = btoa(JSON.stringify(formData));
+    const data = utf8ToBase64(JSON.stringify(formData));
     const link = `${window.location.origin}?itinerary=${data}`;
 
     const backdrop = document.createElement("div");
@@ -3444,7 +3503,7 @@ window.addEventListener("load", () => {
   const params = new URLSearchParams(window.location.search);
   if(params.has("itinerary")){
     try {
-      const data = JSON.parse(atob(params.get("itinerary")));
+      const data = JSON.parse(base64ToUtf8(params.get("itinerary")));
       formData = data;
       // รองรับลิงก์เก่าที่แชร์ไว้ก่อนอัปเดต (ตอนนั้น subStyle ยังเป็น string เดี่ยว และยังไม่มี travelMonth) — กันไม่ให้เปิดลิงก์เก่าแล้วแอปพัง
       if(!Array.isArray(formData.subStyle)) formData.subStyle = formData.subStyle ? [formData.subStyle] : [];
