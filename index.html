@@ -1078,6 +1078,10 @@ const PLACES = [
     id: "tiger-cave",
     visitWindow: { open: "07:00", close: "17:00" },
     physicalDemand: "high",
+    // ไม่มีข้อความช่วงเวลาระบุใน costDetail (ต่างจากที่อื่นที่มี "3-4.5 ชั่วโมง" ชัดเจน) — ค่านี้เป็นค่าประมาณภายในสำหรับ scheduling เท่านั้น
+    // อิงคำยืนยันจากผู้ใช้ (ผู้ที่คุ้นเคยกับสถานที่จริง): ปีนบันได+ชมวิว+ถ่ายรูป ไม่เกิน 2 ชม. ไม่ใช่ข้อมูลที่โชว์ให้ผู้ใช้เห็นตรงๆ จึงยืดหยุ่นได้กว่าราคา/เวลาเปิดปิด
+    durationMinMinutes: 90,
+    durationMaxMinutes: 120,
     lat: 8.1128, lng: 98.9232,
     activityCostPerPerson: 0,
     region: { th: "เมืองกระบี่", en: "Krabi Town" },
@@ -1247,7 +1251,11 @@ const PLACES = [
     id: "khao-ngon-nak",
     visitWindow: { open: "08:00", close: "18:00" },
     lastEntry: "14:00",
-    durationMinutes: 180, // costDetail ระบุ 3-4.5 ชั่วโมง ใช้ขอบล่างแบบระมัดระวังไว้ก่อนสำหรับเช็คเวลาปิด
+    durationMinMinutes: 180, // costDetail ระบุ 3-4.5 ชั่วโมง
+    durationMaxMinutes: 270,
+    // ตามคำยืนยันของผู้ใช้: เดินป่าขึ้นเขาชัน 3-4.5 ชม. (แล้วแต่ความฟิต) กินแรง+เวลาจนแทบไม่เหลือช่วงบ่ายจริง
+    // ถือเป็นกิจกรรมเดียวของวันไปเลย แม้จะไม่ใช่ทัวร์เต็มวันแบบเกาะ/ล่องเรือก็ตาม — กันไม่ให้ระบบจับคู่กิจกรรมที่ 2 ในวันเดียวกันอีก
+    fullDayActivity: true,
     physicalDemand: "high",
     lat: 8.1064, lng: 98.7808,
     activityCostPerPerson: 0,
@@ -1282,7 +1290,8 @@ const PLACES = [
   {
     id: "ao-thalane-kayak",
     visitWindow: { open: "08:00", close: "12:00" },
-    durationMinutes: 240, // costDetail ระบุเป็นทัวร์คายัค "ครึ่งวัน" ~4 ชั่วโมง
+    durationMinMinutes: 240, // costDetail ระบุแค่ "ครึ่งวัน" ไม่มีช่วงตัวเลขชัดเจน ใช้ค่าเดียว (~4 ชั่วโมง) ทั้ง min/max
+    durationMaxMinutes: 240,
     physicalDemand: "medium",
     lat: 8.1219, lng: 98.7502,
     activityCostPerPerson: 850,
@@ -1398,7 +1407,8 @@ const PLACES = [
     boatRequired: false,
     departurePier: null,
     visitWindow: { open: "08:00", close: "17:00" },
-    durationMinutes: 30, // costDetail ระบุ 30-45 นาที ใช้ขอบล่าง
+    durationMinMinutes: 30, // costDetail ระบุ 30-45 นาที
+    durationMaxMinutes: 45,
     parkFee: null,
     imagesIllustrative: true,
     images: [
@@ -1568,7 +1578,8 @@ const PLACES = [
     boatRequired: true,
     departurePier: { th: "ท่าเรืออ่าวนาง หรือ ท่าเรืออ่าวน้ำเมา (ต่อเรือไปไร่เลย์)", en: "Ao Nang Pier or Ao Nam Mao Pier (boat transfer to Railay)" },
     visitWindow: { open: "19:00", close: "21:00" },
-    durationMinutes: 120, // costDetail ระบุ "ทัวร์ประมาณ 2 ชั่วโมง"
+    durationMinMinutes: 120, // costDetail ระบุ "ทัวร์ประมาณ 2 ชั่วโมง" ค่าเดียว ไม่มีช่วง
+    durationMaxMinutes: 120,
     parkFee: null,
     imagesIllustrative: true,
     images: [
@@ -1603,7 +1614,8 @@ const PLACES = [
     boatRequired: false,
     departurePier: null,
     visitWindow: { open: "09:00", close: "15:00" },
-    durationMinutes: 45, // costDetail ระบุ "~45 นาที"
+    durationMinMinutes: 45, // costDetail ระบุ 3 ระดับคอร์ส: ~45 นาที (เบา) / ~1.5 ชม. / ~2 ชม. (คอร์สรวม) — เผื่อทั้งช่วง
+    durationMaxMinutes: 120,
     parkFee: null,
     imagesIllustrative: true,
     images: [
@@ -1638,7 +1650,8 @@ const PLACES = [
     boatRequired: true,
     departurePier: { th: "ท่าเรืออ่าวนาง", en: "Ao Nang Pier" },
     visitWindow: { open: "08:00", close: "16:00" },
-    durationMinutes: 240, // costDetail ระบุ "คอร์สครึ่งวัน"
+    durationMinMinutes: 240, // costDetail ระบุแค่ "คอร์สครึ่งวัน" ไม่มีช่วงตัวเลขชัดเจน ใช้ค่าเดียวทั้ง min/max
+    durationMaxMinutes: 240,
     parkFee: null,
     imagesIllustrative: true,
     images: [
@@ -1705,7 +1718,8 @@ const PLACES = [
     boatRequired: false,
     departurePier: null,
     visitWindow: { open: "09:00", close: "17:00" },
-    durationMinutes: 60, // costDetail ระบุ "1-2 ชั่วโมง" ใช้ขอบล่าง
+    durationMinMinutes: 60, // costDetail ระบุ "1-2 ชั่วโมง"
+    durationMaxMinutes: 120,
     parkFee: null,
     imagesIllustrative: true,
     images: [
@@ -1774,7 +1788,8 @@ const PLACES = [
     departurePier: { th: "ท่าเรือแหลมสัก", en: "Laem Sak Pier" },
     visitWindow: { open: "08:00", close: "15:00" },
     fullDayActivity: false, // เดิมเป็น true แต่ cost/costDetail ระบุชัดว่าเป็นทัวร์ "ครึ่งวัน" ("half-day") — แก้ให้ตรงกับข้อมูลราคาที่มีอยู่จริง
-    durationMinutes: 240, // ครึ่งวัน ~4 ชั่วโมง ตามที่ระบุใน costDetail
+    durationMinMinutes: 240, // ครึ่งวัน ~4 ชั่วโมง ตามที่ระบุใน costDetail ไม่มีช่วงตัวเลข ใช้ค่าเดียวทั้ง min/max
+    durationMaxMinutes: 240,
     parkFee: null,
     imagesIllustrative: true,
     images: [
@@ -1808,7 +1823,8 @@ const PLACES = [
     boatRequired: true,
     departurePier: { th: "ท่าเรือแม่น้ำกระบี่ (ใกล้ตลาดคนเดิน)", en: "Krabi River Pier (near the Walking Street)" },
     visitWindow: { open: "17:30", close: "20:00" },
-    durationMinutes: 90, // costDetail ระบุ "1.5-2 ชั่วโมง" ใช้ขอบล่าง
+    durationMinMinutes: 90, // costDetail ระบุ "1.5-2 ชั่วโมง"
+    durationMaxMinutes: 120,
     includedMeals: { breakfast: false, lunch: false, dinner: true }, // costDetail ระบุชัดว่ารวมมื้อค่ำ (บุฟเฟต์/เซ็ตเมนู) ในทัวร์แล้ว
     parkFee: null,
     imagesIllustrative: true,
@@ -2781,24 +2797,51 @@ function filterPlaces(){
 // เลือกสถานที่ "คู่หู" ที่คะแนนสูงสุดในพูลที่เหลือ ซึ่งระยะเดินทางโดยประมาณจาก anchor ไม่เกิน PAIR_MAX_MINUTES
 // และไม่ใช่กิจกรรมเต็มวัน (ทั้ง anchor และ candidate) — เจอแล้วเอาออกจาก pool (mutate โดยตรง) แล้วคืนสถานที่นั้น ถ้าไม่เจอคืน null
 const PAIR_MAX_MINUTES = 100; // เกินกว่านี้ถือว่าไกลเกินจะจับคู่ในวันเดียวกันอย่างสมเหตุสมผล (ต่างจาก TRAVEL_TIGHT_MINUTES ใน generateItinerary ที่เป็นแค่คำเตือน ไม่ได้ห้ามจับคู่)
-const MIN_VISIT_MINUTES = 60; // fallback สำหรับสถานที่ที่ยังไม่มี durationMinutes ระบุไว้ (ประมาณแบบระมัดระวังไว้ก่อน)
+const MIN_VISIT_MINUTES = 60; // fallback สำหรับสถานที่ที่ยังไม่มี durationMinMinutes ระบุไว้ (ประมาณแบบระมัดระวังไว้ก่อน)
+const ANCHOR_BLOCKS_COMPANION_AFTER = "13:00"; // ถ้า anchor จบ (โดยประมาณ) หลังเวลานี้ ถือว่าไม่เหลือเวลาพอสำหรับมื้อเที่ยง+เดินทาง+กิจกรรมที่ 2 ในบ่ายวันเดียวกันแล้ว
+const HIGH_DEMAND_RECOVERY_BUFFER_MIN = 90; // เผื่อเวลาพักเหนื่อย/เดินทางลง/อาบน้ำเปลี่ยนชุด หลังกิจกรรม physicalDemand สูง ก่อนจะไปทำกิจกรรมที่ 2 ต่อ
+
+// เวลาเริ่มกิจกรรมหลักโดยประมาณของสถานที่นี้ ถ้าถูกเลือกเป็น anchor ของวัน (ใช้ตรรกะเดียวกับ mainStart ใน generateItinerary
+// เพื่อให้การตัดสินใจตอนจับคู่ตรงกับเวลาที่จะแสดงจริงในโปรแกรม)
+function estimateMainStartTime(place){
+  let start = (place.visitWindow && place.visitWindow.open) || (place.boatRequired ? "09:00" : "09:30");
+  if(place.lastEntry) start = minTimeString(start, place.lastEntry);
+  return start;
+}
+
+// เช็คว่า anchor (สถานที่หลักตอนเช้า) กินเวลา+แรงไปมากพอที่จะ "กัน" ไม่ให้จับคู่กิจกรรมที่ 2 ในบ่ายวันเดียวกันไหม
+// ใช้ durationMaxMinutes (ขอบบน, conservative สำหรับบทบาทนี้) + buffer พักฟื้นถ้า physicalDemand สูง
+// ถ้าไม่มีข้อมูล duration เลย ไม่ตัดสิน (คืน false) เท่าที่ตรวจได้จากไฟล์นี้ — ป้องกันไม่ให้บล็อกสถานที่ที่แค่ยังไม่มีข้อมูล
+function anchorConsumesWholeMorning(anchor, mainStart){
+  const duration = anchor.durationMaxMinutes || anchor.durationMinMinutes || 0;
+  if(duration === 0) return false;
+  const buffer = anchor.physicalDemand === "high" ? HIGH_DEMAND_RECOVERY_BUFFER_MIN : 0;
+  const anchorEnd = addMinutesToTime(mainStart, duration + buffer);
+  return anchorEnd > ANCHOR_BLOCKS_COMPANION_AFTER;
+}
 
 // เช็คว่าถ้าจัดสถานที่นี้เป็น "สถานที่ที่สอง/ช่วงบ่าย" ของวัน (เริ่มไม่ก่อน 14:00 ตามสูตรใน generateItinerary)
-// จะยังพอมีเวลาเยี่ยมชมจริง (place.durationMinutes ถ้ามีข้อมูล ไม่งั้น fallback MIN_VISIT_MINUTES) ก่อนเวลาปิดจริง (visitWindow.close) ไหม
+// จะยังพอมีเวลาเยี่ยมชมจริง (place.durationMinMinutes ถ้ามีข้อมูล ไม่งั้น fallback MIN_VISIT_MINUTES) ก่อนเวลาปิดจริง (visitWindow.close) ไหม
+// ใช้ขอบล่าง (durationMinMinutes) เพราะบทบาทนี้ต้องระวังไม่ปฏิเสธสถานที่เกินจริง (ต่างจาก anchorConsumesWholeMorning ที่ใช้ขอบบน)
 // กันบั๊กที่จัดสถานที่ปิด 12:00 ไปเป็นกิจกรรมช่วงบ่ายซึ่งเปิดไปแล้วก็จริง แต่ปิดไปแล้วตอนที่ผู้ใช้จะไปถึง
 function canFitAsSecondSlot(place){
   if(!place.visitWindow || !place.visitWindow.close) return true; // ไม่มีข้อมูลเวลาปิด ไม่ block (เท่าที่ตรวจได้จากไฟล์นี้)
   let secondStart = maxTimeString("14:00", place.visitWindow.open || "14:00");
   if(place.lastEntry) secondStart = minTimeString(secondStart, place.lastEntry);
-  const neededMinutes = place.durationMinutes || MIN_VISIT_MINUTES;
+  const neededMinutes = place.durationMinMinutes || MIN_VISIT_MINUTES;
   return addMinutesToTime(secondStart, neededMinutes) <= place.visitWindow.close;
 }
 
 function pickCompanionForAnchor(anchor, pool){
   if(!anchor || anchor.fullDayActivity) return null;
+  const mainStart = estimateMainStartTime(anchor);
+  if(anchorConsumesWholeMorning(anchor, mainStart)) return null; // เช้านี้กินเวลา/แรงไปมากพอแล้ว ไม่ควรจับคู่กิจกรรมที่ 2 อีก (day-overload)
   for(let i = 0; i < pool.length; i++){
     const candidate = pool[i].place;
     if(candidate.fullDayActivity) continue;
+    // กันคู่ "โหดคูณสอง": ถ้า anchor เองก็ physicalDemand สูงอยู่แล้ว ไม่ควรจับคู่กับกิจกรรมที่หนักอีกอันในวันเดียวกัน
+    // แม้เวลาจะพอดีทางตัวเลขก็ตาม (เช่น เช้าปีนเขา บ่ายไต่บันไดต่ออีกที่ ถือว่าหนักเกินไปในทางปฏิบัติ)
+    if(anchor.physicalDemand === "high" && candidate.physicalDemand === "high") continue;
     if(!canFitAsSecondSlot(candidate)) continue; // ปิดก่อนที่จะมีเวลาไปถึงจริงๆ ในฐานะที่ที่สองของวัน — ข้ามไปหาตัวถัดไป
     const minutes = estimateTravelMinutes(anchor, candidate);
     if(minutes !== null && minutes <= PAIR_MAX_MINUTES){
@@ -2807,6 +2850,41 @@ function pickCompanionForAnchor(anchor, pool){
     }
   }
   return null;
+}
+
+// ========== Regression checks กันบั๊ก day-overload กลับมาอีก (ข้อ 3.5 ของ Krabi_Day_Overload_Bug_Analysis.md) ==========
+// รันครั้งเดียวตอนโหลดหน้า, log แค่ console เท่านั้น ไม่กระทบผู้ใช้จริงแม้แต่กรณี FAIL
+function runSchedulingRegressionChecks(){
+  const byId = id => PLACES.find(p => p.id === id);
+  const results = [];
+
+  // TEST 1: เขางอนนาก ต้องไม่จับคู่กิจกรรมที่ 2 เลย (fullDayActivity: true ตามที่แก้ไว้)
+  const khaoNgonNak = byId("khao-ngon-nak");
+  results.push(["khao-ngon-nak ต้องกัน companion (fullDayActivity)", khaoNgonNak && khaoNgonNak.fullDayActivity === true]);
+
+  // TEST 2: เขางอนนาก + วัดถ้ำเสือ ห้ามถูกจัดวันเดียวกัน (เคสจริงที่พบใน production)
+  const tigerCave = byId("tiger-cave");
+  const poolWithTigerCave = [{ place: tigerCave }];
+  results.push(["เขางอนนาก จับคู่กับวัดถ้ำเสือไม่ได้ (day-overload regression)", pickCompanionForAnchor(khaoNgonNak, poolWithTigerCave) === null]);
+
+  // TEST 3: ทุกที่ physicalDemand=high ต้องไม่จับคู่กับที่ physicalDemand=high อื่นในระยะทางใกล้กัน ("โหดคูณสอง")
+  const highDemandPlaces = PLACES.filter(p => p.physicalDemand === "high");
+  for(const anchor of highDemandPlaces){
+    if(anchor.fullDayActivity) continue; // ถูกกันไว้แล้วตั้งแต่ชั้นนอก ไม่ต้องเช็คซ้ำ
+    const otherHighDemand = highDemandPlaces.filter(p => p.id !== anchor.id).map(place => ({ place }));
+    const companion = pickCompanionForAnchor(anchor, otherHighDemand);
+    results.push([`${anchor.id} ไม่จับคู่กับกิจกรรม physicalDemand สูงอื่น`, companion === null]);
+  }
+
+  // TEST 4: วัดถ้ำเสือ (physicalDemand สูงแต่ duration สั้นกว่า) ยังจับคู่กับกิจกรรมเบาที่เดินทางใกล้ๆ ได้ตามปกติ (ไม่ถูกบล็อกเกินจำเป็น)
+  results.push(["วัดถ้ำเสือ ไม่ถูก anchorConsumesWholeMorning บล็อกเกินจริง", !anchorConsumesWholeMorning(tigerCave, estimateMainStartTime(tigerCave))]);
+
+  const failed = results.filter(([, pass]) => !pass);
+  if(failed.length > 0){
+    console.warn(`[Scheduling regression] FAIL: ${failed.map(([name]) => name).join(", ")}`);
+  } else {
+    console.log(`[Scheduling regression] All ${results.length} checks passed.`);
+  }
 }
 
 // ========== ปรับโปรแกรมตามความเสี่ยงมรสุม (แก้ช่องว่างเดิม: ระบบไม่เคยถามว่าจะไปเดือนไหนเลย) ==========
@@ -2943,8 +3021,8 @@ function generateItinerary(recommended){
 
     // เวลาเริ่มกิจกรรมหลัก: ใช้เวลาเปิดจริงของสถานที่นั้น (visitWindow) แทนการ hardcode 09:30/09:00 ตายตัวทุกที่แบบเดิม
     // (บั๊กเดิม: ตลาดกลางคืนกระบี่ที่เปิดจริง ~17:00 น. เคยถูกจัดเป็นกิจกรรมเช้า 09:30 ถ้าสุ่มมาเป็นสถานที่หลักของวัน)
-    let mainStart = (effectiveMain.visitWindow && effectiveMain.visitWindow.open) || (effectiveMain.boatRequired ? "09:00" : "09:30");
-    if(effectiveMain.lastEntry) mainStart = minTimeString(mainStart, effectiveMain.lastEntry); // เผื่อสถานที่ปิดรับเข้าก่อนเวลาปิดจริง (เช่น เขางอนนากปิดรับ 14:00 แม้อุทยานปิด 18:00)
+    // ใช้ estimateMainStartTime() ตัวเดียวกับตอนจับคู่ companion เพื่อให้เวลาที่ตัดสินใจกับเวลาที่แสดงจริงตรงกันเสมอ
+    let mainStart = estimateMainStartTime(effectiveMain);
 
     // สร้าง activity "ขึ้นเรือ" เฉพาะสถานที่ที่ boatRequired === true จริงๆ เท่านั้น (ไม่ใช่แค่มีข้อมูล departurePier อยู่
     // เช่น หาดนพรัตน์ธาราหรือคายัคอ่าวท่าเลน ที่มีท่าเรืออยู่ใกล้ๆ แต่ไม่ได้บังคับว่าต้องนั่งเรือ)
@@ -2967,12 +3045,21 @@ function generateItinerary(recommended){
       costLabel: effectiveMain.cost[currentLang]
     });
 
+    // เวลาจบโดยประมาณของกิจกรรมหลัก (ข้อ 3.4): mainStart + duration (ขอบบนถ้ามี ไม่งั้นขอบล่าง ไม่งั้น fallback ตายตัว
+    // ที่ให้ผลใกล้เคียงพฤติกรรมเดิม ~150 นาที = มื้อเที่ยง ~12:00 ถ้าเริ่ม 09:30) + buffer พักฟื้นถ้ากิจกรรมโหด
+    const DEFAULT_MAIN_DURATION_MIN = 150; // fallback สำหรับสถานที่ที่ยังไม่มีข้อมูล duration เลย (ส่วนใหญ่ในไฟล์นี้)
+    const mainDuration = effectiveMain.durationMaxMinutes || effectiveMain.durationMinMinutes || DEFAULT_MAIN_DURATION_MIN;
+    const mainRecoveryBuffer = effectiveMain.physicalDemand === "high" ? HIGH_DEMAND_RECOVERY_BUFFER_MIN : 0;
+    const mainEnd = addMinutesToTime(mainStart, mainDuration + mainRecoveryBuffer);
+    // มื้อเที่ยงผูกกับเวลาจบจริงของ anchor แทนค่าคงที่ "12:00" ตายตัว: ไม่เร็วกว่า 11:30, ไม่ช้ากว่า 13:30, แต่ต้องหลัง mainEnd ถ้าอยู่ในช่วงนั้น
+    const lunchTime = maxTimeString("11:30", minTimeString(mainEnd, "13:30"));
+
     // อาหารกลางวัน จากร้านจริงใกล้สถานที่หลัก (เลือกร้านอันดับ 1) — ข้ามถ้าแพ็กเกจของสถานที่นี้รวมมื้อเที่ยงไว้แล้ว (เช่น Hong Island full-day tour)
     if(!(effectiveMain.includedMeals && effectiveMain.includedMeals.lunch) && effectiveMain.restaurants && effectiveMain.restaurants[0]){
       const r = effectiveMain.restaurants[0];
       const nearby = isRestaurantNearby(effectiveMain, r);
       dayItinerary.meals.push({
-        time: "12:00",
+        time: lunchTime,
         name: nearby
           ? (currentLang === "th" ? `มื้อเที่ยง: ${r.name}` : `Lunch: ${r.name}`)
           : (currentLang === "th" ? `มื้อเที่ยง (ร้านแนะนำในกระบี่ ไม่ได้อยู่ติดจุดนี้): ${r.name}` : `Lunch (recommended in Krabi, not actually nearby): ${r.name}`),
@@ -2983,10 +3070,11 @@ function generateItinerary(recommended){
     }
 
     if(effectiveSecond){
-      // เวลาเริ่มกิจกรรมที่สอง: ใช้เวลาช้ากว่าระหว่าง 14:00 (ค่าเริ่มต้นเดิม) กับเวลาเปิดจริงของสถานที่นั้น
-      // เผื่อกรณีสถานที่ที่สองเปิดดึกกว่า 14:00 (เช่น ทัวร์หิ่งห้อยตอนพลบค่ำ) จะได้ไม่จัดเวลาก่อนเปิดจริง
+      // เวลาเริ่มกิจกรรมที่สอง (ข้อ 3.4): ใช้เวลาช้ากว่าระหว่าง "หลังมื้อเที่ยง ~1 ชม." (คำนวณจาก mainEnd จริง แทน "14:00" ตายตัวเดิม)
+      // กับเวลาเปิดจริงของสถานที่นั้น เผื่อกรณีสถานที่ที่สองเปิดดึกกว่านั้น (เช่น ทัวร์หิ่งห้อยตอนพลบค่ำ) จะได้ไม่จัดเวลาก่อนเปิดจริง
       // แล้วเช็คอีกชั้นว่าไม่เกิน lastEntry ถ้ามี (เช่น เขางอนนากปิดรับเข้าครั้งสุดท้าย 14:00)
-      let secondStart = maxTimeString("14:00", (effectiveSecond.visitWindow && effectiveSecond.visitWindow.open) || "14:00");
+      const afterLunch = addMinutesToTime(lunchTime, 60); // เผื่อเวลาทานมื้อเที่ยง ~1 ชม. ก่อนไปกิจกรรมที่ 2
+      let secondStart = maxTimeString(afterLunch, (effectiveSecond.visitWindow && effectiveSecond.visitWindow.open) || "14:00");
       if(effectiveSecond.lastEntry) secondStart = minTimeString(secondStart, effectiveSecond.lastEntry);
       if(effectiveSecond.boatRequired && effectiveSecond.departurePier){
         dayItinerary.activities.push({
@@ -3671,6 +3759,7 @@ document.getElementById("placeDetailBackBottom").addEventListener("click", () =>
 
 // Load itinerary from URL if exists
 window.addEventListener("load", () => {
+  runSchedulingRegressionChecks(); // console-only sanity check กันบั๊ก day-overload กลับมาอีก ไม่กระทบผู้ใช้จริง
   const params = new URLSearchParams(window.location.search);
   if(params.has("itinerary")){
     try {
