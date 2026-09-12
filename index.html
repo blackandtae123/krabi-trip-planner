@@ -3070,12 +3070,27 @@ function generateItinerary(recommended){
     }
 
     if(effectiveSecond){
-      // เวลาเริ่มกิจกรรมที่สอง (ข้อ 3.4): ใช้เวลาช้ากว่าระหว่าง "หลังมื้อเที่ยง ~1 ชม." (คำนวณจาก mainEnd จริง แทน "14:00" ตายตัวเดิม)
-      // กับเวลาเปิดจริงของสถานที่นั้น เผื่อกรณีสถานที่ที่สองเปิดดึกกว่านั้น (เช่น ทัวร์หิ่งห้อยตอนพลบค่ำ) จะได้ไม่จัดเวลาก่อนเปิดจริง
+      // เวลาเดินทางจริงจากสถานที่หลักไปสถานที่ที่สอง (ก่อนหน้านี้ค่านี้ถูกคำนวณแค่ตอนท้ายเพื่อโชว์ "คำเตือน" เฉยๆ
+      // แต่ไม่เคยถูกเอามาบวกเข้าไปในเวลาเริ่มจริงเลย — แก้ตรงนี้ให้เดินทางจริงกลายเป็นส่วนหนึ่งของตารางเวลา ไม่ใช่แค่คำเตือน)
+      const travelMinutes = estimateTravelMinutes(effectiveMain, effectiveSecond);
+
+      // เวลาเริ่มกิจกรรมที่สอง (ข้อ 3.4 + เพิ่มเวลาเดินทาง): ต้องช้ากว่าทั้ง (ก) หลังมื้อเที่ยง+เดินทางไปถึงจริง (ข) เวลาเปิดจริงของสถานที่นั้น
+      // เผื่อกรณีสถานที่ที่สองเปิดดึกกว่านั้น (เช่น ทัวร์หิ่งห้อยตอนพลบค่ำ) จะได้ไม่จัดเวลาก่อนเปิดจริง
       // แล้วเช็คอีกชั้นว่าไม่เกิน lastEntry ถ้ามี (เช่น เขางอนนากปิดรับเข้าครั้งสุดท้าย 14:00)
-      const afterLunch = addMinutesToTime(lunchTime, 60); // เผื่อเวลาทานมื้อเที่ยง ~1 ชม. ก่อนไปกิจกรรมที่ 2
-      let secondStart = maxTimeString(afterLunch, (effectiveSecond.visitWindow && effectiveSecond.visitWindow.open) || "14:00");
+      const afterLunch = addMinutesToTime(lunchTime, 60); // เผื่อเวลาทานมื้อเที่ยง ~1 ชม. ก่อนออกเดินทางไปกิจกรรมที่ 2
+      const arrivalAtSecond = addMinutesToTime(afterLunch, travelMinutes || 0); // เผื่อเวลาเดินทางจริงจากมื้อเที่ยง/สถานที่หลัก ไปถึงสถานที่ที่สอง
+      let secondStart = maxTimeString(arrivalAtSecond, (effectiveSecond.visitWindow && effectiveSecond.visitWindow.open) || "14:00");
       if(effectiveSecond.lastEntry) secondStart = minTimeString(secondStart, effectiveSecond.lastEntry);
+      if(travelMinutes !== null && travelMinutes > 0){
+        // แสดงช่วงเดินทางเป็นรายการในตารางเวลาจริง ให้ผู้ใช้เห็นว่าต้องเผื่อเวลาเดินทางเท่าไหร่ ไม่ใช่แค่โผล่ในกิจกรรมถัดไปเฉยๆ
+        dayItinerary.activities.push({
+          time: afterLunch,
+          name: currentLang === "th" ? `เดินทางไปยัง${effectiveSecond.name.th}` : `Travel to ${effectiveSecond.name.en}`,
+          details: currentLang === "th" ? `ใช้เวลาเดินทางประมาณ ${travelMinutes} นาที` : `Approx. ${travelMinutes} minutes travel time`,
+          cost: 0,
+          costLabel: "-"
+        });
+      }
       if(effectiveSecond.boatRequired && effectiveSecond.departurePier){
         dayItinerary.activities.push({
           time: subtractMinutesFromTime(secondStart, 45),
@@ -3105,11 +3120,10 @@ function generateItinerary(recommended){
 
       // เช็คระยะทาง/เวลาเดินทางระหว่าง 2 สถานที่ในวันเดียวกัน (แก้ช่องว่างเดิม: ระบบไม่เคยเช็คเลย จับ 2 ที่ยัดวันเดียวกันได้
       // โดยไม่ดูระยะทาง/เวลาเดินทางจริงระหว่างกันเลย) — ที่จับคู่กันมาแล้วผ่าน PAIR_MAX_MINUTES ใน filterPlaces
-      // แต่ยังอาจ "ค่อนข้างแน่น" ได้ถ้าเกิน TRAVEL_TIGHT_MINUTES จึงเตือนไว้แม้จะยังจับคู่อยู่ก็ตาม
-      const minutes = estimateTravelMinutes(effectiveMain, effectiveSecond);
-      if(minutes !== null && minutes > TRAVEL_TIGHT_MINUTES){
-        dayItinerary.travelWarning = { from: effectiveMain.name[currentLang], to: effectiveSecond.name[currentLang], minutes };
-        lastTravelWarnings.push({ day: d, from: effectiveMain, to: effectiveSecond, minutes });
+      // แต่ยังอาจ "ค่อนข้างแน่น" ได้ถ้าเกิน TRAVEL_TIGHT_MINUTES จึงเตือนไว้เพิ่มอีกชั้น แม้ตอนนี้เวลาเดินทางจะถูกบวกเข้าตารางจริงแล้วก็ตาม
+      if(travelMinutes !== null && travelMinutes > TRAVEL_TIGHT_MINUTES){
+        dayItinerary.travelWarning = { from: effectiveMain.name[currentLang], to: effectiveSecond.name[currentLang], minutes: travelMinutes };
+        lastTravelWarnings.push({ day: d, from: effectiveMain, to: effectiveSecond, minutes: travelMinutes });
       }
     } else if(!(effectiveMain.includedMeals && effectiveMain.includedMeals.dinner) && effectiveMain.restaurants && effectiveMain.restaurants[1]){
       // วันที่มีสถานที่เดียว เพิ่มร้านอาหารเย็นจากอันดับ 2
