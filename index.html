@@ -370,6 +370,7 @@
   .place-badge.badge-popular{ background:linear-gradient(135deg, #E8A33D, #D9822A); }
   .place-badge.badge-kid{ background:linear-gradient(135deg, var(--turquoise), var(--turquoise-dark)); }
   .place-badge.badge-pinned{ background:linear-gradient(135deg, var(--green), #4E7A5E); }
+  .place-badge.badge-closed{ background:linear-gradient(135deg, #8a8a8a, #5c5c5c); }
 
   .text-input{
     width:100%;
@@ -1222,6 +1223,10 @@ const PLACES = [
     activityCostPerPerson: 0,
     region: { th: "เมืองกระบี่", en: "Krabi Town" },
     name: { th: "ตลาดคนเดินกระบี่ (Walking Street)", en: "Krabi Weekend Night Market (Walking Street)" },
+    // เปิดเฉพาะ ศุกร์-เสาร์-อาทิตย์ (ต่างจากสถานที่อื่นเกือบทั้งหมดที่เปิดทุกวัน) — เดิมมีแค่บอกไว้ในข้อความ desc/costDetail
+    // เฉยๆ ไม่เคยถูกใช้เช็คจริงเลยสักที่ ทำให้ระบบเสนอ/แสดงได้แม้ในวันที่จริงๆ ปิด จึงเพิ่ม field ใช้เช็คจริงตรงนี้
+    // ใช้ convention เดียวกับ Date.getDay() ของ JS: 0=อาทิตย์, 1=จันทร์, ... 6=เสาร์
+    openDays: [0, 5, 6],
     desc: { th: "ตลาดคนเดินริมแม่น้ำกระบี่ ของกินพื้นเมือง งานฝีมือ ดนตรีสด เปิดศุกร์-อาทิตย์เย็น", en: "Riverside walking-street market with local street food, crafts and live music, open Fri-Sun evenings" },
     season: { th: "ตลอดปี (เปิดเฉพาะ ศ.-อา.)", en: "Year-round (Fri-Sun only)" },
     cost: { th: "ไม่มีค่าเข้า จ่ายตามที่ซื้อจริง", en: "Free to enter, pay only for what you buy" },
@@ -1932,7 +1937,13 @@ const STRINGS = {
     monsoonWarnPeak: "เดือนที่เลือกอยู่ในช่วงมรสุมหนักที่สุดของปี (ก.ย.-ต.ค.) คลื่นลมแรงและฝนตกหนักบ่อยที่สุด ทัวร์เรือมีโอกาสถูกยกเลิกสูง ระบบจึงปรับโปรแกรมบางวันให้เป็นกิจกรรมบนบกแทนกิจกรรมทางเรือ เพื่อลดความเสี่ยงที่ทริปจะเสียวันไปกับทัวร์ที่ถูกยกเลิก",
     monsoonSwapNote: "สลับจาก \"{old}\" เป็น \"{new}\" เพราะ {old} ต้องขึ้นเรือ และช่วงที่คุณเลือกไปเที่ยวมีความเสี่ยงสูงที่ทัวร์เรือจะถูกยกเลิก",
     monsoonStillBoat: "โปรแกรมยังมีกิจกรรมที่ต้องขึ้นเรืออยู่บางวัน หากทัวร์ถูกยกเลิกเพราะคลื่นลม แนะนำให้ติดต่อผู้ประกอบการเพื่อขอเลื่อนวันหรือคืนเงิน",
-    travelTightWarn: "โปรแกรมวันนี้ค่อนข้างแน่น: เดินทางจาก \"{from}\" ไป \"{to}\" ใช้เวลาประมาณ {minutes} นาที (ระยะทางโดยประมาณ) ลองเผื่อเวลาให้มากขึ้นหรือสลับเป็นวันอื่นได้ถ้าต้องการความสบายมากขึ้น"
+    travelTightWarn: "โปรแกรมวันนี้ค่อนข้างแน่น: เดินทางจาก \"{from}\" ไป \"{to}\" ใช้เวลาประมาณ {minutes} นาที (ระยะทางโดยประมาณ) ลองเผื่อเวลาให้มากขึ้นหรือสลับเป็นวันอื่นได้ถ้าต้องการความสบายมากขึ้น",
+    specialNeedsLabel: "ความต้องการพิเศษ",
+    specialNeedsQuestion: "มีความต้องการพิเศษอะไรบ้างคะ (เลือกได้หลายข้อ)",
+    specialNeedsHint: "ระบบจะนำข้อมูลนี้ไปปรับสถานที่และร้านอาหารให้เหมาะขึ้น แต่ข้อมูลแพ้อาหารไม่ใช่การรับรองความปลอดภัย ควรแจ้งร้านทุกครั้ง",
+    transferOnlyTitle: "🔄 วันเดียวกันได้ แต่เป็นการโอน/ทรานเฟอร์เท่านั้น",
+    transferOnlyText: "{from} เป็นกิจกรรมเต็มวัน จึงไม่สามารถเที่ยว {from} และ {to} ให้ครบทั้งสองแห่งในวันเดียวกันได้ หากต้องไปต่อในวันเดียวกัน สามารถเดินทางไป {to} ได้ (Transfer only — ไม่ได้เที่ยว {to} แบบเต็มโปรแกรม)",
+    restaurantDietWarning: "ระบบคัดร้านจากข้อมูลที่ระบุไว้เท่านั้น ไม่ใช่การรับรองความปลอดภัยหรือการปลอดสารก่อภูมิแพ้ ควรแจ้งร้านก่อนสั่งทุกครั้ง"
   },
   en: {
     homeTitle: "Krabi Trip Planner",
@@ -1988,7 +1999,13 @@ const STRINGS = {
     monsoonWarnPeak: "The month you picked falls in Krabi's heaviest monsoon stretch (Sep-Oct), when seas are roughest and rain is heaviest. Boat tours have a high chance of being cancelled, so we've swapped some days to land-based activities instead of boat trips, to reduce the risk of losing a day to a cancelled tour.",
     monsoonSwapNote: "Swapped \"{old}\" for \"{new}\" because {old} requires a boat, and your travel dates carry a high risk of boat tours being cancelled.",
     monsoonStillBoat: "Your itinerary still has some boat-based activities. If a tour gets cancelled due to weather, contact the operator to reschedule or get a refund.",
-    travelTightWarn: "This day is a bit tight: getting from \"{from}\" to \"{to}\" takes roughly {minutes} minutes (estimated distance). Consider padding extra time, or moving one of these to a different day if you'd prefer a more relaxed pace."
+    travelTightWarn: "This day is a bit tight: getting from \"{from}\" to \"{to}\" takes roughly {minutes} minutes (estimated distance). Consider padding extra time, or moving one of these to a different day if you'd prefer a more relaxed pace.",
+    specialNeedsLabel: "Special needs",
+    specialNeedsQuestion: "Do you have any special needs? (select all that apply)",
+    specialNeedsHint: "The planner uses these to better match places and restaurants. Allergy information is not a safety guarantee — always tell the restaurant staff directly.",
+    transferOnlyTitle: "🔄 Same day is possible only as a transfer",
+    transferOnlyText: "{from} is a full-day activity, so you cannot fully visit both {from} and {to} on the same day. If you need to continue on the same day, you may travel to {to} (Transfer only — not a full visit).",
+    restaurantDietWarning: "Restaurants are filtered only from the information available to the planner; this is not a guarantee of allergen safety. Always confirm with the restaurant before ordering."
   }
 };
 
@@ -2097,15 +2114,25 @@ const STEPS_CONFIG = [
         { label: "ทริปหนึ่งวัน (0 คืน)", value: "daytrip" },
         { label: "2 วัน 1 คืน", value: "2d1n" },
         { label: "3 วัน 2 คืน", value: "3d2n" },
-        { label: "4+ วัน", value: "4plus" }
+        { label: "4 วัน (สูงสุด)", value: "4plus" }
       ],
       en: [
         { label: "Day trip (0 nights)", value: "daytrip" },
         { label: "2 days 1 night", value: "2d1n" },
         { label: "3 days 2 nights", value: "3d2n" },
-        { label: "4+ days", value: "4plus" }
+        { label: "4 days (maximum)", value: "4plus" }
       ]
     }
+  },
+  {
+    id: "dayTripWindow",
+    type: "timerange",
+    label: { th: "เวลาที่สะดวกเดินทาง", en: "Available travel time" },
+    question: { th: "วันนี้คุณมีเวลาเที่ยวได้ตั้งแต่กี่โมงถึงกี่โมงคะ", en: "What time window do you have available for today's trip?" },
+    // ถามเฉพาะทริปหนึ่งวันเท่านั้น (visibleIf) เพราะทริปหลายวันมีเช้าเต็มทุกวันอยู่แล้ว ไม่จำเป็นต้องถามซ้ำทุกวัน
+    // ส่วนทริปหนึ่งวันมักมีข้อจำกัดจริง เช่น ต้องขึ้นเครื่องเย็นนั้น หรือเพิ่งเดินทางมาถึงตอนสาย — ถ้าไม่ถามไว้ก่อน
+    // ระบบจะจัดโปรแกรมยาวเกินเวลาที่มีจริง หรือเริ่มเช้าเกินไปจนไปไม่ทัน
+    visibleIf: (fd) => fd.duration === "daytrip",
   },
   {
     id: "travelMonth",
@@ -2128,6 +2155,43 @@ const STEPS_CONFIG = [
     }
   },
   {
+    id: "specialNeeds",
+    type: "checkbox",
+    maxSelect: 6,
+    options: {
+      th: [
+        { label: "มีเด็กเล็ก", value: "youngChildren" },
+        { label: "มีผู้สูงอายุ", value: "elderly" },
+        { label: "มีผู้ที่เดินลำบาก/ใช้รถเข็น", value: "mobility" },
+        { label: "ไม่ต้องการกิจกรรมหนัก/เดินเยอะ", value: "avoidStrenuous" },
+        { label: "ตั้งครรภ์", value: "pregnancy" },
+        { label: "มังสวิรัติ", value: "vegetarian" },
+        { label: "อาหารเจ", value: "veganJain" },
+        { label: "ฮาลาล", value: "halal" },
+        { label: "แพ้อาหารทะเล", value: "seafoodAllergy" },
+        { label: "แพ้ถั่ว", value: "nutAllergy" },
+        { label: "แพ้นม/แลคโตส", value: "dairyAllergy" },
+        { label: "แพ้ไข่", value: "eggAllergy" },
+        { label: "ไม่กินอาหารเผ็ด", value: "noSpicy" }
+      ],
+      en: [
+        { label: "Traveling with young children", value: "youngChildren" },
+        { label: "Traveling with an older adult", value: "elderly" },
+        { label: "Limited mobility / wheelchair", value: "mobility" },
+        { label: "Avoid strenuous activities / lots of walking", value: "avoidStrenuous" },
+        { label: "Pregnancy", value: "pregnancy" },
+        { label: "Vegetarian", value: "vegetarian" },
+        { label: "Vegan / Jain", value: "veganJain" },
+        { label: "Halal", value: "halal" },
+        { label: "Seafood allergy", value: "seafoodAllergy" },
+        { label: "Nut allergy", value: "nutAllergy" },
+        { label: "Dairy / lactose allergy", value: "dairyAllergy" },
+        { label: "Egg allergy", value: "eggAllergy" },
+        { label: "Avoid spicy food", value: "noSpicy" }
+      ]
+    }
+  },
+  {
     id: "mustHave",
     type: "places",
     // ให้ผู้ใช้เจาะจงสถานที่ที่ "ต้องมี" ในทริปได้สูงสุด 3 ที่ จะระบุวันที่แน่นอน (1/2/3...) หรือปล่อยให้ระบบจัดวันให้ก็ได้
@@ -2137,27 +2201,30 @@ const STEPS_CONFIG = [
   {
     id: "notes",
     type: "text",
-    placeholder: { th: "เช่น 3 คน, มีเด็ก 1 คน, แพ้อาหารทะเล, มังสวิรัต", en: "E.g. 3 people, 1 child, allergic to seafood, vegetarian" }
+    label: { th: "ข้อมูลเพิ่มเติม", en: "Additional notes" },
+    question: { th: "มีข้อมูลเพิ่มเติมอะไรที่อยากบอกระบบไหมคะ", en: "Anything else you'd like the planner to know?" },
+    placeholder: { th: "เช่น 3 คน, พักแถวอ่าวนาง, ต้องกลับสนามบิน 18:00 น.", en: "E.g. 3 people, staying in Ao Nang, need to reach the airport by 18:00" }
   }
 ];
 
 let currentLang = "th";
 let currentStep = 0;
 let placeDetailOrigin = "resultsScreen"; // จำหน้าที่เปิดรายละเอียดสถานที่มา (หน้าแรก หรือหน้าผลลัพธ์) เพื่อย้อนกลับให้ถูกหน้า
-let aiAnalysis = null;       // ผลวิเคราะห์ข้อจำกัดจาก Claude API (null = ยังไม่ได้เรียก/เรียกไม่สำเร็จ)
+let aiAnalysis = null;       // ผลวิเคราะห์ข้อจำกัดจาก Gemini API (null = ยังไม่ได้เรียก/เรียกไม่สำเร็จ)
 let aiAnalysisLoading = false;
 let lastUnplacedMustHave = []; // สถานที่ "ต้องมี" ที่ยัดใส่ทริปไม่ได้จริงๆ (เช่น จำนวนวันของทริปไม่พอ) — ใช้แจ้งเตือนผู้ใช้ ไม่ปล่อยให้หายไปเงียบๆ
 let lastMonsoonSwaps = [];     // [{oldPlace, newPlace}] — วันที่ถูกสลับจากกิจกรรมทางเรือเป็นกิจกรรมบนบก เพราะช่วงที่เลือกเสี่ยงมรสุมสูง
 let lastMonsoonRisk = null;    // "shoulder" | "peak-monsoon" | null — ใช้โชว์ banner เตือนแม้ไม่ได้สลับอะไร
 let lastMonsoonStillHasBoat = false; // true = สลับหมดเท่าที่ทำได้แล้วแต่ยังมีกิจกรรมทางเรือเหลืออยู่ (land pool ไม่พอสลับหมด) — ใช้โชว์คำเตือนเพิ่มเติม
 let lastTravelWarnings = [];   // [{day, from, to, minutes}] — วันที่ระยะเดินทางระหว่าง 2 สถานที่ในวันเดียวกันค่อนข้างแน่น (>60 นาทีโดยประมาณ)
+let lastTransferOnlyConflicts = []; // [{day, fromPlace, toPlace}] — must-have full-day ชนกันในวันเดียวกัน: จุดที่สองเป็น transfer-only
 
 // AI_MODE:
-//   "demo" = จำลองผลวิเคราะห์ด้วย keyword matching ฝั่ง client ล้วนๆ ไม่เรียก Claude API จริง ไม่เสียเงินเลย
-//            เหมาะสำหรับพรีเซนต์/เดโมช่วงที่ยังไม่พร้อมเติมเครดิต Anthropic
-//   "live" = เรียก Claude API จริงผ่าน /api/analyze-constraints (ต้องตั้ง ANTHROPIC_API_KEY บน Vercel และมีเครดิต)
-// เปลี่ยนเป็น "live" ได้ทันทีตอนพร้อมใช้ AI จริง โดยไม่ต้องแก้โค้ดส่วนอื่นเลย
-const AI_MODE = "demo";
+//   "demo" = จำลองผลวิเคราะห์ฝั่ง client โดยไม่เรียกบริการ AI ภายนอก
+//   "live" = เรียก Gemini ผ่าน /api/analyze-constraints โดยเก็บ GEMINI_API_KEY ไว้ฝั่ง Vercel
+//             (ใช้ Gemini Free Tier ได้ตามโควตา/เงื่อนไขปัจจุบันของ Google)
+// เปลี่ยนเป็น "live" หลังตั้ง GEMINI_API_KEY บน Vercel แล้ว
+const AI_MODE = "live";
 
 let formData = {
   age: null,
@@ -2166,7 +2233,9 @@ let formData = {
   budget: null,
   transport: null,
   duration: null,
+  dayTripWindow: { start: "08:00", end: "18:00" }, // ใช้เฉพาะตอน duration === "daytrip" (ดู visibleIf ใน STEPS_CONFIG) — ค่า default เผื่อไม่ได้แก้เลย
   travelMonth: null, // "high" | "shoulder" | "peak-monsoon" | "unsure" | null — ใช้เตือนความเสี่ยงทัวร์เรือถูกยกเลิกช่วงมรสุม
+  specialNeeds: [],
   mustHave: [], // [{placeId, day}] — สถานที่ที่ผู้ใช้ระบุว่า "ต้องมี" ในทริป day = เลขวัน (1-based) หรือ null = ให้ระบบจัดวันให้
   notes: ""
 };
@@ -2240,6 +2309,58 @@ function isRestaurantNearby(place, r){
   return haversineKm(place.lat, place.lng, r.lat, r.lng) <= RESTAURANT_NEARBY_KM;
 }
 
+// เลือกร้านโดยอิงจากข้อจำกัดอาหารที่ผู้ใช้เลือก — ใช้เฉพาะข้อมูลที่มีอยู่จริงใน catalog
+// ห้ามตีความว่าเป็นการรับรอง allergen safety; ใช้เพื่อหลีกเลี่ยงตัวเลือกที่เห็นได้ชัดว่าไม่เหมาะ และเตือนผู้ใช้ให้ยืนยันกับร้าน
+function restaurantFitScore(r){
+  const needs = formData.specialNeeds || [];
+  const cuisine = `${r.cuisine?.th || ""} ${r.cuisine?.en || ""}`.toLowerCase();
+  let score = 0;
+  const seafoodHeavy = /seafood|ซีฟู้ด|อาหารทะเล/.test(cuisine);
+  const vegKnown = /vegetarian|vegan|มังสวิรัติ|vegan options/.test(cuisine);
+  const veganKnown = /vegan|วีแกน|เจ|jain/.test(cuisine);
+  const halalKnown = /halal|ฮาลาล/.test(cuisine);
+
+  if(needs.includes("seafoodAllergy") && seafoodHeavy) score -= 100;
+  if(needs.includes("vegetarian") && vegKnown) score += 20;
+  if(needs.includes("veganJain") && veganKnown) score += 25;
+  if(needs.includes("halal") && halalKnown) score += 25;
+  if(needs.includes("nutAllergy") && /nut|ถั่ว/.test(cuisine)) score -= 100;
+  if(needs.includes("noSpicy") && /spicy|เผ็ด/.test(cuisine)) score -= 100;
+  if(needs.includes("dairyAllergy") && /dairy|milk|lactose|นม|แลคโตส/.test(cuisine)) score -= 100;
+  if(needs.includes("eggAllergy") && /egg|ไข่/.test(cuisine)) score -= 100;
+  return score;
+}
+
+function isRestaurantCompatible(r){
+  const needs = formData.specialNeeds || [];
+  const cuisine = `${r.cuisine?.th || ""} ${r.cuisine?.en || ""}`.toLowerCase();
+  const seafoodHeavy = /seafood|ซีฟู้ด|อาหารทะเล/.test(cuisine);
+  const vegKnown = /vegetarian|vegan|มังสวิรัติ|vegan options/.test(cuisine);
+  const veganKnown = /vegan|วีแกน|เจ|jain/.test(cuisine);
+  const halalKnown = /halal|ฮาลาล/.test(cuisine);
+
+  if(needs.includes("seafoodAllergy") && seafoodHeavy) return false;
+  if(needs.includes("nutAllergy") && /nut|ถั่ว/.test(cuisine)) return false;
+  if(needs.includes("vegetarian") && !vegKnown) return false;
+  if(needs.includes("veganJain") && !veganKnown) return false;
+  if(needs.includes("halal") && !halalKnown) return false;
+  if(needs.includes("noSpicy") && /spicy|เผ็ด/.test(cuisine)) return false;
+  if(needs.includes("dairyAllergy") && /dairy|milk|lactose|นม|แลคโตส/.test(cuisine)) return false;
+  if(needs.includes("eggAllergy") && /egg|ไข่/.test(cuisine)) return false;
+  return true;
+}
+
+function chooseRestaurant(place, index=0){
+  const restaurants = (place.restaurants || []).filter(r => isRestaurantNearby(place, r) && isRestaurantCompatible(r));
+  if(restaurants.length === 0) return null;
+  const ranked = [...restaurants].sort((a,b) => restaurantFitScore(b) - restaurantFitScore(a));
+  return ranked[index] || ranked[0];
+}
+
+function hasDietaryNeed(){
+  return (formData.specialNeeds || []).some(v => ["vegetarian","veganJain","halal","seafoodAllergy","nutAllergy","dairyAllergy","eggAllergy","noSpicy"].includes(v));
+}
+
 // ประเมินเวลาเดินทาง (นาที) ระหว่างสถานที่ 2 แห่ง จากระยะทางตรง (haversine) คูณตัวคูณความคดเคี้ยวของเส้นทางจริง
 // บวกเวลาเผื่อสำหรับขึ้น/ลงเรือหรือจอดรถ — เป็นค่าประมาณคร่าวๆ เพื่อใช้เตือนโปรแกรมที่แน่นเกินไป ไม่ใช่เวลาที่แม่นยำ
 function estimateTravelMinutes(placeA, placeB){
@@ -2267,6 +2388,14 @@ function subtractMinutesFromTime(timeStr, minutesToSubtract){
 
 // เทียบว่าเวลา a มาก่อนหรือหลังเวลา b แบบ "HH:MM" (ใช้ sort กิจกรรม/มื้ออาหารในแต่ละวันตามเวลาจริง)
 function compareTimeStrings(a, b){ return a.localeCompare(b); }
+
+// แปลง "HH:MM" เป็นจำนวนนาทีนับจากเที่ยงคืน แล้วหาผลต่าง (b - a) เป็นนาที — ใช้เช็คว่าช่วงว่างระหว่าง 2 เวลานานแค่ไหนจริงๆ
+// (ต่างจาก compareTimeStrings ที่บอกได้แค่ก่อน/หลัง ไม่บอกจำนวนนาที)
+function minutesBetweenTimes(a, b){
+  const [ah, am] = a.split(":").map(Number);
+  const [bh, bm] = b.split(":").map(Number);
+  return (bh * 60 + bm) - (ah * 60 + am);
+}
 
 // บวกเวลาแบบ "HH:MM" (string) กี่นาที คืนผลลัพธ์เป็น "HH:MM" — ใช้เช็คว่ากิจกรรมจะจบก่อนเวลาปิดสถานที่ (visitWindow.close) ไหม
 function addMinutesToTime(timeStr, minutesToAdd){
@@ -2371,6 +2500,14 @@ function placeImageFallbackSVG(labelText){
 // สถานที่ยอดนิยม/เป็นที่รู้จักที่สุดของกระบี่ (คัดมือ ใช้แสดง badge "ยอดนิยม" บนการ์ด)
 const POPULAR_PLACE_IDS = new Set(["phi-phi", "railay", "thale-waek", "tiger-cave"]);
 
+// เช็คว่าสถานที่นี้ "ปิดวันนี้จริงๆ" ไหม (อ้างอิงวันในสัปดาห์จริงจากเครื่องผู้ใช้ ณ ตอนที่เปิดหน้านี้)
+// ใช้กับสถานที่ที่เปิดไม่ครบทุกวัน เช่น ตลาดคนเดินกระบี่ (เปิดแค่ ศ.-ส.-อา.) — ที่อื่นส่วนใหญ่ไม่มี openDays จึงถือว่าเปิดทุกวันตามปกติ (คืน false เสมอ)
+function isPlaceClosedToday(place){
+  if(!place.openDays) return false;
+  const todayDayOfWeek = new Date().getDay(); // 0=อาทิตย์ ... 6=เสาร์ ตาม convention ของ Date.getDay()
+  return !place.openDays.includes(todayDayOfWeek);
+}
+
 // สร้าง badge มุมการ์ดสถานที่ (ยอดนิยม / เหมาะกับเด็ก / ต้องมี) — ใช้ร่วมกันทั้งการ์ดหน้าแรกและหน้าผลลัพธ์
 function getPlaceBadgesHTML(place, { pinned = false } = {}){
   const badges = [];
@@ -2382,6 +2519,9 @@ function getPlaceBadgesHTML(place, { pinned = false } = {}){
   }
   if(place.physicalDemand === "low"){
     badges.push(`<span class="place-badge badge-kid">${currentLang === "th" ? "เหมาะกับเด็ก" : "Kid-friendly"}</span>`);
+  }
+  if(isPlaceClosedToday(place)){
+    badges.push(`<span class="place-badge badge-closed">${currentLang === "th" ? "ปิดวันนี้" : "Closed today"}</span>`);
   }
   if(badges.length === 0) return "";
   return `<div class="place-badges">${badges.join("")}</div>`;
@@ -2416,11 +2556,17 @@ function renderCarousel(){
   }).join("");
 }
 
+function getVisibleSteps(){
+  // ข้ามคำถามที่ visibleIf ระบุไว้แล้วไม่ผ่านเงื่อนไข (เช่น dayTripWindow ที่ถามเฉพาะทริปหนึ่งวัน)
+  return STEPS_CONFIG.filter(s => !s.visibleIf || s.visibleIf(formData));
+}
+
 function renderAIFilterSteps(){
   const container = document.getElementById("stepsContainer");
-  container.innerHTML = STEPS_CONFIG.map((step, idx) => {
-    const config = STEPS_CONFIG[idx];
-    const stepNumber = idx + 1;
+  const visibleSteps = getVisibleSteps();
+  container.innerHTML = visibleSteps.map((config) => {
+    const idx = STEPS_CONFIG.indexOf(config); // index จริงใน STEPS_CONFIG (ตรงกับค่าที่ currentStep ใช้อ้างอิงเสมอ)
+    const stepNumber = visibleSteps.indexOf(config) + 1; // ลำดับตามที่ผู้ใช้เห็นจริง (นับเฉพาะ step ที่ visible ตอนนี้)
     const isActive = currentStep === idx;
     let content = "";
 
@@ -2441,6 +2587,25 @@ function renderAIFilterSteps(){
             placeholder="${t(config.placeholder?.[currentLang] || 'notes')}" 
             style="min-height: 80px; resize: vertical;" onchange="app.handleStepInput('${config.id}', this.value, this)"></textarea>
         </div>
+      `;
+    } else if(config.type === "timerange"){
+      const val = formData[config.id] || { start: "08:00", end: "18:00" };
+      content = `
+        <div class="input-group" style="display:flex; gap:16px;">
+          <div style="flex:1;">
+            <label style="display:block; font-size:12px; color:var(--text-muted); margin-bottom:6px;">${currentLang === "th" ? "เริ่มได้ตั้งแต่" : "Available from"}</label>
+            <input type="time" class="text-input" value="${val.start}" onchange="app.handleTimeRangeInput('${config.id}', 'start', this.value)">
+          </div>
+          <div style="flex:1;">
+            <label style="display:block; font-size:12px; color:var(--text-muted); margin-bottom:6px;">${currentLang === "th" ? "ถึงประมาณ" : "Until approx."}</label>
+            <input type="time" class="text-input" value="${val.end}" onchange="app.handleTimeRangeInput('${config.id}', 'end', this.value)">
+          </div>
+        </div>
+        <p style="font-size:12px; color:var(--text-muted); margin-top:10px;">
+          ${currentLang === "th"
+            ? "เช่น ถ้าต้องขึ้นเครื่อง/รถตู้เย็นนี้ หรือเพิ่งเดินทางมาถึงตอนสาย บอกช่วงเวลาที่พอจะเที่ยวได้จริง จะได้จัดโปรแกรมให้พอดีเวลา ไม่ยัดจนแน่นเกินไป"
+            : "E.g. if you have a flight/van to catch tonight or arrived late, tell us your real available window so the plan fits — instead of packing in more than time allows."}
+        </p>
       `;
     } else if(config.type === "places"){
       const durationDaysMap = { daytrip: 1, "2d1n": 2, "3d2n": 3, "4plus": 4 };
@@ -2476,20 +2641,21 @@ function renderAIFilterSteps(){
 
     return `
       <div class="step-card ${isActive ? "active" : ""}">
-        <div class="step-number" data-i18n="step${stepNumber}Label">${t(`step${stepNumber}Label`)}</div>
-        <h3 data-i18n="step${stepNumber}Question">${t(`step${stepNumber}Question`)}</h3>
+        <div class="step-number">${config.id === "specialNeeds" ? t("specialNeedsLabel") : (config.label ? config.label[currentLang] : t(`step${stepNumber}Label`))}</div>
+        <h3>${config.id === "specialNeeds" ? t("specialNeedsQuestion") : (config.question ? config.question[currentLang] : t(`step${stepNumber}Question`))}</h3>
         <div class="subtitle"></div>
         <div class="input-group">
           ${config.type === "radio" || config.type === "checkbox" ? `
             <div class="chip-row">${content}</div>
-            ${config.type === "checkbox" ? `<div class="chip-row-hint">${currentLang === "th" ? "← เลื่อนดูตัวเลือกทั้งหมด เลือกได้สูงสุด 2 อย่าง →" : "← Scroll for more, pick up to 2 →"}</div>` : `<div class="chip-row-hint">${currentLang === "th" ? "← เลื่อนดูตัวเลือกทั้งหมด →" : "← Scroll to see all options →"}</div>`}
+            ${config.type === "checkbox" ? `<div class="chip-row-hint">${currentLang === "th" ? `← เลื่อนดูตัวเลือกทั้งหมด เลือกได้สูงสุด ${config.maxSelect} ข้อ →` : `← Scroll for more, pick up to ${config.maxSelect} →`}</div>` : `<div class="chip-row-hint">${currentLang === "th" ? "← เลื่อนดูตัวเลือกทั้งหมด →" : "← Scroll to see all options →"}</div>`}
+            ${config.id === "specialNeeds" ? `<p style="font-size:12px; color:var(--text-muted); margin-top:10px;">${t("specialNeedsHint")}</p>` : ""}
           ` : content}
         </div>
         <div class="step-progress">
           <div class="progress-bar">
-            <div class="progress-fill" style="width: ${((stepNumber) / STEPS_CONFIG.length) * 100}%"></div>
+            <div class="progress-fill" style="width: ${((stepNumber) / visibleSteps.length) * 100}%"></div>
           </div>
-          <div class="progress-text"><span>${stepNumber}</span>/${STEPS_CONFIG.length}</div>
+          <div class="progress-text"><span>${stepNumber}</span>/${visibleSteps.length}</div>
         </div>
       </div>
     `;
@@ -2511,18 +2677,20 @@ function renderAIFilterSteps(){
 function updateStepButtons(){
   const btnBack = document.getElementById("btnBack");
   const btnNext = document.getElementById("btnNext");
-  const isLastStep = currentStep === STEPS_CONFIG.length - 1;
+  const visibleSteps = getVisibleSteps();
+  const isLastStep = visibleSteps.length > 0 && STEPS_CONFIG.indexOf(visibleSteps[visibleSteps.length - 1]) === currentStep;
   const currentStepId = STEPS_CONFIG[currentStep].id;
   const currentVal = formData[currentStepId];
   // อาเรย์ (style/subStyle) เป็น object เสมอ ดังนั้น `!!currentVal` จะ true แม้เลือกไว้ 0 อย่าง (อาเรย์ว่างก็ truthy ใน JS)
   // ต้องเช็คความยาวแทน ไม่งั้นปุ่ม "ถัดไป" จะกดผ่านได้ทั้งที่ยังไม่ได้เลือกอะไรเลยในสอง step นี้ — เป็นบั๊กเดิมที่ต้องแก้
   const isStepFilled = Array.isArray(currentVal) ? currentVal.length > 0 : !!currentVal;
+  const invalidDayTripWindow = currentStepId === "dayTripWindow" && (!currentVal || minutesBetweenTimes(currentVal.start, currentVal.end) <= 0);
 
   // ปุ่ม "ย้อนกลับ" ไม่ต้อง disable ที่ step แรกอีกต่อไป เพราะ prevStep() ใช้ history.back() แล้ว
   // ซึ่งจะพากลับไปหน้าแรก (Home) ได้ถูกต้องเองตามลำดับ history stack ที่แท้จริง — การ disable ไว้แบบเดิม
   // (จากตอนที่ prevStep() ยังลด currentStep ตรงๆ) ทำให้ผู้ใช้กดย้อนกลับจาก step แรกไม่ได้เลย เป็นบั๊กที่ต้องแก้
   btnBack.disabled = false;
-  btnNext.disabled = !isStepFilled && currentStepId !== "notes" && currentStepId !== "mustHave";
+  btnNext.disabled = invalidDayTripWindow || (!isStepFilled && currentStepId !== "notes" && currentStepId !== "mustHave" && currentStepId !== "dayTripWindow");
   btnNext.textContent = isLastStep ? t("createPlan") : t("btnNext");
 }
 
@@ -2675,6 +2843,13 @@ function filterPlaces(){
       score += ageAdjust[formData.age][place.physicalDemand] || 0;
     }
 
+    const needs = formData.specialNeeds || [];
+    if(needs.includes("youngChildren") && place.physicalDemand === "high") score -= 5;
+    if(needs.includes("elderly") && place.physicalDemand === "high") score -= 5;
+    if(needs.includes("mobility") && place.physicalDemand === "high") score -= 8;
+    if(needs.includes("avoidStrenuous") && place.physicalDemand === "high") score -= 10;
+    if(needs.includes("pregnancy") && place.physicalDemand === "high") score -= 8;
+
     return { place, score, matchedReasons };
   });
 
@@ -2684,6 +2859,12 @@ function filterPlaces(){
   // (สถานที่ที่ผู้ใช้ระบุเป็น "ต้องมี" (mustHave) ตรงๆ ไม่ผ่าน pool นี้ จึงยังใส่ได้ตามที่ผู้ใช้ตั้งใจเลือกเอง)
   if(formData.transport && formData.transport !== "boat"){
     scored = scored.filter(s => !(s.place.transport.length === 1 && s.place.transport[0] === "boat"));
+  }
+
+  // Mobility limits / explicitly avoiding strenuous activities are treated as hard constraints for automatic picks.
+  // A user-selected must-have can still override this because it reflects an explicit destination request.
+  if(formData.specialNeeds?.includes("mobility") || formData.specialNeeds?.includes("avoidStrenuous")){
+    scored = scored.filter(s => s.place.physicalDemand !== "high");
   }
 
   // เรียงตามคะแนนสูงสุดก่อน
@@ -2772,6 +2953,19 @@ function filterPlaces(){
     }
   }
 
+  // ตรวจ must-have ที่เป็น full-day ชนกันในวันเดียวกัน
+  // ไม่ถือว่าเป็น error: อนุญาตให้เดินทางต่อได้ แต่จุดที่สองจะเป็น transfer-only ไม่ใช่กิจกรรมเต็มวัน
+  lastTransferOnlyConflicts = [];
+  for(let d = 1; d <= neededDays; d++){
+    const [aIdx, bIdx] = slotsForDay(d);
+    const a = aIdx !== undefined ? finalSequence[aIdx] : null;
+    const b = bIdx !== undefined ? finalSequence[bIdx] : null;
+    if(a && b && a.fullDayActivity && b.fullDayActivity){
+      // สถานที่แรกถือเป็นกิจกรรมเต็มวัน, สถานที่ที่สองคงไว้เพื่อแสดง transfer-only
+      lastTransferOnlyConflicts.push({ day: d, fromPlace: a, toPlace: b });
+    }
+  }
+
   // ========== ขั้นที่ 3: ปรับโปรแกรมตามความเสี่ยงมรสุม (ถ้าเลือกช่วงเวลาเดินทางไว้ในฟอร์ม) ==========
   applyMonsoonAdjustment(finalSequence, pinnedPlaceIds, usedPlaceIds, scored);
 
@@ -2825,9 +3019,10 @@ function anchorConsumesWholeMorning(anchor, mainStart){
 // ใช้ขอบล่าง (durationMinMinutes) เพราะบทบาทนี้ต้องระวังไม่ปฏิเสธสถานที่เกินจริง (ต่างจาก anchorConsumesWholeMorning ที่ใช้ขอบบน)
 // กันบั๊กที่จัดสถานที่ปิด 12:00 ไปเป็นกิจกรรมช่วงบ่ายซึ่งเปิดไปแล้วก็จริง แต่ปิดไปแล้วตอนที่ผู้ใช้จะไปถึง
 function canFitAsSecondSlot(place){
-  if(!place.visitWindow || !place.visitWindow.close) return true; // ไม่มีข้อมูลเวลาปิด ไม่ block (เท่าที่ตรวจได้จากไฟล์นี้)
-  let secondStart = maxTimeString("14:00", place.visitWindow.open || "14:00");
-  if(place.lastEntry) secondStart = minTimeString(secondStart, place.lastEntry);
+  if(!place.visitWindow || !place.visitWindow.close) return true;
+  const secondStart = maxTimeString("14:00", place.visitWindow.open || "14:00");
+  // If the normal second-slot start is already past last entry, the activity cannot fit.
+  if(place.lastEntry && secondStart > place.lastEntry) return false;
   const neededMinutes = place.durationMinMinutes || MIN_VISIT_MINUTES;
   return addMinutesToTime(secondStart, neededMinutes) <= place.visitWindow.close;
 }
@@ -2964,35 +3159,9 @@ function buildDiverseSequence(scored, finalSequence){
 // "ข้อจำกัด/ข้อมูลเพิ่มเติม" แบบ keyword matching เบื้องต้น (เช่น พิมพ์ "อยากไปวัดถ้ำเสือวันที่ 2" ก็จับได้)
 // ถ้าสถานที่เดียวกันถูกระบุทั้งสองทาง ให้ใช้ค่าจากฟอร์มเป็นหลัก (ตั้งใจกรอกตรงๆ น่าเชื่อถือกว่าการเดาจากข้อความ)
 function getEffectiveMustHave(){
-  const fromForm = formData.mustHave || [];
-  const fromNotes = detectMustHaveFromNotes(formData.notes || "");
-  const merged = [...fromForm];
-  fromNotes.forEach(n => {
-    if(!merged.some(m => m.placeId === n.placeId)) merged.push(n);
-  });
-  return merged.slice(0, 3); // จำกัดไม่เกิน 3 ที่รวมกันทั้งสองแหล่ง กันจำนวนเกินจำนวนวันที่มี
-}
-
-// จับชื่อสถานที่ (ไทย/อังกฤษ) ที่ถูกพิมพ์ถึงตรงๆ ในช่องข้อความอิสระ พร้อมมองหาเลขวันใกล้เคียง
-// (เช่น "วันที่ 2" หรือ "day 2") ถ้าไม่เจอเลขวันใกล้ๆ ถือว่าไม่ระบุวัน ให้ระบบจัดวันให้เอง
-// หมายเหตุ: เป็น keyword matching ง่ายๆ ฝั่ง client ล้วนๆ ไม่ใช่การเข้าใจภาษาธรรมชาติจริง แม่นยำน้อยกว่าเลือกในฟอร์มตรงๆ
-function detectMustHaveFromNotes(notesText){
-  if(!notesText || !notesText.trim()) return [];
-  const detected = [];
-  PLACES.forEach(place => {
-    const namesToCheck = [place.name.th, place.name.en];
-    let foundIdx = -1;
-    for(const name of namesToCheck){
-      const i = notesText.toLowerCase().indexOf(name.toLowerCase());
-      if(i !== -1){ foundIdx = i; break; }
-    }
-    if(foundIdx === -1) return;
-
-    const windowText = notesText.slice(Math.max(0, foundIdx - 15), foundIdx + 30);
-    const dayMatch = windowText.match(/(?:วันที่|day)\s*(\d)/i);
-    detected.push({ placeId: place.id, day: dayMatch ? parseInt(dayMatch[1], 10) : null });
-  });
-  return detected;
+  // สถานที่ที่ต้องมีมาจากการเลือกในฟอร์มโดยตรงเท่านั้น
+  // ไม่แปลง free-text notes เป็น hard constraint เพื่อป้องกันประโยคปฏิเสธ เช่น "ไม่อยากไป..." ถูกตีความกลับด้าน
+  return (formData.mustHave || []).slice(0, 3);
 }
 
 function generateItinerary(recommended){
@@ -3008,7 +3177,8 @@ function generateItinerary(recommended){
     // กรณีสุดขั้ว (catalog ไม่พอจริงๆ) วันนี้อาจไม่มีสถานที่เหลือเลย — ข้ามวันนี้แทนที่จะสร้างวันว่างเปล่าที่ดูเหมือนระบบพัง
     if(!mainPlace && !secondPlace) continue;
     const effectiveMain = mainPlace || secondPlace;
-    const effectiveSecond = mainPlace ? secondPlace : null;
+    const transferConflict = lastTransferOnlyConflicts.find(c => c.day === d && c.toPlace.id === (secondPlace && secondPlace.id));
+    const effectiveSecond = mainPlace ? (transferConflict ? null : secondPlace) : null;
 
     const dayItinerary = {
       day: d,
@@ -3023,6 +3193,12 @@ function generateItinerary(recommended){
     // (บั๊กเดิม: ตลาดกลางคืนกระบี่ที่เปิดจริง ~17:00 น. เคยถูกจัดเป็นกิจกรรมเช้า 09:30 ถ้าสุ่มมาเป็นสถานที่หลักของวัน)
     // ใช้ estimateMainStartTime() ตัวเดียวกับตอนจับคู่ companion เพื่อให้เวลาที่ตัดสินใจกับเวลาที่แสดงจริงตรงกันเสมอ
     let mainStart = estimateMainStartTime(effectiveMain);
+
+    // ทริปหนึ่งวัน: ถ้าผู้ใช้ระบุเวลาที่สะดวกเดินทางไว้ (dayTripWindow) ห้ามเริ่มก่อนเวลานั้น แม้สถานที่จะเปิดเช้ากว่านั้นก็ตาม
+    // (เช่น เพิ่งเดินทางมาถึงตอนสาย หรือรอเช็คเอาต์โรงแรมก่อน) — ใช้ maxTimeString กันไม่ให้ดันเวลาช้าไปกว่าที่สถานที่เปิดจริงด้วย
+    if(formData.duration === "daytrip" && formData.dayTripWindow && formData.dayTripWindow.start){
+      mainStart = maxTimeString(mainStart, formData.dayTripWindow.start);
+    }
 
     // สร้าง activity "ขึ้นเรือ" เฉพาะสถานที่ที่ boatRequired === true จริงๆ เท่านั้น (ไม่ใช่แค่มีข้อมูล departurePier อยู่
     // เช่น หาดนพรัตน์ธาราหรือคายัคอ่าวท่าเลน ที่มีท่าเรืออยู่ใกล้ๆ แต่ไม่ได้บังคับว่าต้องนั่งเรือ)
@@ -3050,23 +3226,47 @@ function generateItinerary(recommended){
     const DEFAULT_MAIN_DURATION_MIN = 150; // fallback สำหรับสถานที่ที่ยังไม่มีข้อมูล duration เลย (ส่วนใหญ่ในไฟล์นี้)
     const mainDuration = effectiveMain.durationMaxMinutes || effectiveMain.durationMinMinutes || DEFAULT_MAIN_DURATION_MIN;
     const mainRecoveryBuffer = effectiveMain.physicalDemand === "high" ? HIGH_DEMAND_RECOVERY_BUFFER_MIN : 0;
+
+    if(transferConflict){
+      const transferMinutes = estimateTravelMinutes(effectiveMain, transferConflict.toPlace);
+      dayItinerary.activities.push({
+        time: addMinutesToTime(mainStart, mainDuration + mainRecoveryBuffer),
+        name: currentLang === "th" ? `🔄 ${transferConflict.toPlace.name.th} (Transfer only — ไม่ได้เที่ยวเต็มวัน)` : `🔄 ${transferConflict.toPlace.name.en} (Transfer only — not a full visit)`,
+        details: (currentLang === "th"
+          ? t("transferOnlyText").replace(/{from}/g, effectiveMain.name.th).replace(/{to}/g, transferConflict.toPlace.name.th)
+          : t("transferOnlyText").replace(/{from}/g, effectiveMain.name.en).replace(/{to}/g, transferConflict.toPlace.name.en))
+          + (transferMinutes ? ` ${currentLang === "th" ? `ระยะทาง/เวลาเดินทางโดยประมาณ ${transferMinutes} นาที` : `Estimated transfer time: ${transferMinutes} min.`}` : ""),
+        cost: 0,
+        costLabel: currentLang === "th" ? "ไม่ถือเป็นกิจกรรมท่องเที่ยว" : "Not counted as a sightseeing activity"
+      });
+    }
     const mainEnd = addMinutesToTime(mainStart, mainDuration + mainRecoveryBuffer);
     // มื้อเที่ยงผูกกับเวลาจบจริงของ anchor แทนค่าคงที่ "12:00" ตายตัว: ไม่เร็วกว่า 11:30, ไม่ช้ากว่า 13:30, แต่ต้องหลัง mainEnd ถ้าอยู่ในช่วงนั้น
     const lunchTime = maxTimeString("11:30", minTimeString(mainEnd, "13:30"));
 
-    // อาหารกลางวัน จากร้านจริงใกล้สถานที่หลัก (เลือกร้านอันดับ 1) — ข้ามถ้าแพ็กเกจของสถานที่นี้รวมมื้อเที่ยงไว้แล้ว (เช่น Hong Island full-day tour)
-    if(!(effectiveMain.includedMeals && effectiveMain.includedMeals.lunch) && effectiveMain.restaurants && effectiveMain.restaurants[0]){
-      const r = effectiveMain.restaurants[0];
-      const nearby = isRestaurantNearby(effectiveMain, r);
-      dayItinerary.meals.push({
-        time: lunchTime,
-        name: nearby
-          ? (currentLang === "th" ? `มื้อเที่ยง: ${r.name}` : `Lunch: ${r.name}`)
-          : (currentLang === "th" ? `มื้อเที่ยง (ร้านแนะนำในกระบี่ ไม่ได้อยู่ติดจุดนี้): ${r.name}` : `Lunch (recommended in Krabi, not actually nearby): ${r.name}`),
-        details: `${r.cuisine[currentLang]} • ★ ${r.rating}`,
-        costLabel: currentLang === "th" ? "ประมาณ 200-400 บาท/คน" : "~฿200-400/person",
-        costRange: [200, 400]
-      });
+    // มื้อกลางวัน: เลือกเฉพาะร้านที่อยู่ใกล้และผ่านข้อจำกัดที่ผู้ใช้เลือกไว้
+    // ถ้าไม่มีร้านที่ข้อมูลเพียงพอ ให้แสดงช่องอาหารแบบทั่วไปแทนการดันร้านที่ไม่เหมาะขึ้นมา
+    if(!(effectiveMain.includedMeals && effectiveMain.includedMeals.lunch)){
+      const r = chooseRestaurant(effectiveMain, 0);
+      if(r){
+        dayItinerary.meals.push({
+          time: lunchTime,
+          name: currentLang === "th" ? `มื้อเที่ยง: ${r.name}` : `Lunch: ${r.name}`,
+          details: `${r.cuisine[currentLang]} • ★ ${r.rating}`,
+          costLabel: currentLang === "th" ? "ประมาณ 200-400 บาท/คน" : "~฿200-400/person",
+          costRange: [200, 400]
+        });
+      } else if((effectiveMain.restaurants || []).length > 0){
+        dayItinerary.meals.push({
+          time: lunchTime,
+          name: currentLang === "th" ? "มื้อเที่ยง: เลือกร้านที่ตรงกับข้อจำกัด" : "Lunch: Choose a restaurant matching your requirements",
+          details: currentLang === "th"
+            ? "ไม่มีร้านในข้อมูลที่ยืนยันว่าตรงกับข้อจำกัดนี้และอยู่ใกล้พอ จึงไม่ดันร้านที่ไม่เหมาะขึ้นมา — กรุณาตรวจสอบร้านจริงก่อนสั่งอาหาร"
+            : "No listed restaurant is explicitly compatible and nearby, so incompatible options are not promoted — confirm the actual restaurant before ordering.",
+          costLabel: currentLang === "th" ? "ประมาณ 200-400 บาท/คน" : "~฿200-400/person",
+          costRange: [200, 400]
+        });
+      }
     }
 
     if(effectiveSecond){
@@ -3107,15 +3307,17 @@ function generateItinerary(recommended){
         cost: null,
         costLabel: effectiveSecond.cost[currentLang]
       });
-      if(!(effectiveSecond.includedMeals && effectiveSecond.includedMeals.dinner) && effectiveSecond.restaurants && effectiveSecond.restaurants[1]){
-        const r2 = effectiveSecond.restaurants[1];
-        dayItinerary.meals.push({
-          time: "17:00",
-          name: currentLang === "th" ? `ของว่าง/เย็น: ${r2.name}` : `Snack/Dinner: ${r2.name}`,
-          details: `${r2.cuisine[currentLang]} • ★ ${r2.rating}`,
-          costLabel: currentLang === "th" ? "ประมาณ 150-350 บาท/คน" : "~฿150-350/person",
-          costRange: [150, 350]
-        });
+      if(!(effectiveSecond.includedMeals && effectiveSecond.includedMeals.dinner)){
+        const r2 = chooseRestaurant(effectiveSecond, 1) || chooseRestaurant(effectiveSecond, 0);
+        if(r2){
+          dayItinerary.meals.push({
+            time: maxTimeString("17:00", (effectiveSecond.visitWindow && effectiveSecond.visitWindow.open) || "17:00"),
+            name: currentLang === "th" ? `ของว่าง/เย็น: ${r2.name}` : `Snack/Dinner: ${r2.name}`,
+            details: `${r2.cuisine[currentLang]} • ★ ${r2.rating}`,
+            costLabel: currentLang === "th" ? "ประมาณ 150-350 บาท/คน" : "~฿150-350/person",
+            costRange: [150, 350]
+          });
+        }
       }
 
       // เช็คระยะทาง/เวลาเดินทางระหว่าง 2 สถานที่ในวันเดียวกัน (แก้ช่องว่างเดิม: ระบบไม่เคยเช็คเลย จับ 2 ที่ยัดวันเดียวกันได้
@@ -3125,21 +3327,58 @@ function generateItinerary(recommended){
         dayItinerary.travelWarning = { from: effectiveMain.name[currentLang], to: effectiveSecond.name[currentLang], minutes: travelMinutes };
         lastTravelWarnings.push({ day: d, from: effectiveMain, to: effectiveSecond, minutes: travelMinutes });
       }
-    } else if(!(effectiveMain.includedMeals && effectiveMain.includedMeals.dinner) && effectiveMain.restaurants && effectiveMain.restaurants[1]){
+    } else if(!(effectiveMain.includedMeals && effectiveMain.includedMeals.dinner) && effectiveMain.restaurants && effectiveMain.restaurants.length){
+      // วันที่มีสถานที่เดียว (ไม่มีกิจกรรมที่ 2 จับคู่ได้ เช่น เขางอนนากที่เป็น fullDayActivity) — เดิมปัญหาคือ
+      // ปล่อยช่วงบ่ายว่างเปล่าไปเลยจนถึงมื้อเย็น โดยไม่บอกอะไรผู้ใช้เลยว่าช่วงที่หายไปนั้นคืออะไร ดูเหมือนระบบลืมจัดให้
+      // ถ้าช่วงว่างระหว่างหลังมื้อเที่ยงถึงมื้อเย็นนานเกินไป (> 90 นาที) ให้ใส่รายการ "พักผ่อนตามอัธยาศัย" ลงไปให้เห็นชัดๆ
+      const freeTimeStart = addMinutesToTime(lunchTime, 60);
+      const dinnerTime = "18:30";
+      if(minutesBetweenTimes(freeTimeStart, dinnerTime) > 90){
+        dayItinerary.activities.push({
+          time: freeTimeStart,
+          name: currentLang === "th" ? "พักผ่อนตามอัธยาศัย" : "Free time / rest",
+          details: currentLang === "th"
+            ? "ไม่มีกิจกรรมจัดไว้ช่วงนี้ — กลับที่พักพักผ่อน เดินเล่นแถวที่พัก หรือแวะร้านกาแฟ/สปาใกล้ๆ ได้ตามสะดวก"
+            : "No activity scheduled for this window — head back to your hotel to rest, stroll nearby, or stop by a café/spa at your own pace.",
+          cost: 0,
+          costLabel: "-"
+        });
+      }
       // วันที่มีสถานที่เดียว เพิ่มร้านอาหารเย็นจากอันดับ 2
-      const r2 = effectiveMain.restaurants[1];
-      dayItinerary.meals.push({
-        time: "18:30",
-        name: currentLang === "th" ? `มื้อเย็น: ${r2.name}` : `Dinner: ${r2.name}`,
-        details: `${r2.cuisine[currentLang]} • ★ ${r2.rating}`,
-        costLabel: currentLang === "th" ? "ประมาณ 250-500 บาท/คน" : "~฿250-500/person",
-        costRange: [250, 500]
-      });
+      const r2 = chooseRestaurant(effectiveMain, 1) || chooseRestaurant(effectiveMain, 0);
+      if(r2){
+        dayItinerary.meals.push({
+          time: dinnerTime,
+          name: currentLang === "th" ? `มื้อเย็น: ${r2.name}` : `Dinner: ${r2.name}`,
+          details: `${r2.cuisine[currentLang]} • ★ ${r2.rating}`,
+          costLabel: currentLang === "th" ? "ประมาณ 250-500 บาท/คน" : "~฿250-500/person",
+          costRange: [250, 500]
+        });
+      } else if((effectiveMain.restaurants || []).length > 0){
+        dayItinerary.meals.push({
+          time: dinnerTime,
+          name: currentLang === "th" ? "มื้อเย็น: เลือกร้านที่ตรงกับข้อจำกัด" : "Dinner: Choose a restaurant matching your requirements",
+          details: currentLang === "th"
+            ? "ไม่มีร้านในข้อมูลที่ยืนยันว่าตรงกับข้อจำกัดนี้และอยู่ใกล้พอ จึงไม่ดันร้านที่ไม่เหมาะขึ้นมา — กรุณาตรวจสอบร้านจริงก่อนสั่งอาหาร"
+            : "No listed restaurant is explicitly compatible and nearby, so incompatible options are not promoted — confirm the actual restaurant before ordering.",
+          costLabel: currentLang === "th" ? "ประมาณ 250-500 บาท/คน" : "~฿250-500/person",
+          costRange: [250, 500]
+        });
+      }
     }
 
     // เรียงกิจกรรม+มื้ออาหารตามเวลาจริง (ไม่ใช่ตามลำดับที่ push เข้ามา) เพื่อให้ timeline แสดงผลถูกต้องเสมอ
     // แม้สถานที่หลักของวันจะเป็นกิจกรรมช่วงเย็น (เช่น ทัวร์หิ่งห้อย/ล่องเรือพระอาทิตย์ตก) มื้อเที่ยงก็ยังต้องโผล่ก่อนในตาราง
     dayItinerary.timeline = [...dayItinerary.activities, ...dayItinerary.meals].sort((a, b) => compareTimeStrings(a.time, b.time));
+
+    // ทริปหนึ่งวัน: เตือนถ้าตารางที่จัดออกมาจริงยาวเลยเวลาที่ผู้ใช้บอกไว้ว่าสะดวก (dayTripWindow.end) เช่น ต้องรีบไปขึ้นเครื่อง
+    // ไม่ตัดกิจกรรมออกให้ (อาจกระทบสถานที่ที่เลือกไว้ตั้งแต่ชั้น filterPlaces) แค่แจ้งเตือนให้ผู้ใช้รู้ตัวไว้ก่อน คล้าย travelWarning
+    if(formData.duration === "daytrip" && formData.dayTripWindow && formData.dayTripWindow.end && dayItinerary.timeline.length > 0){
+      const lastItem = dayItinerary.timeline[dayItinerary.timeline.length - 1];
+      if(lastItem.time > formData.dayTripWindow.end){
+        dayItinerary.dayTripWindowOverrun = { lastActivityTime: lastItem.time, windowEnd: formData.dayTripWindow.end };
+      }
+    }
 
     itinerary.push(dayItinerary);
   }
@@ -3184,6 +3423,16 @@ function renderRecommendations(places){
   }
 
   // Banner เตือนวันที่ระยะเดินทางระหว่าง 2 สถานที่ค่อนข้างแน่น (แก้ช่องว่างเดิม: ไม่เคยเช็คระยะทางระหว่างสถานที่ในวันเดียวกันเลย)
+  const transferNotice = lastTransferOnlyConflicts.length > 0 ? `
+    <div class="ai-warning-card" style="margin-bottom:14px;">
+      <strong>${t("transferOnlyTitle")}</strong>
+      ${lastTransferOnlyConflicts.map(c => `
+        <div class="rec-reason" style="margin-top:6px;">${t("transferOnlyText")
+          .replace(/{from}/g, c.fromPlace.name[currentLang])
+          .replace(/{to}/g, c.toPlace.name[currentLang])}</div>`).join("")}
+    </div>
+  ` : "";
+
   const travelNotice = lastTravelWarnings.length > 0 ? `
     <div class="ai-warning-card" style="margin-bottom:14px;">
       <strong>${currentLang === "th" ? "⏱️ บางวันโปรแกรมค่อนข้างแน่น" : "⏱️ Some days are a bit tight"}</strong>
@@ -3199,6 +3448,7 @@ function renderRecommendations(places){
   section.innerHTML = `
     <h3 class="section-title" data-i18n="recommendationsTitle">${t("recommendationsTitle")}</h3>
     ${monsoonNotice}
+    ${transferNotice}
     ${travelNotice}
     ${unplacedNotice}
     ${places.map(place => {
@@ -3221,7 +3471,7 @@ function renderRecommendations(places){
   `;
 }
 
-/* ========== AI CONSTRAINT ANALYSIS (เรียก Claude API จริงผ่าน /api/analyze-constraints) ========== */
+/* ========== AI CONSTRAINT ANALYSIS (เรียก Gemini ผ่าน /api/analyze-constraints) ========== */
 function renderAIStatusBanner(){
   const el = document.getElementById("aiStatusBanner");
   if(!el) return;
@@ -3238,8 +3488,11 @@ let aiRequestSeq = 0; // นับคำขอวิเคราะห์ AI แ
 async function runAIConstraintAnalysis(){
   const myRequestId = ++aiRequestSeq;
 
-  // ไม่มีข้อความในช่องข้อจำกัด ไม่ต้องวิเคราะห์
-  if(!formData.notes || !formData.notes.trim()){
+  // วิเคราะห์เมื่อมี Notes หรือมี Special Needs ที่เลือกไว้
+  // เพื่อให้ผู้ใช้ที่ไม่ได้พิมพ์ข้อความ แต่เลือกเช่น "แพ้อาหารทะเล" ยังได้ผลวิเคราะห์จาก AI
+  const hasNotes = !!(formData.notes && formData.notes.trim());
+  const hasSpecialNeeds = Array.isArray(formData.specialNeeds) && formData.specialNeeds.length > 0;
+  if(!hasNotes && !hasSpecialNeeds){
     aiAnalysis = null;
     renderAIStatusBanner();
     return;
@@ -3266,7 +3519,7 @@ async function runAIConstraintAnalysis(){
     return;
   }
 
-  // AI_MODE === "live" — เรียก Claude API จริงผ่าน serverless function
+  // AI_MODE === "live" — เรียก Gemini ผ่าน Vercel serverless function
   try {
     const placesSummary = PLACES.map(p => ({
       id: p.id,
@@ -3279,7 +3532,7 @@ async function runAIConstraintAnalysis(){
     const res = await fetch("/api/analyze-constraints", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notes: formData.notes, lang: currentLang, places: placesSummary })
+      body: JSON.stringify({ notes: formData.notes, specialNeeds: formData.specialNeeds || [], lang: currentLang, places: placesSummary })
     });
 
     if(!res.ok) throw new Error("AI API responded with status " + res.status);
@@ -3287,7 +3540,8 @@ async function runAIConstraintAnalysis(){
     if(myRequestId !== aiRequestSeq) return; // คำขอเก่ากว่าที่เพิ่งตอบกลับมาช้า — มีคำขอใหม่แทนที่ไปแล้ว ไม่ต้องเอาผลนี้มาใช้
     aiAnalysis = data;
   } catch(err){
-    // ถ้าเรียก AI ไม่สำเร็จ (ยังไม่ตั้งค่า API key, network error, ฯลฯ) ให้ทำงานต่อแบบไม่มี AI แทนที่จะพังทั้งหน้า
+    // ถ้าเรียก AI ไม่สำเร็จ (ยังไม่ตั้งค่า API key, quota เต็ม, network error ฯลฯ)
+    // ให้ทำงานต่อด้วย Rule Engine/ข้อมูล structured ที่มีอยู่ แทนที่จะพังทั้งหน้า
     console.warn("AI constraint analysis failed:", err);
     if(myRequestId !== aiRequestSeq) return;
     aiAnalysis = null;
@@ -3302,20 +3556,20 @@ async function runAIConstraintAnalysis(){
   }
 }
 
-/* ========== DEMO MODE: จำลองผลวิเคราะห์ด้วย keyword matching (ไม่เรียก API จริง ไม่เสียเงิน) ==========
-   หมายเหตุ: นี่คือการจำลองพฤติกรรมของ AI ด้วยกฎง่ายๆ ฝั่ง client เพื่อให้เดโม/พรีเซนต์ได้โดยไม่ต้องเติมเครดิต
-   Anthropic ก่อน ความแม่นยำ/ความเข้าใจบริบทจะสู้การเรียก Claude API จริง (AI_MODE = "live") ไม่ได้ */
+/* ========== DEMO MODE: fallback แบบ rule-based (ไม่เรียก API จริง) ==========
+   ใช้เป็นทางเลือกสำรองเมื่อ AI_MODE เปลี่ยนเป็น "demo" หรือเมื่อ backend ใช้งานไม่ได้ */
 function generateMockAnalysis(notesRaw, places, lang){
-  const notes = notesRaw.toLowerCase();
-
-  const has = (keywords) => keywords.some(k => notes.includes(k));
-
-  const hasChildren   = has(["เด็ก", "ลูก", "kid", "child", "children"]);
-  const hasElderly    = has(["ผู้สูงอายุ", "คนแก่", "คุณตา", "คุณยาย", "elderly", "senior"]);
-  const isVegetarian  = has(["มังสวิรัติ", "เจ ", "กินเจ", "vegetarian", "vegan"]);
-  const seafoodAllergy = has(["แพ้อาหารทะเล", "แพ้ทะเล", "seafood allerg"]);
-  const nutAllergy    = has(["แพ้ถั่ว", "nut allerg"]);
-  const mobilityIssue = has(["เข่า", "ขาไม่ดี", "วีลแชร์", "เดินไม่ไหว", "wheelchair", "mobility"]);
+  // Notes are supplemental free text only; structured special-needs buttons are the source of truth.
+  const specialNeeds = formData.specialNeeds || [];
+  // สำหรับข้อจำกัดสำคัญ ให้ใช้ตัวเลือกแบบปุ่มเป็น source of truth
+  // ไม่เดาจาก free-text เพราะประโยคปฏิเสธ เช่น "ไม่แพ้อาหารทะเล" อาจถูกตีความกลับด้านได้
+  const hasChildren   = specialNeeds.includes("youngChildren");
+  const hasElderly    = specialNeeds.includes("elderly");
+  const isVegetarian  = specialNeeds.includes("vegetarian") || specialNeeds.includes("veganJain");
+  const seafoodAllergy = specialNeeds.includes("seafoodAllergy");
+  const nutAllergy    = specialNeeds.includes("nutAllergy");
+  const mobilityIssue = specialNeeds.includes("mobility");
+  const avoidStrenuous = specialNeeds.includes("avoidStrenuous");
 
   const dietary = [];
   if(isVegetarian) dietary.push("vegetarian");
@@ -3372,6 +3626,7 @@ function generateMockAnalysis(notesRaw, places, lang){
     dietary,
     allergies,
     mobilityConcern: mobilityIssue,
+    avoidStrenuous,
     placeNotes,
     restaurantAdvice
   };
@@ -3412,6 +3667,15 @@ function renderPlaceDetail(place){
     </div>
     ` : ""}
 
+    ${isPlaceClosedToday(place) ? `
+    <div class="ai-warning-card">
+      <strong>${currentLang === "th" ? "🚪 ปิดวันนี้" : "🚪 Closed today"}</strong>
+      <div class="rec-reason" style="margin-top:6px;">${currentLang === "th"
+        ? "สถานที่นี้ไม่ได้เปิดทุกวัน และวันนี้ (ตามวันที่ในเครื่องของคุณ) เป็นวันที่ปิด ถ้าจะไปวันนี้แนะนำให้เลือกที่อื่นแทน"
+        : "This place isn't open every day, and today (based on your device's date) is a closed day. If you're planning to go today, consider another spot instead."}</div>
+    </div>
+    ` : ""}
+
     ${aiNote ? `
     <div class="ai-warning-card">
       <strong>${currentLang === "th" ? "⚠️ ข้อควรพิจารณาสำหรับกลุ่มของคุณ" : "⚠️ Something to consider for your group"}</strong>
@@ -3443,18 +3707,23 @@ function renderPlaceDetail(place){
     </div>
 
     <div class="recommendation-card" style="margin-top:14px;">
-      <h3 class="section-title" style="margin-bottom:10px;">${
-        (place.restaurants && place.restaurants.length && place.restaurants.every(r => !isRestaurantNearby(place, r)))
-          ? t("placeDetailRestaurantsFar")
-          : t("placeDetailRestaurants")
-      }</h3>
+      <h3 class="section-title" style="margin-bottom:10px;">${t("placeDetailRestaurants")}</h3>
       ${aiRestaurantAdvice ? `<div class="ai-restaurant-advice">🤖 ${escapeHtml(aiRestaurantAdvice)}</div>` : ""}
-      ${(place.restaurants || []).map(r => `
-        <div style="padding:10px 0; border-bottom:1px solid var(--border);">
-          <div class="rec-name" style="font-size:14px;">${r.name} <span style="color: var(--brown);">★ ${r.rating}</span></div>
-          <div class="rec-reason">${r.cuisine[currentLang]}</div>
-        </div>
-      `).join("")}
+      ${hasDietaryNeed() ? `<div class="ai-restaurant-advice" style="margin-bottom:8px;">⚠️ ${t("restaurantDietWarning")}</div>` : ""}
+      ${(() => {
+        const compatibleRestaurants = (place.restaurants || []).filter(r => isRestaurantNearby(place, r) && isRestaurantCompatible(r));
+        if(compatibleRestaurants.length === 0){
+          return `<div class="rec-reason">${currentLang === "th"
+            ? "ยังไม่มีร้านอาหารในข้อมูลที่ทั้งอยู่ใกล้และตรงกับความต้องการที่เลือกไว้ — ระบบจะไม่ดันร้านที่ขัดกับข้อจำกัดขึ้นมา ควรตรวจสอบกับร้านจริงก่อนสั่งอาหาร"
+            : "No listed nearby restaurant is explicitly compatible with your selected requirements — incompatible options are not promoted. Confirm with the restaurant before ordering."}</div>`;
+        }
+        return compatibleRestaurants.map(r => `
+          <div style="padding:10px 0; border-bottom:1px solid var(--border);">
+            <div class="rec-name" style="font-size:14px;">${r.name} <span style="color: var(--brown);">★ ${r.rating}</span></div>
+            <div class="rec-reason">${r.cuisine[currentLang]}</div>
+          </div>
+        `).join("");
+      })()}
     </div>
 
     <div class="recommendation-card" style="margin-top:14px;">
@@ -3498,6 +3767,13 @@ function renderItinerary(itinerary){
                   .replace("{from}", day.travelWarning.from)
                   .replace("{to}", day.travelWarning.to)
                   .replace("{minutes}", day.travelWarning.minutes)}
+              </div>
+            ` : ""}
+            ${day.dayTripWindowOverrun ? `
+              <div class="ai-warning-card" style="margin-bottom:10px;">
+                ⏰ ${currentLang === "th"
+                  ? `โปรแกรมนี้จัดไว้ถึง ${day.dayTripWindowOverrun.lastActivityTime} น. ซึ่งช้ากว่าเวลาที่คุณระบุว่าสะดวก (ถึง ${day.dayTripWindowOverrun.windowEnd} น.) ลองตัดบางกิจกรรมออก หรือเผื่อเวลาเพิ่มถ้าเป็นไปได้`
+                  : `This plan runs until ${day.dayTripWindowOverrun.lastActivityTime}, later than the availability you gave (until ${day.dayTripWindowOverrun.windowEnd}). Consider trimming an activity or allowing extra time if you can.`}
               </div>
             ` : ""}
             ${day.timeline.map(item => `
@@ -3552,7 +3828,11 @@ function renderScreen(){
 const app = {
   goToHome(){
     currentStep = 0;
-    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, travelMonth: null, mustHave: [], notes: "" };
+    aiAnalysis = null;
+    aiAnalysisLoading = false;
+    aiRequestSeq++;
+    lastTransferOnlyConflicts = [];
+    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
     pushHistoryState({ screen: "home" });
     showScreen("homeScreen");
     renderCarousel();
@@ -3575,7 +3855,11 @@ const app = {
   },
   startAIFilter(){
     currentStep = 0;
-    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, travelMonth: null, mustHave: [], notes: "" };
+    aiAnalysis = null;
+    aiAnalysisLoading = false;
+    aiRequestSeq++;
+    lastTransferOnlyConflicts = [];
+    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
     pushHistoryState({ screen: "aiFilter", step: 0 });
     showScreen("aiFilterScreen");
     renderAIFilterSteps();
@@ -3616,6 +3900,11 @@ const app = {
     }
     updateStepButtons();
   },
+  handleTimeRangeInput(stepId, part, value){
+    formData[stepId] = formData[stepId] || { start: "08:00", end: "18:00" };
+    formData[stepId][part] = value;
+    updateStepButtons();
+  },
   toggleMustHave(placeId, checked){
     formData.mustHave = formData.mustHave || [];
     if(checked){
@@ -3635,8 +3924,21 @@ const app = {
     if(entry) entry.day = dayValue ? parseInt(dayValue, 10) : null;
   },
   nextStep(){
-    if(currentStep < STEPS_CONFIG.length - 1){
-      currentStep++;
+    if(STEPS_CONFIG[currentStep]?.id === "dayTripWindow"){
+      const w = formData.dayTripWindow;
+      if(!w || minutesBetweenTimes(w.start, w.end) <= 0){
+        alert(currentLang === "th" ? "กรุณาเลือกช่วงเวลาให้ถูกต้อง โดยเวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม" : "Please choose a valid time window; the end time must be later than the start time.");
+        return;
+      }
+    }
+    // ข้ามข้ามไปทีละขั้นจนกว่าจะเจอ step ที่ visible จริง (หรือหมด STEPS_CONFIG แปลว่าถึงขั้นสุดท้ายแล้ว)
+    // กันกรณี step ระหว่างทางถูกซ่อนไว้ด้วย visibleIf (เช่น dayTripWindow ที่โชว์เฉพาะทริปหนึ่งวัน)
+    let next = currentStep + 1;
+    while(next < STEPS_CONFIG.length && STEPS_CONFIG[next].visibleIf && !STEPS_CONFIG[next].visibleIf(formData)){
+      next++;
+    }
+    if(next < STEPS_CONFIG.length){
+      currentStep = next;
       pushHistoryState({ screen: "aiFilter", step: currentStep });
       renderAIFilterSteps();
       window.scrollTo(0, 0);
@@ -3693,8 +3995,12 @@ const app = {
     if(currentHasData && !confirm(t("loadSavedConfirmOverwrite"))) return;
 
     formData = data;
+    if(!Array.isArray(formData.style)) formData.style = [];
     if(!Array.isArray(formData.subStyle)) formData.subStyle = formData.subStyle ? [formData.subStyle] : [];
     if(formData.travelMonth === undefined) formData.travelMonth = null;
+    if(!Array.isArray(formData.specialNeeds)) formData.specialNeeds = formData.specialNeeds ? [formData.specialNeeds] : [];
+    formData.specialNeeds = formData.specialNeeds.filter(v => typeof v === "string");
+    if(!formData.dayTripWindow) formData.dayTripWindow = { start: "08:00", end: "18:00" }; // ลิงก์เก่าก่อนมี field นี้ — เติมค่า default ให้ ไม่งั้นจะ undefined ตอนใช้งาน
     showScreen("resultsScreen");
     renderResults();
   },
@@ -3778,10 +4084,16 @@ window.addEventListener("load", () => {
   if(params.has("itinerary")){
     try {
       const data = decodeShareData(params.get("itinerary"));
+      aiAnalysis = null;
+      aiAnalysisLoading = false;
+      aiRequestSeq++;
+      lastTransferOnlyConflicts = [];
       formData = data;
-      // รองรับลิงก์เก่าที่แชร์ไว้ก่อนอัปเดต (ตอนนั้น subStyle ยังเป็น string เดี่ยว และยังไม่มี travelMonth) — กันไม่ให้เปิดลิงก์เก่าแล้วแอปพัง
+      // รองรับลิงก์เก่าที่แชร์ไว้ก่อนอัปเดต (ตอนนั้น subStyle ยังเป็น string เดี่ยว และยังไม่มี travelMonth/dayTripWindow) — กันไม่ให้เปิดลิงก์เก่าแล้วแอปพัง
       if(!Array.isArray(formData.subStyle)) formData.subStyle = formData.subStyle ? [formData.subStyle] : [];
       if(formData.travelMonth === undefined) formData.travelMonth = null;
+      if(!Array.isArray(formData.specialNeeds)) formData.specialNeeds = formData.specialNeeds ? [formData.specialNeeds] : [];
+      if(!formData.dayTripWindow) formData.dayTripWindow = { start: "08:00", end: "18:00" };
       replaceHistoryState({ screen: "results" }); // แทนที่ entry แรกสุด ไม่ push ใหม่ เพราะเป็นจุดเริ่มต้นของ session นี้
       showScreen("resultsScreen");
       renderResults();
