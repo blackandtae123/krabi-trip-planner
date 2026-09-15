@@ -14,6 +14,7 @@
 <meta name="twitter:title" content="Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด">
 <meta name="twitter:description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
 <meta name="twitter:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=1200">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -871,6 +872,24 @@
     box-shadow: var(--shadow-sm);
   }
 
+
+  .origin-picker{display:flex;flex-direction:column;gap:14px;}
+  .origin-mode-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .origin-mode-btn{border:1px solid var(--border);background:#fff;color:var(--text);border-radius:14px;padding:11px 13px;cursor:pointer;font-size:13px;font-weight:600;box-shadow:var(--shadow-sm);}
+  .origin-mode-btn.active{border-color:var(--turquoise);box-shadow:0 0 0 2px rgba(47,169,164,.12);}
+  .origin-zone-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .origin-zone{border:1px solid var(--border);background:#fff;border-radius:14px;padding:12px;text-align:left;cursor:pointer;}
+  .origin-zone.active{border-color:var(--turquoise);background:#f2fbfa;}
+  .origin-map{height:320px;border-radius:18px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+  .origin-map-note{font-size:12px;color:var(--text-muted);line-height:1.5;}
+  .origin-actions{display:flex;gap:10px;flex-wrap:wrap;}
+  .origin-action-btn{border:none;border-radius:12px;padding:10px 13px;background:var(--turquoise);color:#fff;font-weight:600;cursor:pointer;}
+  .origin-action-btn.secondary{background:#fff;color:var(--turquoise-dark);border:1px solid var(--border);}
+  .origin-summary{margin-bottom:14px;padding:15px 16px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-sm);}
+  .origin-summary-title{font-weight:700;margin-bottom:4px;color:var(--turquoise-dark);}
+  .origin-distance-pill{display:inline-block;margin:6px 6px 0 0;padding:5px 9px;border-radius:999px;background:#f5f7f5;font-size:11px;color:var(--text-muted);}
+  @media (max-width:640px){.origin-zone-grid{grid-template-columns:1fr}.origin-map{height:280px}.origin-mode-row{display:grid;grid-template-columns:1fr 1fr}.origin-mode-btn{width:100%}}
+
   /* ---------- print (real PDF export via browser print dialog) ---------- */
   @media print{
     .lang-switch-home, .ai-filter-banner, .step-buttons, .step-progress,
@@ -891,6 +910,7 @@
     #resultsScreen{ display:block !important; }
   }
 </style>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 </head>
 <body>
 
@@ -946,6 +966,7 @@
 
   <div class="results-container">
     <div id="aiStatusBanner" aria-live="polite"></div>
+    <div id="originSummarySection"></div>
     <div class="itinerary-chat-section" id="itineraryChatSection"></div>
     <div class="recommendations-section" id="recommendationsSection"></div>
     <div class="itinerary-section" id="itinerarySection"></div>
@@ -2074,6 +2095,13 @@ const STEPS_CONFIG = [
     }
   },
   {
+    id: "origin",
+    type: "origin",
+    label: { th: "จุดเริ่มต้นของทริป", en: "Trip starting point" },
+    question: { th: "วันนี้คุณเริ่มเที่ยวจากบริเวณไหนของกระบี่คะ", en: "Where will you start your trip in Krabi?" },
+    optional: false
+  },
+  {
     id: "style",
     type: "checkbox",
     maxSelect: 2,
@@ -2301,6 +2329,7 @@ const AI_MODE = "live";
 
 let formData = {
   age: null,
+  origin: { mode: "none", lat: null, lng: null, label: "", nearbyFirst: false },
   style: [],
   subStyle: [], // เลือกได้สูงสุด 2 สาย เรียงตามลำดับที่เลือก (index 0 = ความสนใจหลัก, index 1 = รอง) — ดูการให้คะแนนใน filterPlaces
   budget: null,
@@ -2368,6 +2397,77 @@ function haversineKm(lat1, lng1, lat2, lng2){
   const dLng = toRad(lng2 - lng1);
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+const ORIGIN_ZONES = [
+  {id:"ao-nang",label:{th:"อ่าวนาง",en:"Ao Nang"},lat:8.0369,lng:98.8225},
+  {id:"krabi-town",label:{th:"ตัวเมืองกระบี่",en:"Krabi Town"},lat:8.0622,lng:98.9135},
+  {id:"tubkaek",label:{th:"ทับแขก",en:"Tubkaek"},lat:8.1064,lng:98.7808},
+  {id:"klong-thom",label:{th:"คลองท่อม",en:"Khlong Thom"},lat:7.9263,lng:99.2668}
+];
+let originMapInstance = null;
+let originMapMarker = null;
+function getOriginPoint(){
+  const o=formData.origin;
+  if(!o || o.lat==null || o.lng==null) return null;
+  return {lat:Number(o.lat),lng:Number(o.lng),label:o.label|| (currentLang==='th'?'จุดเริ่มต้นที่เลือก':'Selected starting point')};
+}
+function originDistanceKm(place){
+  const o=getOriginPoint();
+  if(!o || !place || place.lat==null || place.lng==null) return null;
+  return haversineKm(o.lat,o.lng,place.lat,place.lng);
+}
+function setOrigin(mode, lat, lng, label, nearbyFirst){
+  formData.origin={mode:mode||'map',lat:lat==null?null:Number(lat),lng:lng==null?null:Number(lng),label:String(label||''),nearbyFirst:!!nearbyFirst};
+  renderAIFilterSteps();
+}
+function setOriginZone(zoneId){
+  const z=ORIGIN_ZONES.find(x=>x.id===zoneId);
+  if(!z) return;
+  setOrigin('zone',z.lat,z.lng,z.label[currentLang],formData.origin?.nearbyFirst);
+}
+function toggleOriginNearby(checked){
+  formData.origin=formData.origin||{mode:'none',lat:null,lng:null,label:'',nearbyFirst:false};
+  formData.origin.nearbyFirst=!!checked;
+  updateStepButtons();
+}
+function useCurrentLocation(){
+  if(!navigator.geolocation){alert(currentLang==='th'?'อุปกรณ์นี้ไม่รองรับการระบุตำแหน่งจากเบราว์เซอร์':'Geolocation is not supported by this browser.');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    setOrigin('gps',pos.coords.latitude,pos.coords.longitude,currentLang==='th'?'ตำแหน่งปัจจุบันของคุณ':'Your current location',true);
+  },err=>{
+    const msg=err && err.code===1 ? (currentLang==='th'?'ไม่ได้รับอนุญาตให้ใช้ตำแหน่ง กรุณาอนุญาตในเบราว์เซอร์หรือเลือกบนแผนที่':'Location permission was denied. Please allow it or choose on the map.') : (currentLang==='th'?'ระบุตำแหน่งไม่สำเร็จ กรุณาเลือกบนแผนที่แทน':'Could not determine your location. Please choose on the map instead.');
+    alert(msg);
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+}
+function initOriginMap(){
+  if(typeof L==='undefined') return;
+  const el=document.getElementById('originMap'); if(!el) return;
+  if(originMapInstance){ originMapInstance.remove(); originMapInstance=null; originMapMarker=null; }
+  originMapInstance=L.map(el).setView([8.035,98.86],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(originMapInstance);
+  const o=getOriginPoint();
+  if(o){ originMapMarker=L.marker([o.lat,o.lng],{draggable:true}).addTo(originMapInstance); originMapMarker.bindPopup(escapeHtml(o.label||'Starting point')).openPopup(); originMapInstance.setView([o.lat,o.lng],13); originMapMarker.on('dragend',e=>{const p=e.target.getLatLng();setOrigin('map',p.lat,p.lng,currentLang==='th'?'ตำแหน่งที่เลือกบนแผนที่':'Map selected location',formData.origin?.nearbyFirst);}); }
+  originMapInstance.on('click',e=>{setOrigin('map',e.latlng.lat,e.latlng.lng,currentLang==='th'?'ตำแหน่งที่เลือกบนแผนที่':'Map selected location',formData.origin?.nearbyFirst);});
+  setTimeout(()=>originMapInstance && originMapInstance.invalidateSize(),100);
+}
+function renderOriginStep(){
+  const o=formData.origin||{mode:'none',lat:null,lng:null,label:'',nearbyFirst:false};
+  return `<div class="origin-picker">
+    <div class="origin-mode-row">
+      <button type="button" class="origin-mode-btn ${o.mode==='gps'?'active':''}" onclick="app.useCurrentLocation()">📍 ${currentLang==='th'?'ใช้ตำแหน่งปัจจุบัน':'Use current location'}</button>
+      <button type="button" class="origin-mode-btn ${['map','zone'].includes(o.mode)?'active':''}" onclick="app.setOriginMode('map')">🗺️ ${currentLang==='th'?'เลือกบนแผนที่':'Choose on map'}</button>
+      <button type="button" class="origin-mode-btn ${o.mode==='zone'?'active':''}" onclick="app.setOriginMode('zone')">🏨 ${currentLang==='th'?'เลือกโซนที่พัก':'Choose area'}</button>
+      <button type="button" class="origin-mode-btn ${o.mode==='none'?'active':''}" onclick="app.setOrigin('none',null,null,'',false)">⏭️ ${currentLang==='th'?'ไม่ระบุ':'Skip'}</button>
+    </div>
+    ${o.mode==='zone'?`<div class="origin-zone-grid">${ORIGIN_ZONES.map(z=>`<button type="button" class="origin-zone ${o.label===z.label[currentLang]?'active':''}" onclick="app.setOriginZone('${z.id}')"><strong>${z.label[currentLang]}</strong><div class="origin-map-note">${currentLang==='th'?'ใช้เป็นจุดอ้างอิงของโซน':'Use as an area reference point'}</div></button>`).join('')}</div>`:''}
+    ${o.mode==='map'||o.mode==='gps'?`<div id="originMap" class="origin-map"></div>`:''}
+    <div class="origin-actions">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);"><input type="checkbox" ${o.nearbyFirst?'checked':''} onchange="app.toggleOriginNearby(this.checked)"> ${currentLang==='th'?'จัดสถานที่ใกล้ต้นทางก่อน':'Prioritize places near the starting point'}</label>
+    </div>
+    ${getOriginPoint()?`<div class="origin-map-note">${currentLang==='th'?'ต้นทางที่เลือก:':'Selected starting point:'} <strong>${escapeHtml(getOriginPoint().label)}</strong></div>`:`<div class="origin-map-note">${currentLang==='th'?'ตำแหน่งเป็นข้อมูลเสริม ถ้าไม่ระบุ ระบบยังจัดทริปตามความต้องการอื่นได้ตามปกติ':'Starting point is optional. If omitted, the planner still works from your other preferences.'}</div>`}
+    ${o.mode==='map'||o.mode==='gps'?`<div class="origin-map-note">${currentLang==='th'?'แตะบนแผนที่เพื่อย้ายหมุดได้ และใช้ตำแหน่งนี้เป็นฐานในการให้คะแนนความใกล้และคำนวณเวลาเดินทางโดยประมาณ':'Tap the map to move the pin. This point is used for proximity scoring and approximate transfer time.'}</div>`:''}
+  </div>`;
 }
 
 // บางสถานที่ในข้อมูลมี restaurants ที่พิกัดจริงอยู่ไกลมาก (เช่น Ao Thalane/Hong Island/Laem Sak ที่ดันมีร้านอยู่ไกลถึง
@@ -2680,6 +2780,8 @@ function renderAIFilterSteps(){
             : "E.g. if you have a flight/van to catch tonight or arrived late, tell us your real available window so the plan fits — instead of packing in more than time allows."}
         </p>
       `;
+    } else if(config.type === "origin"){
+      content = renderOriginStep();
     } else if(config.type === "places"){
       const durationDaysMap = { daytrip: 1, "2d1n": 2, "3d2n": 3, "4plus": 4 };
       const dayCount = durationDaysMap[formData.duration] || 4;
@@ -2744,6 +2846,7 @@ function renderAIFilterSteps(){
     }
   });
 
+  if(STEPS_CONFIG[currentStep]?.type === "origin") initOriginMap();
   updateStepButtons();
 }
 
@@ -2758,12 +2861,13 @@ function updateStepButtons(){
   // ต้องเช็คความยาวแทน ไม่งั้นปุ่ม "ถัดไป" จะกดผ่านได้ทั้งที่ยังไม่ได้เลือกอะไรเลยในสอง step นี้ — เป็นบั๊กเดิมที่ต้องแก้
   const isStepFilled = Array.isArray(currentVal) ? currentVal.length > 0 : !!currentVal;
   const invalidDayTripWindow = currentStepId === "dayTripWindow" && (!currentVal || minutesBetweenTimes(currentVal.start, currentVal.end) <= 0);
+  const invalidOrigin = false; // จุดเริ่มต้นเป็นข้อมูลเสริม: ผู้ใช้ข้ามได้
 
   // ปุ่ม "ย้อนกลับ" ไม่ต้อง disable ที่ step แรกอีกต่อไป เพราะ prevStep() ใช้ history.back() แล้ว
   // ซึ่งจะพากลับไปหน้าแรก (Home) ได้ถูกต้องเองตามลำดับ history stack ที่แท้จริง — การ disable ไว้แบบเดิม
   // (จากตอนที่ prevStep() ยังลด currentStep ตรงๆ) ทำให้ผู้ใช้กดย้อนกลับจาก step แรกไม่ได้เลย เป็นบั๊กที่ต้องแก้
   btnBack.disabled = false;
-  btnNext.disabled = invalidDayTripWindow || (!isStepFilled && currentStepId !== "notes" && currentStepId !== "mustHave" && currentStepId !== "dayTripWindow");
+  btnNext.disabled = invalidDayTripWindow || invalidOrigin || (!isStepFilled && currentStepId !== "notes" && currentStepId !== "mustHave" && currentStepId !== "dayTripWindow");
   btnNext.textContent = isLastStep ? t("createPlan") : t("btnNext");
 }
 
@@ -2866,6 +2970,7 @@ function summarizeAdjustmentCommand(c){
   if(c.type==='add_place') return th?`เพิ่ม ${p?p.name.th:c.placeId} ในวันที่ ${c.day}`:`Add ${p?p.name.en:c.placeId} to Day ${c.day}`;
   if(c.type==='swap_places') return th?`สลับ ${p?p.name.th:c.placeId} กับ ${q?q.name.th:c.toPlaceId} ในวันที่ ${c.day}`:`Swap ${p?p.name.en:c.placeId} with ${q?q.name.en:c.toPlaceId} on Day ${c.day}`;
   if(c.type==='set_activity_timing') return th?`${c.day?`วันที่ ${c.day}: `:''}หลีกเลี่ยงกิจกรรมทางน้ำช่วงบ่าย`:`${c.day?`Day ${c.day}: `:''}Avoid water activities in the afternoon`;
+  if(c.type==='set_origin_preference') return th?(c.originPreference==='nearby_first'?'ให้ความสำคัญกับสถานที่ใกล้ต้นทางก่อน':'ไม่เน้นความใกล้ต้นทาง'):(c.originPreference==='nearby_first'?'Prioritize places near the starting point':'Do not prioritize proximity to the starting point');
   return th?'ปรับโปรแกรม':'Adjusted itinerary';
 }
 function validateAndApplyAdjustmentCommands(commands){
@@ -2883,6 +2988,13 @@ function validateAndApplyAdjustmentCommands(commands){
       if(!itineraryAdjustments.activityTiming) itineraryAdjustments.activityTiming={};
       if(day===null) itineraryAdjustments.activityTiming.avoidWaterAfternoon=true;
       else { if(!itineraryAdjustments.activityTiming.avoidWaterAfternoonDays) itineraryAdjustments.activityTiming.avoidWaterAfternoonDays={}; itineraryAdjustments.activityTiming.avoidWaterAfternoonDays[day]=true; }
+      applied.push(c);
+      continue;
+    }
+    if(c.type==='set_origin_preference'){
+      if(c.originPreference!=='nearby_first' && c.originPreference!=='balanced'){ errors.push(currentLang==='th'?'ตัวเลือกการจัดตามต้นทางไม่ถูกต้อง':'Invalid starting-point preference.'); continue; }
+      formData.origin=formData.origin||{mode:'none',lat:null,lng:null,label:'',nearbyFirst:false};
+      formData.origin.nearbyFirst=c.originPreference==='nearby_first';
       applied.push(c);
       continue;
     }
@@ -2932,7 +3044,7 @@ async function submitItineraryAdjustmentRequest(text){
     const base=filterPlaces();
     const days=Array.from({length:base.neededDays},(_,i)=>({day:i+1,places:currentDayPlaces(i+1,base).filter(Boolean).map(p=>({id:p.id,name:p.name[currentLang]}))}));
     const places=PLACES.map(p=>({id:p.id,name:p.name[currentLang],axis:p.axis,boatRequired:!!p.boatRequired,physicalDemand:p.physicalDemand,fullDayActivity:!!p.fullDayActivity,visitWindow:p.visitWindow||null}));
-    const res=await fetch('/api/adjust-itinerary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:trimmed,lang:currentLang,neededDays:base.neededDays,days,places,learnedPreferences:userPreferenceMemory})});
+    const res=await fetch('/api/adjust-itinerary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:trimmed,lang:currentLang,neededDays:base.neededDays,days,places,origin:formData.origin||null,learnedPreferences:userPreferenceMemory})});
     if(!res.ok)throw new Error('adjust API '+res.status);
     const data=await res.json();
     const learned=recordLearnedPreferences(data.learnedPreferences||[]);
@@ -2954,6 +3066,7 @@ function renderResults(){
   const recommended = applyItineraryAdjustments(baseRecommended);
   const itinerary = generateItinerary(recommended);
 
+  renderOriginSummary();
   renderItineraryChat();
   renderRecommendations(recommended.sequence);
   renderItinerary(itinerary);
@@ -3100,6 +3213,13 @@ function filterPlaces(){
       score += ageAdjust[formData.age][place.physicalDemand] || 0;
     }
 
+    const originKm = originDistanceKm(place);
+    if(originKm != null && formData.origin?.nearbyFirst){
+      // Strong proximity preference, but never a hard filter: other explicit preferences can still matter.
+      score += Math.max(0, 12 - Math.min(12, originKm / 3));
+      matchedReasons.push("origin-proximity");
+    }
+
     const needs = formData.specialNeeds || [];
     if(needs.includes("youngChildren") && place.physicalDemand === "high") score -= 5;
     if(needs.includes("elderly") && place.physicalDemand === "high") score -= 5;
@@ -3124,8 +3244,16 @@ function filterPlaces(){
     scored = scored.filter(s => s.place.physicalDemand !== "high");
   }
 
-  // เรียงตามคะแนนสูงสุดก่อน
-  scored.sort((a, b) => b.score - a.score);
+  // เรียงตามคะแนนสูงสุดก่อน; ถ้าคะแนนสูสีกันและผู้ใช้ขอใกล้ต้นทาง ให้ใช้ระยะทางเป็นตัวตัดสิน
+  scored.sort((a, b) => {
+    const diff=b.score-a.score;
+    if(Math.abs(diff) > 0.25) return diff;
+    if(formData.origin?.nearbyFirst){
+      const da=originDistanceKm(a.place), db=originDistanceKm(b.place);
+      if(da != null && db != null && da !== db) return da-db;
+    }
+    return diff;
+  });
 
   const durationDaysMap = { daytrip: 1, "2d1n": 2, "3d2n": 3, "4plus": 4 };
   const neededDays = durationDaysMap[formData.duration] || 2;
@@ -3476,6 +3604,22 @@ function generateItinerary(recommended){
     const aiExtraBuffer = (aiAnalysis && aiAnalysis.timingPreference && aiAnalysis.timingPreference.extraBufferMinutes) || 0;
     const effectiveExtraBuffer = Math.max(0, aiExtraBuffer + getDayBufferDelta(d));
 
+    // ถ้ามีต้นทาง ให้แสดงเวลาเดินทางจากต้นทางไปสถานที่แรกของวัน (เป็นค่าโดยประมาณจากพิกัด ไม่ใช่เส้นทางถนนจริง)
+    const originPoint = getOriginPoint();
+    if(originPoint && effectiveMain && effectiveMain.lat != null && effectiveMain.lng != null){
+      const tempOrigin={lat:originPoint.lat,lng:originPoint.lng,axis:"land",boatRequired:false};
+      const originTravelMinutes=estimateTravelMinutes(tempOrigin,effectiveMain);
+      if(originTravelMinutes != null && originTravelMinutes > 0){
+        const departAt=subtractMinutesFromTime(mainStart,originTravelMinutes);
+        dayItinerary.activities.push({
+          time:departAt,
+          name: currentLang === "th" ? `ออกเดินทางจาก${originPoint.label}` : `Depart from ${originPoint.label}`,
+          details: currentLang === "th" ? `ไปยัง${effectiveMain.name.th} • ใช้เวลาโดยประมาณ ${originTravelMinutes} นาที` : `To ${effectiveMain.name.en} • approx. ${originTravelMinutes} minutes`,
+          cost:0, costLabel:"-"
+        });
+      }
+    }
+
     // สร้าง activity "ขึ้นเรือ" เฉพาะสถานที่ที่ boatRequired === true จริงๆ เท่านั้น (ไม่ใช่แค่มีข้อมูล departurePier อยู่
     // เช่น หาดนพรัตน์ธาราหรือคายัคอ่าวท่าเลน ที่มีท่าเรืออยู่ใกล้ๆ แต่ไม่ได้บังคับว่าต้องนั่งเรือ)
     if(effectiveMain.boatRequired && effectiveMain.departurePier){
@@ -3672,6 +3816,14 @@ function generateItinerary(recommended){
   return itinerary;
 }
 
+function renderOriginSummary(){
+  const el=document.getElementById('originSummarySection'); if(!el) return;
+  const o=getOriginPoint();
+  if(!o){ el.innerHTML=''; return; }
+  const top=PLACES.map(p=>({p,km:originDistanceKm(p)})).filter(x=>x.km!=null).sort((a,b)=>a.km-b.km).slice(0,4);
+  el.innerHTML=`<div class="origin-summary"><div class="origin-summary-title">📍 ${currentLang==='th'?'ต้นทางที่ใช้จัดทริป':'Starting point used for planning'}</div><div>${escapeHtml(o.label)}${formData.origin?.nearbyFirst?` • <strong>${currentLang==='th'?'เน้นสถานที่ใกล้ก่อน':'nearby places prioritized'}</strong>`:''}</div>${top.length?`<div>${top.map(x=>`<span class="origin-distance-pill">${escapeHtml(x.p.name[currentLang])} ~ ${x.km.toFixed(1)} กม.</span>`).join('')}</div>`:''}<div class="origin-map-note" style="margin-top:8px;">${currentLang==='th'?'ระยะทางเป็นเส้นตรงโดยประมาณจากพิกัด และไม่ได้แทนระยะทางถนน/ทางเรือจริง':'Distances are approximate straight-line distances from coordinates, not actual road/boat routes.'}</div></div>`;
+}
+
 function renderRecommendations(places){
   const section = document.getElementById("recommendationsSection");
   const mustHaveIds = new Set(getEffectiveMustHave().map(m => m.placeId));
@@ -3820,7 +3972,7 @@ async function runAIConstraintAnalysis(){
     const res = await fetch("/api/analyze-constraints", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notes: formData.notes, specialNeeds: formData.specialNeeds || [], lang: currentLang, places: placesSummary })
+      body: JSON.stringify({ notes: formData.notes, specialNeeds: formData.specialNeeds || [], lang: currentLang, places: placesSummary, learnedPreferences: userPreferenceMemory })
     });
 
     if(!res.ok) throw new Error("AI API responded with status " + res.status);
@@ -3868,6 +4020,8 @@ function generateMockAnalysis(notesRaw, places, lang){
 
   const placeNotes = {};
   const restaurantAdvice = {};
+  const noteText = String(notesRaw || "").toLowerCase();
+  const avoidWaterAfternoon = /ไม่อยาก.*(เล่นน้ำ|ลงน้ำ|เปียก|กิจกรรมทางน้ำ).*บ่าย|บ่าย.*(ไม่เอา|ไม่อยาก|ไม่ต้อง).*?(เล่นน้ำ|ลงน้ำ|เปียก|กิจกรรมทางน้ำ)|ไม่เอาเปียก.*บ่าย/.test(noteText);
 
   places.forEach(place => {
     // คำเตือนเรื่องความเหมาะสมของสถานที่
@@ -3917,7 +4071,9 @@ function generateMockAnalysis(notesRaw, places, lang){
     mobilityConcern: mobilityIssue,
     avoidStrenuous,
     placeNotes,
-    restaurantAdvice
+    restaurantAdvice,
+    timingPreference: avoidWaterAfternoon ? { preferredStartTime: null, mustReturnBy: null, extraBufferMinutes: null, avoidWaterAfternoon: true } : null,
+    learnedPreferences: avoidWaterAfternoon ? [{ key: "avoid_water_afternoon", value: "true", confidence: 0.95, scope: "trip", day: null }] : []
   };
 }
 
@@ -4175,7 +4331,7 @@ const app = {
     lastTransferOnlyConflicts = [];
     resetItineraryAdjustments();
     itineraryChatHistory = [];
-    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
+    formData = { age: null, origin: { mode: "none", lat: null, lng: null, label: "", nearbyFirst: false }, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
     pushHistoryState({ screen: "home" });
     showScreen("homeScreen");
     renderCarousel();
@@ -4204,11 +4360,21 @@ const app = {
     lastTransferOnlyConflicts = [];
     resetItineraryAdjustments();
     itineraryChatHistory = [];
-    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
+    formData = { age: null, origin: { mode: "none", lat: null, lng: null, label: "", nearbyFirst: false }, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
     pushHistoryState({ screen: "aiFilter", step: 0 });
     showScreen("aiFilterScreen");
     renderAIFilterSteps();
   },
+  setOriginMode(mode){
+    formData.origin=formData.origin||{mode:'none',lat:null,lng:null,label:'',nearbyFirst:false};
+    if(mode==='map'){ formData.origin.mode='map'; if(formData.origin.lat==null||formData.origin.lng==null){formData.origin.lat=null;formData.origin.lng=null;formData.origin.label='';} }
+    if(mode==='zone'){ formData.origin.mode='zone'; }
+    renderAIFilterSteps();
+  },
+  setOrigin(mode,lat,lng,label,nearbyFirst){ setOrigin(mode,lat,lng,label,nearbyFirst); },
+  setOriginZone(zoneId){ setOriginZone(zoneId); },
+  useCurrentLocation(){ useCurrentLocation(); },
+  toggleOriginNearby(checked){ toggleOriginNearby(checked); },
   handleStepInput(stepId, value, element){
     const stepConfig = STEPS_CONFIG.find(s => s.id === stepId);
     if(stepConfig && stepConfig.type === "checkbox" && stepConfig.maxSelect){
@@ -4340,6 +4506,7 @@ const app = {
     // ถ้าฟอร์มปัจจุบันมีข้อมูลที่ผู้ใช้กรอกไปแล้ว (ไม่ใช่ค่าเริ่มต้นล้วนๆ) ให้ถามยืนยันก่อน ป้องกันการเขียนทับโดยไม่ตั้งใจ
   const currentHasData = Object.keys(formData).some(k => {
       const v = formData[k];
+      if(k === "origin") return !!(v && v.mode && v.mode !== "none");
       return Array.isArray(v) ? v.length > 0 : (v !== null && v !== undefined && v !== "");
     });
     if(currentHasData && !confirm(t("loadSavedConfirmOverwrite"))) return;
@@ -4352,6 +4519,10 @@ const app = {
     if(!Array.isArray(formData.style)) formData.style = [];
     if(!Array.isArray(formData.subStyle)) formData.subStyle = formData.subStyle ? [formData.subStyle] : [];
     if(formData.travelMonth === undefined) formData.travelMonth = null;
+    if(!formData.origin || typeof formData.origin !== "object" || Array.isArray(formData.origin)) formData.origin={mode:"none",lat:null,lng:null,label:"",nearbyFirst:false};
+    if(formData.origin.lat != null) formData.origin.lat=Number(formData.origin.lat);
+    if(formData.origin.lng != null) formData.origin.lng=Number(formData.origin.lng);
+    if(typeof formData.origin.nearbyFirst !== "boolean") formData.origin.nearbyFirst=false;
     if(!Array.isArray(formData.specialNeeds)) formData.specialNeeds = formData.specialNeeds ? [formData.specialNeeds] : [];
     formData.specialNeeds = formData.specialNeeds.filter(v => typeof v === "string");
     if(!formData.dayTripWindow) formData.dayTripWindow = { start: "08:00", end: "18:00" }; // ลิงก์เก่าก่อนมี field นี้ — เติมค่า default ให้ ไม่งั้นจะ undefined ตอนใช้งาน
