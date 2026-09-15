@@ -111,6 +111,7 @@ export default async function handler(req,res){
   const conversationState=(b.conversationState&&typeof b.conversationState==='object')?{pending:!!b.conversationState.pending,question:clean(b.conversationState.question,700),topic:clean(b.conversationState.topic,300),lastInterpretation:clean(b.conversationState.lastInterpretation,300)}:{};
   const prompt=buildPrompt({message,lang,neededDays,days,places,learnedPreferences:b.learnedPreferences,currentPreferences:b.currentPreferences,conversationHistory,conversationState});
   const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,{method:"POST",headers:{"x-goog-api-key":GEMINI_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({systemInstruction:{parts:[{text:"Return only JSON matching the supplied schema. Use semantic reasoning, not keyword matching. Never fabricate place IDs or facts."}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:0.1,responseMimeType:"application/json",responseSchema:schema}})});
+     }
   const raw=await r.text(); if(!r.ok)return send(res,502,{error:"Gemini API request failed"});
   let outer;try{outer=JSON.parse(raw)}catch{return send(res,502,{error:"Invalid Gemini response"})}
   const text=outer?.candidates?.[0]?.content?.parts?.map(x=>x.text||"").join("")||""; let result;try{result=JSON.parse(text)}catch{return send(res,502,{error:"Invalid structured response"})}
