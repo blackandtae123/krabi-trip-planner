@@ -14,7 +14,6 @@
 <meta name="twitter:title" content="Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด">
 <meta name="twitter:description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
 <meta name="twitter:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=1200">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -714,7 +713,8 @@
   .itinerary-chat-input:focus{ border-color:var(--turquoise); }
   .itinerary-chat-send{ min-width:82px; min-height:44px; border:none; border-radius:var(--radius-md); background:linear-gradient(135deg,var(--turquoise) 0%,var(--green) 100%); color:#fff; font-weight:700; cursor:pointer; }
   .itinerary-chat-send:disabled{ opacity:.55; cursor:wait; }
-  .itinerary-chat-status{ margin-top:10px; font-size:12.5px; line-height:1.55; white-space:pre-line; }
+  .itinerary-chat-quick{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}.itinerary-chat-chip{border:1px solid #cfe3df;background:#f3faf8;border-radius:999px;padding:7px 11px;cursor:pointer;font:inherit}.itinerary-chat-chip:hover{filter:brightness(.97)}
+    .itinerary-chat-status{ margin-top:10px; font-size:12.5px; line-height:1.55; white-space:pre-line; }
   .itinerary-chat-status.ok{ color:var(--turquoise-dark); }
   .itinerary-chat-status.error{ color:#B94B30; }
   .itinerary-chat-status.loading{ color:var(--text-muted); }
@@ -872,24 +872,6 @@
     box-shadow: var(--shadow-sm);
   }
 
-
-  .origin-picker{display:flex;flex-direction:column;gap:14px;}
-  .origin-mode-row{display:flex;gap:10px;flex-wrap:wrap;}
-  .origin-mode-btn{border:1px solid var(--border);background:#fff;color:var(--text);border-radius:14px;padding:11px 13px;cursor:pointer;font-size:13px;font-weight:600;box-shadow:var(--shadow-sm);}
-  .origin-mode-btn.active{border-color:var(--turquoise);box-shadow:0 0 0 2px rgba(47,169,164,.12);}
-  .origin-zone-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
-  .origin-zone{border:1px solid var(--border);background:#fff;border-radius:14px;padding:12px;text-align:left;cursor:pointer;}
-  .origin-zone.active{border-color:var(--turquoise);background:#f2fbfa;}
-  .origin-map{height:320px;border-radius:18px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
-  .origin-map-note{font-size:12px;color:var(--text-muted);line-height:1.5;}
-  .origin-actions{display:flex;gap:10px;flex-wrap:wrap;}
-  .origin-action-btn{border:none;border-radius:12px;padding:10px 13px;background:var(--turquoise);color:#fff;font-weight:600;cursor:pointer;}
-  .origin-action-btn.secondary{background:#fff;color:var(--turquoise-dark);border:1px solid var(--border);}
-  .origin-summary{margin-bottom:14px;padding:15px 16px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow-sm);}
-  .origin-summary-title{font-weight:700;margin-bottom:4px;color:var(--turquoise-dark);}
-  .origin-distance-pill{display:inline-block;margin:6px 6px 0 0;padding:5px 9px;border-radius:999px;background:#f5f7f5;font-size:11px;color:var(--text-muted);}
-  @media (max-width:640px){.origin-zone-grid{grid-template-columns:1fr}.origin-map{height:280px}.origin-mode-row{display:grid;grid-template-columns:1fr 1fr}.origin-mode-btn{width:100%}}
-
   /* ---------- print (real PDF export via browser print dialog) ---------- */
   @media print{
     .lang-switch-home, .ai-filter-banner, .step-buttons, .step-progress,
@@ -910,7 +892,6 @@
     #resultsScreen{ display:block !important; }
   }
 </style>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 </head>
 <body>
 
@@ -966,7 +947,6 @@
 
   <div class="results-container">
     <div id="aiStatusBanner" aria-live="polite"></div>
-    <div id="originSummarySection"></div>
     <div class="itinerary-chat-section" id="itineraryChatSection"></div>
     <div class="recommendations-section" id="recommendationsSection"></div>
     <div class="itinerary-section" id="itinerarySection"></div>
@@ -2095,13 +2075,6 @@ const STEPS_CONFIG = [
     }
   },
   {
-    id: "origin",
-    type: "origin",
-    label: { th: "จุดเริ่มต้นของทริป", en: "Trip starting point" },
-    question: { th: "วันนี้คุณเริ่มเที่ยวจากบริเวณไหนของกระบี่คะ", en: "Where will you start your trip in Krabi?" },
-    optional: false
-  },
-  {
     id: "style",
     type: "checkbox",
     maxSelect: 2,
@@ -2291,11 +2264,13 @@ let lastMonsoonRisk = null;    // "shoulder" | "peak-monsoon" | null — ใช�
 let lastMonsoonStillHasBoat = false; // true = สลับหมดเท่าที่ทำได้แล้วแต่ยังมีกิจกรรมทางเรือเหลืออยู่ (land pool ไม่พอสลับหมด) — ใช้โชว์คำเตือนเพิ่มเติม
 let lastTravelWarnings = [];   // [{day, from, to, minutes}] — วันที่ระยะเดินทางระหว่าง 2 สถานที่ในวันเดียวกันค่อนข้างแน่น (>60 นาทีโดยประมาณ)
 let lastTransferOnlyConflicts = []; // [{day, fromPlace, toPlace}] — must-have full-day ชนกันในวันเดียวกัน: จุดที่สองเป็น transfer-only
+let lastPreferenceConflicts = []; // preference ที่ระบบพยายามทำตามแต่ติดข้อจำกัดจริง
 
 // Phase 3: AI parser writes only these structured edits; generateItinerary remains the scheduler.
-let itineraryAdjustments = { dayWindows:{}, dayBufferDelta:{}, daySlotsOverride:{}, activityTiming:{} };
+let itineraryAdjustments = { dayWindows:{}, dayBufferDelta:{}, daySlotsOverride:{}, activityTiming:{}, preferenceConstraints:[] };
 let itineraryChatBusy = false;
 let itineraryChatHistory = [];
+let itineraryConversationState = { pending:false, question:'', topic:'', lastInterpretation:'', options:[] };
 let userPreferenceMemory = loadUserPreferenceMemory();
 function loadUserPreferenceMemory(){
   try{ const raw=localStorage.getItem('krabi_user_preferences'); const data=raw?JSON.parse(raw):{}; return data && typeof data==='object' ? data : {}; }catch(e){ return {}; }
@@ -2318,7 +2293,7 @@ function recordLearnedPreferences(items){
   if(accepted.length) saveUserPreferenceMemory();
   return accepted;
 }
-function resetItineraryAdjustments(){ itineraryAdjustments = { dayWindows:{}, dayBufferDelta:{}, daySlotsOverride:{}, activityTiming:{} }; }
+function resetItineraryAdjustments(){ itineraryAdjustments = { dayWindows:{}, dayBufferDelta:{}, daySlotsOverride:{}, activityTiming:{}, preferenceConstraints:[] }; itineraryConversationState={pending:false,question:'',topic:'',lastInterpretation:'',options:[]}; }
 
 // AI_MODE:
 //   "demo" = จำลองผลวิเคราะห์ฝั่ง client โดยไม่เรียกบริการ AI ภายนอก
@@ -2329,7 +2304,6 @@ const AI_MODE = "live";
 
 let formData = {
   age: null,
-  origin: { mode: "none", lat: null, lng: null, label: "", nearbyFirst: false },
   style: [],
   subStyle: [], // เลือกได้สูงสุด 2 สาย เรียงตามลำดับที่เลือก (index 0 = ความสนใจหลัก, index 1 = รอง) — ดูการให้คะแนนใน filterPlaces
   budget: null,
@@ -2397,77 +2371,6 @@ function haversineKm(lat1, lng1, lat2, lng2){
   const dLng = toRad(lng2 - lng1);
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-const ORIGIN_ZONES = [
-  {id:"ao-nang",label:{th:"อ่าวนาง",en:"Ao Nang"},lat:8.0369,lng:98.8225},
-  {id:"krabi-town",label:{th:"ตัวเมืองกระบี่",en:"Krabi Town"},lat:8.0622,lng:98.9135},
-  {id:"tubkaek",label:{th:"ทับแขก",en:"Tubkaek"},lat:8.1064,lng:98.7808},
-  {id:"klong-thom",label:{th:"คลองท่อม",en:"Khlong Thom"},lat:7.9263,lng:99.2668}
-];
-let originMapInstance = null;
-let originMapMarker = null;
-function getOriginPoint(){
-  const o=formData.origin;
-  if(!o || o.lat==null || o.lng==null) return null;
-  return {lat:Number(o.lat),lng:Number(o.lng),label:o.label|| (currentLang==='th'?'จุดเริ่มต้นที่เลือก':'Selected starting point')};
-}
-function originDistanceKm(place){
-  const o=getOriginPoint();
-  if(!o || !place || place.lat==null || place.lng==null) return null;
-  return haversineKm(o.lat,o.lng,place.lat,place.lng);
-}
-function setOrigin(mode, lat, lng, label, nearbyFirst){
-  formData.origin={mode:mode||'map',lat:lat==null?null:Number(lat),lng:lng==null?null:Number(lng),label:String(label||''),nearbyFirst:!!nearbyFirst};
-  renderAIFilterSteps();
-}
-function setOriginZone(zoneId){
-  const z=ORIGIN_ZONES.find(x=>x.id===zoneId);
-  if(!z) return;
-  setOrigin('zone',z.lat,z.lng,z.label[currentLang],formData.origin?.nearbyFirst);
-}
-function toggleOriginNearby(checked){
-  formData.origin=formData.origin||{mode:'none',lat:null,lng:null,label:'',nearbyFirst:false};
-  formData.origin.nearbyFirst=!!checked;
-  updateStepButtons();
-}
-function useCurrentLocation(){
-  if(!navigator.geolocation){alert(currentLang==='th'?'อุปกรณ์นี้ไม่รองรับการระบุตำแหน่งจากเบราว์เซอร์':'Geolocation is not supported by this browser.');return;}
-  navigator.geolocation.getCurrentPosition(pos=>{
-    setOrigin('gps',pos.coords.latitude,pos.coords.longitude,currentLang==='th'?'ตำแหน่งปัจจุบันของคุณ':'Your current location',true);
-  },err=>{
-    const msg=err && err.code===1 ? (currentLang==='th'?'ไม่ได้รับอนุญาตให้ใช้ตำแหน่ง กรุณาอนุญาตในเบราว์เซอร์หรือเลือกบนแผนที่':'Location permission was denied. Please allow it or choose on the map.') : (currentLang==='th'?'ระบุตำแหน่งไม่สำเร็จ กรุณาเลือกบนแผนที่แทน':'Could not determine your location. Please choose on the map instead.');
-    alert(msg);
-  },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
-}
-function initOriginMap(){
-  if(typeof L==='undefined') return;
-  const el=document.getElementById('originMap'); if(!el) return;
-  if(originMapInstance){ originMapInstance.remove(); originMapInstance=null; originMapMarker=null; }
-  originMapInstance=L.map(el).setView([8.035,98.86],11);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(originMapInstance);
-  const o=getOriginPoint();
-  if(o){ originMapMarker=L.marker([o.lat,o.lng],{draggable:true}).addTo(originMapInstance); originMapMarker.bindPopup(escapeHtml(o.label||'Starting point')).openPopup(); originMapInstance.setView([o.lat,o.lng],13); originMapMarker.on('dragend',e=>{const p=e.target.getLatLng();setOrigin('map',p.lat,p.lng,currentLang==='th'?'ตำแหน่งที่เลือกบนแผนที่':'Map selected location',formData.origin?.nearbyFirst);}); }
-  originMapInstance.on('click',e=>{setOrigin('map',e.latlng.lat,e.latlng.lng,currentLang==='th'?'ตำแหน่งที่เลือกบนแผนที่':'Map selected location',formData.origin?.nearbyFirst);});
-  setTimeout(()=>originMapInstance && originMapInstance.invalidateSize(),100);
-}
-function renderOriginStep(){
-  const o=formData.origin||{mode:'none',lat:null,lng:null,label:'',nearbyFirst:false};
-  return `<div class="origin-picker">
-    <div class="origin-mode-row">
-      <button type="button" class="origin-mode-btn ${o.mode==='gps'?'active':''}" onclick="app.useCurrentLocation()">📍 ${currentLang==='th'?'ใช้ตำแหน่งปัจจุบัน':'Use current location'}</button>
-      <button type="button" class="origin-mode-btn ${['map','zone'].includes(o.mode)?'active':''}" onclick="app.setOriginMode('map')">🗺️ ${currentLang==='th'?'เลือกบนแผนที่':'Choose on map'}</button>
-      <button type="button" class="origin-mode-btn ${o.mode==='zone'?'active':''}" onclick="app.setOriginMode('zone')">🏨 ${currentLang==='th'?'เลือกโซนที่พัก':'Choose area'}</button>
-      <button type="button" class="origin-mode-btn ${o.mode==='none'?'active':''}" onclick="app.setOrigin('none',null,null,'',false)">⏭️ ${currentLang==='th'?'ไม่ระบุ':'Skip'}</button>
-    </div>
-    ${o.mode==='zone'?`<div class="origin-zone-grid">${ORIGIN_ZONES.map(z=>`<button type="button" class="origin-zone ${o.label===z.label[currentLang]?'active':''}" onclick="app.setOriginZone('${z.id}')"><strong>${z.label[currentLang]}</strong><div class="origin-map-note">${currentLang==='th'?'ใช้เป็นจุดอ้างอิงของโซน':'Use as an area reference point'}</div></button>`).join('')}</div>`:''}
-    ${o.mode==='map'||o.mode==='gps'?`<div id="originMap" class="origin-map"></div>`:''}
-    <div class="origin-actions">
-      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);"><input type="checkbox" ${o.nearbyFirst?'checked':''} onchange="app.toggleOriginNearby(this.checked)"> ${currentLang==='th'?'จัดสถานที่ใกล้ต้นทางก่อน':'Prioritize places near the starting point'}</label>
-    </div>
-    ${getOriginPoint()?`<div class="origin-map-note">${currentLang==='th'?'ต้นทางที่เลือก:':'Selected starting point:'} <strong>${escapeHtml(getOriginPoint().label)}</strong></div>`:`<div class="origin-map-note">${currentLang==='th'?'ตำแหน่งเป็นข้อมูลเสริม ถ้าไม่ระบุ ระบบยังจัดทริปตามความต้องการอื่นได้ตามปกติ':'Starting point is optional. If omitted, the planner still works from your other preferences.'}</div>`}
-    ${o.mode==='map'||o.mode==='gps'?`<div class="origin-map-note">${currentLang==='th'?'แตะบนแผนที่เพื่อย้ายหมุดได้ และใช้ตำแหน่งนี้เป็นฐานในการให้คะแนนความใกล้และคำนวณเวลาเดินทางโดยประมาณ':'Tap the map to move the pin. This point is used for proximity scoring and approximate transfer time.'}</div>`:''}
-  </div>`;
 }
 
 // บางสถานที่ในข้อมูลมี restaurants ที่พิกัดจริงอยู่ไกลมาก (เช่น Ao Thalane/Hong Island/Laem Sak ที่ดันมีร้านอยู่ไกลถึง
@@ -2780,8 +2683,6 @@ function renderAIFilterSteps(){
             : "E.g. if you have a flight/van to catch tonight or arrived late, tell us your real available window so the plan fits — instead of packing in more than time allows."}
         </p>
       `;
-    } else if(config.type === "origin"){
-      content = renderOriginStep();
     } else if(config.type === "places"){
       const durationDaysMap = { daytrip: 1, "2d1n": 2, "3d2n": 3, "4plus": 4 };
       const dayCount = durationDaysMap[formData.duration] || 4;
@@ -2846,7 +2747,6 @@ function renderAIFilterSteps(){
     }
   });
 
-  if(STEPS_CONFIG[currentStep]?.type === "origin") initOriginMap();
   updateStepButtons();
 }
 
@@ -2861,13 +2761,12 @@ function updateStepButtons(){
   // ต้องเช็คความยาวแทน ไม่งั้นปุ่ม "ถัดไป" จะกดผ่านได้ทั้งที่ยังไม่ได้เลือกอะไรเลยในสอง step นี้ — เป็นบั๊กเดิมที่ต้องแก้
   const isStepFilled = Array.isArray(currentVal) ? currentVal.length > 0 : !!currentVal;
   const invalidDayTripWindow = currentStepId === "dayTripWindow" && (!currentVal || minutesBetweenTimes(currentVal.start, currentVal.end) <= 0);
-  const invalidOrigin = false; // จุดเริ่มต้นเป็นข้อมูลเสริม: ผู้ใช้ข้ามได้
 
   // ปุ่ม "ย้อนกลับ" ไม่ต้อง disable ที่ step แรกอีกต่อไป เพราะ prevStep() ใช้ history.back() แล้ว
   // ซึ่งจะพากลับไปหน้าแรก (Home) ได้ถูกต้องเองตามลำดับ history stack ที่แท้จริง — การ disable ไว้แบบเดิม
   // (จากตอนที่ prevStep() ยังลด currentStep ตรงๆ) ทำให้ผู้ใช้กดย้อนกลับจาก step แรกไม่ได้เลย เป็นบั๊กที่ต้องแก้
   btnBack.disabled = false;
-  btnNext.disabled = invalidDayTripWindow || invalidOrigin || (!isStepFilled && currentStepId !== "notes" && currentStepId !== "mustHave" && currentStepId !== "dayTripWindow");
+  btnNext.disabled = invalidDayTripWindow || (!isStepFilled && currentStepId !== "notes" && currentStepId !== "mustHave" && currentStepId !== "dayTripWindow");
   btnNext.textContent = isLastStep ? t("createPlan") : t("btnNext");
 }
 
@@ -2884,6 +2783,147 @@ function findPlaceByIdSafe(id){ return typeof id === "string" ? (PLACES.find(p =
 function isWaterActivityPlace(place){
   return !!place && (place.axis === "water" || (Array.isArray(place.tags) && place.tags.some(t => t === "water-activity" || t === "island")));
 }
+function canonicalPreferenceTarget(place){
+  if(!place) return [];
+  const tags=Array.isArray(place.tags)?place.tags:[];
+  const nameTh=String(place.name?.th||'');
+  const nameEn=String(place.name?.en||'').toLowerCase();
+  const out=[];
+  const add=(v)=>{ if(v&&!out.includes(v)) out.push(v); };
+  if(isWaterActivityPlace(place)) add('water');
+  if(tags.includes('island')) add('island');
+  if(place.boatRequired || tags.includes('boat')) add('boat');
+  if(tags.includes('hiking') || tags.includes('sport')) add('active');
+  if(tags.includes('hiking')) add('hiking');
+  if(tags.includes('cultural') || /วัด|temple|mosque|มัสยิด|ศาล/.test(nameTh+' '+nameEn)) add('temple');
+  if(tags.includes('cultural')) add('cultural');
+  if(tags.includes('cafe')) add('cafe');
+  if(tags.includes('viewpoint')) add('viewpoint');
+  if(tags.includes('beach') || /หาด|beach/.test(nameTh+' '+nameEn)) add('beach');
+  if(tags.includes('nature')) add('nature');
+  if(tags.includes('shopping') || /market|ตลาด/.test(nameTh+' '+nameEn)) add('shopping');
+  if(tags.includes('food') || tags.includes('restaurant')) add('food');
+  if(place.fullDayActivity) add('full_day');
+  if(place.axis==='land') add('land');
+  if(place.axis==='water') add('sea');
+  return out;
+}
+function placeMatchesPreference(place,pref){
+  if(!place||!pref) return false;
+  if(pref.targetType==='place') return Array.isArray(pref.placeIds)&&pref.placeIds.includes(place.id);
+  if(pref.target==='any') return true;
+  return canonicalPreferenceTarget(place).includes(String(pref.target||'').toLowerCase());
+}
+function preferenceDays(pref,neededDays){
+  if(Array.isArray(pref?.days)&&pref.days.length) return pref.days.filter(d=>Number.isInteger(d)&&d>=1&&d<=neededDays);
+  return Array.from({length:neededDays},(_,i)=>i+1);
+}
+function preferencePeriods(pref){
+  if(Array.isArray(pref?.periods)&&pref.periods.length) return pref.periods;
+  return ['any'];
+}
+function preferenceAppliesToSlot(pref,day,slotIndex){
+  if(!preferenceDays(pref,99).includes(day)) return false;
+  const ps=preferencePeriods(pref); if(ps.includes('any')) return true;
+  const period=slotIndex===0?'morning':slotIndex===1?'afternoon':'evening';
+  return ps.includes(period);
+}
+function preferenceConflict(a,b){
+  if(!a||!b||a.target!==b.target||a.targetType!==b.targetType) return false;
+  const ad=Array.isArray(a.days)?a.days:[], bd=Array.isArray(b.days)?b.days:[];
+  const overlapDays = (!ad.length||!bd.length) ? true : ad.some(d=>bd.includes(d));
+  const ap=preferencePeriods(a), bp=preferencePeriods(b);
+  const overlapPeriods = ap.includes('any')||bp.includes('any')||ap.some(x=>bp.includes(x));
+  return overlapDays && overlapPeriods && (a.mode!==b.mode);
+}
+function upsertPreferenceConstraint(pref,neededDays){
+  const clean={
+    type:'set_preference', mode:['avoid','prefer','require'].includes(pref.mode)?pref.mode:'prefer',
+    targetType:pref.targetType==='place'?'place':'category', target:String(pref.target||'any'),
+    placeIds:Array.isArray(pref.placeIds)?pref.placeIds.filter(id=>findPlaceByIdSafe(id)).slice(0,30):[],
+    periods:preferencePeriods(pref).filter(x=>['morning','afternoon','evening','any'].includes(x)),
+    days:Array.isArray(pref.days)?pref.days.filter(d=>Number.isInteger(d)&&d>=1&&d<=neededDays):[],
+    strength:pref.strength==='hard'?'hard':'soft'
+  };
+  itineraryAdjustments.preferenceConstraints=(itineraryAdjustments.preferenceConstraints||[]).filter(x=>!preferenceConflict(clean,x));
+  itineraryAdjustments.preferenceConstraints.push(clean);
+  return clean;
+}
+function getPreferenceConstraintsForDay(day){
+  return (itineraryAdjustments.preferenceConstraints||[]).filter(p=>preferenceDays(p,14).includes(day));
+}
+function scorePreferenceForSlot(place,day,slotIndex){
+  if(!place) return 0;
+  let score=0;
+  for(const pref of getPreferenceConstraintsForDay(day)){
+    if(!preferenceAppliesToSlot(pref,day,slotIndex)) continue;
+    const hit=placeMatchesPreference(place,pref);
+    if(pref.mode==='prefer') score += hit ? (pref.strength==='hard'?12:6) : 0;
+    if(pref.mode==='require') score += hit ? 18 : -18;
+    if(pref.mode==='avoid') score += hit ? (pref.strength==='hard'?-30:-10) : 0;
+  }
+  return score;
+}
+function automaticPlaceAllowed(place){
+  if(!place) return false;
+  if(formData.transport&&formData.transport!=='boat'&&place.transport?.length===1&&place.transport[0]==='boat') return false;
+  if((formData.specialNeeds?.includes('mobility')||formData.specialNeeds?.includes('avoidStrenuous'))&&place.physicalDemand==='high') return false;
+  return true;
+}
+function syncAIPreferenceConstraints(list){
+  if(!Array.isArray(list)) return;
+  const neededDays=formData.duration==='daytrip'?1:(formData.duration==='2d1n'?2:(formData.duration==='3d2n'?3:4));
+  for(const pref of list){
+    const confidence=Number(pref?.confidence);
+    if(Number.isFinite(confidence)&&confidence<0.80) continue;
+    if(!pref?.mode||!pref?.target) continue;
+    upsertPreferenceConstraint(pref,neededDays);
+  }
+}
+function applyGenericPreferenceConstraints(slots,recommended){
+  const neededDays=recommended.neededDays;
+  lastPreferenceConflicts=[];
+  const pinned=new Set((getEffectiveMustHave()||[]).map(x=>x.placeId));
+  const allCandidates=[...recommended.sequence,...PLACES.filter(p=>!recommended.sequence.some(x=>x.id===p.id))].filter(automaticPlaceAllowed);
+  const slotsForDay=recommended.slotsForDay;
+  const occupied=new Set(slots.filter(Boolean).map(p=>p.id));
+  const periodPositions=(pref,idxs)=>idxs.map((idx,pos)=>({idx,pos})).filter(x=>preferenceAppliesToSlot(pref,0,x.pos));
+  for(let d=1;d<=neededDays;d++){
+    const idxs=slotsForDay(d).filter(i=>i!==undefined);
+    if(!idxs.length) continue;
+    const prefs=getPreferenceConstraintsForDay(d);
+    if(!prefs.length) continue;
+    for(const pref of prefs.filter(p=>p.mode==='avoid'||p.mode==='require')){
+      for(const x of idxs.map((idx,pos)=>({idx,pos}))){
+        if(!preferenceAppliesToSlot(pref,d,x.pos)) continue;
+        const current=slots[x.idx];
+        const hit=!!current&&placeMatchesPreference(current,pref);
+        const violation=pref.mode==='avoid'?hit:!hit;
+        if(!violation) continue;
+        // First try a within-day swap without touching pinned places.
+        const swap=idxs.map((idx,pos)=>({idx,pos,place:slots[idx]})).find(y=>y.pos!==x.pos&&y.place&&!pinned.has(y.place.id) && (pref.mode==='avoid'?!placeMatchesPreference(y.place,pref):placeMatchesPreference(y.place,pref)));
+        if(swap){ slots[x.idx]=swap.place; slots[swap.idx]=current; continue; }
+        // Then try a catalog candidate that satisfies the requested semantic preference.
+        const replacement=allCandidates.find(p=>!occupied.has(p.id)&&!pinned.has(p.id) && (pref.mode==='avoid'?!placeMatchesPreference(p,pref):placeMatchesPreference(p,pref)));
+        if(replacement){ if(current) occupied.delete(current.id); slots[x.idx]=replacement; occupied.add(replacement.id); continue; }
+        lastPreferenceConflicts.push({day:d,mode:pref.mode,target:pref.target,periods:preferencePeriods(pref)});
+      }
+    }
+    for(const pref of prefs.filter(p=>p.mode==='prefer')){
+      for(const x of idxs.map((idx,pos)=>({idx,pos}))){
+        if(!preferenceAppliesToSlot(pref,d,x.pos)) continue;
+        const current=slots[x.idx];
+        if(current&&placeMatchesPreference(current,pref)) continue;
+        const sameDay=idxs.map((idx,pos)=>({idx,pos,place:slots[idx]})).find(y=>y.pos!==x.pos&&y.place&&!pinned.has(y.place.id)&&placeMatchesPreference(y.place,pref));
+        if(sameDay){ slots[x.idx]=sameDay.place; slots[sameDay.idx]=current; continue; }
+        const replacement=allCandidates.find(p=>!occupied.has(p.id)&&!pinned.has(p.id)&&placeMatchesPreference(p,pref));
+        if(replacement){ if(current) occupied.delete(current.id); slots[x.idx]=replacement; occupied.add(replacement.id); continue; }
+      }
+    }
+  }
+  return slots;
+}
+
 function hasAvoidWaterAfternoon(day=null){
   const chat = itineraryAdjustments.activityTiming || {};
   const chatDays = chat.avoidWaterAfternoonDays || {};
@@ -2923,6 +2963,7 @@ function applyItineraryAdjustments(recommended){
   // Respect an explicit preference such as “ไม่อยากเล่นน้ำช่วงบ่าย” by moving a feasible water activity
   // to the morning slot. This never invents a schedule: generateItinerary still computes actual times/opening hours.
   applyWaterTimingPreference(slots, recommended.neededDays, recommended.slotsForDay);
+  applyGenericPreferenceConstraints(slots, recommended);
 
   // Re-run the existing monsoon safety layer after chat edits so the chat cannot bypass it.
   const pinned = new Set((getEffectiveMustHave()||[]).map(x=>x.placeId));
@@ -2952,10 +2993,12 @@ function validateAdjustedDayPair(places){
 function renderItineraryChat(){
   const el=document.getElementById("itineraryChatSection"); if(!el) return;
   const history=itineraryChatHistory.map(m=>`<div class="itinerary-chat-bubble ${m.role==='user'?'user':'assistant'}">${escapeHtml(m.text)}</div>`).join("");
+  const quickOptions=itineraryConversationState.pending&&Array.isArray(itineraryConversationState.options)&&itineraryConversationState.options.length ? `<div class="itinerary-chat-quick">${itineraryConversationState.options.map(o=>`<button type="button" class="itinerary-chat-chip" onclick="app.submitItineraryChatText(${JSON.stringify(String(o))})">${escapeHtml(String(o))}</button>`).join('')}</div>` : '';
   el.innerHTML=`<div class="itinerary-chat-card">
     <div class="itinerary-chat-title">💬 ${currentLang==='th'?'ปรับโปรแกรมด้วยแชท':'Adjust your itinerary by chat'}</div>
-    <div class="itinerary-chat-hint">${currentLang==='th'?'พิมพ์ภาษาคนได้เลย แม้ใช้คำที่ระบบไม่เคยเจอ: AI จะตีความความหมายก่อน ถ้าเข้าใจมั่นใจจึงนำไปใช้ ถ้ายังไม่แน่ใจจะถามกลับ และ preference ที่ยืนยันแล้วจะจำไว้สำหรับทริปถัดไป':'Use natural language, even unfamiliar wording: AI interprets the meaning first, applies only when confident, asks when uncertain, and remembers confirmed preferences for future trips.'}</div>
+    <div class="itinerary-chat-hint">${currentLang==='th'?'พิมพ์แบบภาษาคนได้เลย: เช่น “เช้าไม่เอาน้ำ”, “อยากเล่นน้ำเช้าเย็น”, “วันที่ 1 กับ 4 ไม่เอาเล่นน้ำ”, “วันที่ 4 ไม่เอาวัด”, หรือผสมหลายเงื่อนไขในประโยคเดียว — AI จะตีความความหมายก่อน ถ้าไม่แน่ใจจะถามกลับ':'Use natural language, even unfamiliar wording: AI interprets the meaning first, applies only when confident, asks when uncertain, and remembers confirmed preferences for future trips.'}</div>
     ${history?`<div class="itinerary-chat-history">${history}</div>`:''}
+    ${quickOptions}
     <div class="itinerary-chat-row"><textarea id="itineraryChatInput" class="itinerary-chat-input" rows="1" placeholder="${currentLang==='th'?'เช่น วันที่ 2 เริ่ม 10 โมง เพิ่มเวลาพัก 30 นาที':'e.g. Start Day 2 at 10am and add 30 minutes buffer'}" ${itineraryChatBusy?'disabled':''}></textarea><button id="itineraryChatSend" class="itinerary-chat-send" onclick="app.submitItineraryChat()" ${itineraryChatBusy?'disabled':''}>${itineraryChatBusy?'…':(currentLang==='th'?'ปรับ':'Apply')}</button></div>
     <div id="itineraryChatStatus" class="itinerary-chat-status ${itineraryChatBusy?'loading':''}" aria-live="polite">${itineraryChatBusy?(currentLang==='th'?'กำลังแปลงคำขอเป็นคำสั่งที่ปลอดภัย...':'Converting your request into safe structured commands...'):''}</div>
   </div>`;
@@ -2970,13 +3013,22 @@ function summarizeAdjustmentCommand(c){
   if(c.type==='add_place') return th?`เพิ่ม ${p?p.name.th:c.placeId} ในวันที่ ${c.day}`:`Add ${p?p.name.en:c.placeId} to Day ${c.day}`;
   if(c.type==='swap_places') return th?`สลับ ${p?p.name.th:c.placeId} กับ ${q?q.name.th:c.toPlaceId} ในวันที่ ${c.day}`:`Swap ${p?p.name.en:c.placeId} with ${q?q.name.en:c.toPlaceId} on Day ${c.day}`;
   if(c.type==='set_activity_timing') return th?`${c.day?`วันที่ ${c.day}: `:''}หลีกเลี่ยงกิจกรรมทางน้ำช่วงบ่าย`:`${c.day?`Day ${c.day}: `:''}Avoid water activities in the afternoon`;
-  if(c.type==='set_origin_preference') return th?(c.originPreference==='nearby_first'?'ให้ความสำคัญกับสถานที่ใกล้ต้นทางก่อน':'ไม่เน้นความใกล้ต้นทาง'):(c.originPreference==='nearby_first'?'Prioritize places near the starting point':'Do not prioritize proximity to the starting point');
+  if(c.type==='set_preference'){ const days=Array.isArray(c.days)&&c.days.length?`วันที่ ${c.days.join(', ')}`:'ทุกวัน'; const ps=Array.isArray(c.periods)&&c.periods.length&&!c.periods.includes('any')?c.periods.join(' + '):'ทั้งวัน'; const target=c.target==='water'?'กิจกรรมทางน้ำ':c.target==='temple'?'วัด':(c.target||'กิจกรรมที่เลือก'); return th?`${c.mode==='avoid'?'ไม่เอา':c.mode==='require'?'ต้องมี':'อยากได้'}${target} — ${days} — ${ps}`:`${c.mode} ${target} — ${Array.isArray(c.days)&&c.days.length?`days ${c.days.join(', ')}`:'all days'} — ${ps}`; }
   return th?'ปรับโปรแกรม':'Adjusted itinerary';
 }
 function validateAndApplyAdjustmentCommands(commands){
   const base=filterPlaces(), working=applyItineraryAdjustments(base), errors=[], applied=[];
   if(!Array.isArray(commands)||!commands.length) return {ok:false,errors:[currentLang==='th'?'ไม่พบคำสั่งที่รองรับ':'No supported adjustment found.']};
   for(const c of commands.slice(0,8)){
+    if(c.type==='set_preference'){
+      const days=Array.isArray(c.days)?c.days.filter(d=>Number.isInteger(d)&&d>=1&&d<=base.neededDays):[];
+      const mode=['avoid','prefer','require'].includes(c.mode)?c.mode:null;
+      const targetType=c.targetType==='place'?'place':'category';
+      if(!mode || !String(c.target||'').trim()){errors.push(currentLang==='th'?'ยังระบุความต้องการไม่ชัดเจน':'Preference was not specific enough.');continue;}
+      if(targetType==='place' && (!Array.isArray(c.placeIds)||!c.placeIds.length||c.placeIds.some(id=>!findPlaceByIdSafe(id)))){errors.push(currentLang==='th'?'ไม่พบสถานที่ที่ระบุ':'One or more requested places were not found.');continue;}
+      upsertPreferenceConstraint({mode,targetType,target:String(c.target),placeIds:c.placeIds,periods:c.periods,days,strength:c.strength},base.neededDays);
+      applied.push(c); continue;
+    }
     if(c.type==='set_activity_timing'){
       const activityType=String(c.activityType||'').toLowerCase(), period=String(c.period||'').toLowerCase();
       const day = c.day == null ? null : Number(c.day);
@@ -2988,13 +3040,6 @@ function validateAndApplyAdjustmentCommands(commands){
       if(!itineraryAdjustments.activityTiming) itineraryAdjustments.activityTiming={};
       if(day===null) itineraryAdjustments.activityTiming.avoidWaterAfternoon=true;
       else { if(!itineraryAdjustments.activityTiming.avoidWaterAfternoonDays) itineraryAdjustments.activityTiming.avoidWaterAfternoonDays={}; itineraryAdjustments.activityTiming.avoidWaterAfternoonDays[day]=true; }
-      applied.push(c);
-      continue;
-    }
-    if(c.type==='set_origin_preference'){
-      if(c.originPreference!=='nearby_first' && c.originPreference!=='balanced'){ errors.push(currentLang==='th'?'ตัวเลือกการจัดตามต้นทางไม่ถูกต้อง':'Invalid starting-point preference.'); continue; }
-      formData.origin=formData.origin||{mode:'none',lat:null,lng:null,label:'',nearbyFirst:false};
-      formData.origin.nearbyFirst=c.originPreference==='nearby_first';
       applied.push(c);
       continue;
     }
@@ -3043,22 +3088,35 @@ async function submitItineraryAdjustmentRequest(text){
   try{
     const base=filterPlaces();
     const days=Array.from({length:base.neededDays},(_,i)=>({day:i+1,places:currentDayPlaces(i+1,base).filter(Boolean).map(p=>({id:p.id,name:p.name[currentLang]}))}));
-    const places=PLACES.map(p=>({id:p.id,name:p.name[currentLang],axis:p.axis,boatRequired:!!p.boatRequired,physicalDemand:p.physicalDemand,fullDayActivity:!!p.fullDayActivity,visitWindow:p.visitWindow||null}));
-    const res=await fetch('/api/adjust-itinerary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:trimmed,lang:currentLang,neededDays:base.neededDays,days,places,origin:formData.origin||null,learnedPreferences:userPreferenceMemory})});
+    const places=PLACES.map(p=>({id:p.id,name:p.name[currentLang],axis:p.axis,tags:p.tags||[],boatRequired:!!p.boatRequired,physicalDemand:p.physicalDemand,fullDayActivity:!!p.fullDayActivity,visitWindow:p.visitWindow||null}));
+    const res=await fetch('/api/adjust-itinerary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:trimmed,lang:currentLang,neededDays:base.neededDays,days,places,learnedPreferences:userPreferenceMemory,currentPreferences:itineraryAdjustments.preferenceConstraints||[],conversationHistory:itineraryChatHistory.slice(-12),conversationState:itineraryConversationState})});
     if(!res.ok)throw new Error('adjust API '+res.status);
     const data=await res.json();
     const learned=recordLearnedPreferences(data.learnedPreferences||[]);
-    if(data.status==='clarify' || data.clarificationQuestion){
-      itineraryChatHistory.push({role:'assistant',text:data.clarificationQuestion || (currentLang==='th'?'ขอรายละเอียดเพิ่มอีกนิด เพื่อไม่เดาผิด':'I need one more detail so I do not guess incorrectly.')});
+    // Never terminate the conversation just because the parser returned no command.
+    // Unknown/new wording should lead to a clarification question, then the next user
+    // reply is sent together with recent chat history so the AI can resolve the meaning.
+    if(data.status==='clarify' || data.clarificationQuestion || !Array.isArray(data.commands) || !data.commands.length){
+      const q=data.clarificationQuestion || (currentLang==='th'
+        ? 'ฉันยังไม่แน่ใจว่าคุณหมายถึงอะไร ขอถามเพิ่มนิดหนึ่งได้ไหม — คุณต้องการปรับ “สถานที่”, “กิจกรรม”, “ช่วงเวลา” หรือ “วันที่” ไหนครับ/ค่ะ? ถ้ามีคำเฉพาะที่ฉันไม่รู้จัก บอกความหมายคร่าว ๆ ได้เลย เดี๋ยวฉันจะใช้บริบทที่คุยกันต่อให้'
+        : 'I want to make sure I understand you correctly. Do you mean a place, activity, time period, or specific day? If you used an unfamiliar term, explain it briefly and I will use that context in the next turn.');
+      itineraryConversationState={pending:true,question:q,topic:String(data?.clarificationContext?.topic||data?.understanding||'').slice(0,300),lastInterpretation:String(data?.understanding||'').slice(0,300),options:Array.isArray(data?.clarificationContext?.options)?data.clarificationContext.options.slice(0,6):[]};
+      itineraryChatHistory.push({role:'assistant',text:q});
       return;
     }
+    itineraryConversationState={pending:false,question:'',topic:'',lastInterpretation:String(data?.understanding||'').slice(0,300)};
     const result=validateAndApplyAdjustmentCommands(data.commands), lines=[];
     if(result.applied&&result.applied.length){lines.push(currentLang==='th'?'เข้าใจคำขอแล้วและปรับโปรแกรมให้ ระบบคำนวณตารางใหม่ทั้งโปรแกรม โดยยังยึดกฎเวลาเปิด-ปิด เวลาเดินทาง และมรสุมเดิม':'Understood and applied. The itinerary was recalculated from scratch while keeping the existing opening-hours, travel-time, and monsoon rules.');lines.push(...result.applied.map(summarizeAdjustmentCommand));}
     else if(data.understanding){ lines.push((currentLang==='th'?'ผมตีความว่าคุณต้องการ: ':'I understood your preference as: ')+data.understanding); }
+    if(result.errors&&result.errors.length && !result.applied?.length){
+      const q=currentLang==='th'?'ผมเข้าใจเจตนาของคุณแล้ว แต่ยังทำตามเงื่อนไขของตารางปัจจุบันไม่ได้ทั้งหมด คุณต้องการให้ผมหาทางเลือกที่ใกล้เคียงให้ไหม?': 'I understand the intent, but the current schedule cannot satisfy it exactly. Would you like me to find the closest feasible alternative?';
+      itineraryConversationState={pending:true,question:q,topic:String(data?.understanding||'').slice(0,300),lastInterpretation:String(data?.understanding||'').slice(0,300),options:[]};
+      lines.push(q);
+    }
     if(learned.length){ lines.push(currentLang==='th'?`จำ preference นี้ไว้สำหรับทริปถัดไปแล้ว (${learned.map(x=>x.value).join(', ')})`:`Saved this preference for future trips (${learned.map(x=>x.value).join(', ')})`); }
     if(result.errors&&result.errors.length)lines.push(...result.errors);
     itineraryChatHistory.push({role:'assistant',text:lines.join('\n')|| (currentLang==='th'?'ยังปรับโปรแกรมจากคำขอนี้ไม่ได้':'I could not apply that request.')});
-  }catch(e){console.warn(e);itineraryChatHistory.push({role:'assistant',text:currentLang==='th'?'ระบบตีความคำขอนี้ไม่ได้ในตอนนี้ จึงคงโปรแกรมเดิมไว้':'I could not interpret that request right now, so the existing itinerary was kept.'});}
+  }catch(e){console.warn(e); const q=currentLang==='th'?'ฉันยังประมวลผลข้อความนี้ไม่สำเร็จ แต่ไม่อยากทิ้งคำขอของคุณ ลองบอกเพิ่มอีกนิดว่าต้องการเปลี่ยน “อะไร” และ “วัน/ช่วงเวลาไหน” ได้ไหม? ฉันจะเอาคำตอบนี้ไปต่อจากข้อความเดิม':'I could not process that message yet, but I do not want to discard it. Please tell me what you want to change and, if relevant, which day or time period. I will continue from this message.'; itineraryConversationState={pending:true,question:q,topic:'retry',lastInterpretation:'',options:[]}; itineraryChatHistory.push({role:'assistant',text:q});}
   finally{itineraryChatBusy=false;renderItineraryChat();}
 }
 function renderResults(){
@@ -3066,7 +3124,6 @@ function renderResults(){
   const recommended = applyItineraryAdjustments(baseRecommended);
   const itinerary = generateItinerary(recommended);
 
-  renderOriginSummary();
   renderItineraryChat();
   renderRecommendations(recommended.sequence);
   renderItinerary(itinerary);
@@ -3213,13 +3270,6 @@ function filterPlaces(){
       score += ageAdjust[formData.age][place.physicalDemand] || 0;
     }
 
-    const originKm = originDistanceKm(place);
-    if(originKm != null && formData.origin?.nearbyFirst){
-      // Strong proximity preference, but never a hard filter: other explicit preferences can still matter.
-      score += Math.max(0, 12 - Math.min(12, originKm / 3));
-      matchedReasons.push("origin-proximity");
-    }
-
     const needs = formData.specialNeeds || [];
     if(needs.includes("youngChildren") && place.physicalDemand === "high") score -= 5;
     if(needs.includes("elderly") && place.physicalDemand === "high") score -= 5;
@@ -3244,16 +3294,8 @@ function filterPlaces(){
     scored = scored.filter(s => s.place.physicalDemand !== "high");
   }
 
-  // เรียงตามคะแนนสูงสุดก่อน; ถ้าคะแนนสูสีกันและผู้ใช้ขอใกล้ต้นทาง ให้ใช้ระยะทางเป็นตัวตัดสิน
-  scored.sort((a, b) => {
-    const diff=b.score-a.score;
-    if(Math.abs(diff) > 0.25) return diff;
-    if(formData.origin?.nearbyFirst){
-      const da=originDistanceKm(a.place), db=originDistanceKm(b.place);
-      if(da != null && db != null && da !== db) return da-db;
-    }
-    return diff;
-  });
+  // เรียงตามคะแนนสูงสุดก่อน
+  scored.sort((a, b) => b.score - a.score);
 
   const durationDaysMap = { daytrip: 1, "2d1n": 2, "3d2n": 3, "4plus": 4 };
   const neededDays = durationDaysMap[formData.duration] || 2;
@@ -3604,22 +3646,6 @@ function generateItinerary(recommended){
     const aiExtraBuffer = (aiAnalysis && aiAnalysis.timingPreference && aiAnalysis.timingPreference.extraBufferMinutes) || 0;
     const effectiveExtraBuffer = Math.max(0, aiExtraBuffer + getDayBufferDelta(d));
 
-    // ถ้ามีต้นทาง ให้แสดงเวลาเดินทางจากต้นทางไปสถานที่แรกของวัน (เป็นค่าโดยประมาณจากพิกัด ไม่ใช่เส้นทางถนนจริง)
-    const originPoint = getOriginPoint();
-    if(originPoint && effectiveMain && effectiveMain.lat != null && effectiveMain.lng != null){
-      const tempOrigin={lat:originPoint.lat,lng:originPoint.lng,axis:"land",boatRequired:false};
-      const originTravelMinutes=estimateTravelMinutes(tempOrigin,effectiveMain);
-      if(originTravelMinutes != null && originTravelMinutes > 0){
-        const departAt=subtractMinutesFromTime(mainStart,originTravelMinutes);
-        dayItinerary.activities.push({
-          time:departAt,
-          name: currentLang === "th" ? `ออกเดินทางจาก${originPoint.label}` : `Depart from ${originPoint.label}`,
-          details: currentLang === "th" ? `ไปยัง${effectiveMain.name.th} • ใช้เวลาโดยประมาณ ${originTravelMinutes} นาที` : `To ${effectiveMain.name.en} • approx. ${originTravelMinutes} minutes`,
-          cost:0, costLabel:"-"
-        });
-      }
-    }
-
     // สร้าง activity "ขึ้นเรือ" เฉพาะสถานที่ที่ boatRequired === true จริงๆ เท่านั้น (ไม่ใช่แค่มีข้อมูล departurePier อยู่
     // เช่น หาดนพรัตน์ธาราหรือคายัคอ่าวท่าเลน ที่มีท่าเรืออยู่ใกล้ๆ แต่ไม่ได้บังคับว่าต้องนั่งเรือ)
     if(effectiveMain.boatRequired && effectiveMain.departurePier){
@@ -3816,14 +3842,6 @@ function generateItinerary(recommended){
   return itinerary;
 }
 
-function renderOriginSummary(){
-  const el=document.getElementById('originSummarySection'); if(!el) return;
-  const o=getOriginPoint();
-  if(!o){ el.innerHTML=''; return; }
-  const top=PLACES.map(p=>({p,km:originDistanceKm(p)})).filter(x=>x.km!=null).sort((a,b)=>a.km-b.km).slice(0,4);
-  el.innerHTML=`<div class="origin-summary"><div class="origin-summary-title">📍 ${currentLang==='th'?'ต้นทางที่ใช้จัดทริป':'Starting point used for planning'}</div><div>${escapeHtml(o.label)}${formData.origin?.nearbyFirst?` • <strong>${currentLang==='th'?'เน้นสถานที่ใกล้ก่อน':'nearby places prioritized'}</strong>`:''}</div>${top.length?`<div>${top.map(x=>`<span class="origin-distance-pill">${escapeHtml(x.p.name[currentLang])} ~ ${x.km.toFixed(1)} กม.</span>`).join('')}</div>`:''}<div class="origin-map-note" style="margin-top:8px;">${currentLang==='th'?'ระยะทางเป็นเส้นตรงโดยประมาณจากพิกัด และไม่ได้แทนระยะทางถนน/ทางเรือจริง':'Distances are approximate straight-line distances from coordinates, not actual road/boat routes.'}</div></div>`;
-}
-
 function renderRecommendations(places){
   const section = document.getElementById("recommendationsSection");
   const mustHaveIds = new Set(getEffectiveMustHave().map(m => m.placeId));
@@ -3871,6 +3889,12 @@ function renderRecommendations(places){
     </div>
   ` : "";
 
+  const preferenceNotice = lastPreferenceConflicts.length > 0 ? `
+    <div class="ai-warning-card" style="margin-bottom:14px;">
+      <strong>${currentLang === "th" ? "⚠️ มีบางความต้องการที่ทำได้ไม่ครบ" : "⚠️ Some preferences could not be fully satisfied"}</strong>
+      ${lastPreferenceConflicts.slice(0,8).map(c => `<div class="rec-reason" style="margin-top:6px;">${currentLang === "th" ? `วันที่ ${c.day}: ระบบพยายาม${c.mode === "avoid" ? "หลีกเลี่ยง" : "จัด"} ${c.target === "water" ? "กิจกรรมทางน้ำ" : c.target === "temple" ? "วัด" : c.target} ในช่วง ${c.periods.includes("any") ? "ที่ระบุ" : c.periods.join(" และ ")} แต่ติดข้อจำกัดของสถานที่หรือเวลาที่มีอยู่` : `Day ${c.day}: the ${c.target} preference could not be fully satisfied because of place or time constraints.`}</div>`).join("")}
+    </div>` : "";
+
   const travelNotice = lastTravelWarnings.length > 0 ? `
     <div class="ai-warning-card" style="margin-bottom:14px;">
       <strong>${currentLang === "th" ? "⏱️ บางวันโปรแกรมค่อนข้างแน่น" : "⏱️ Some days are a bit tight"}</strong>
@@ -3886,6 +3910,7 @@ function renderRecommendations(places){
   section.innerHTML = `
     <h3 class="section-title" data-i18n="recommendationsTitle">${t("recommendationsTitle")}</h3>
     ${monsoonNotice}
+    ${preferenceNotice}
     ${transferNotice}
     ${travelNotice}
     ${unplacedNotice}
@@ -3980,6 +4005,7 @@ async function runAIConstraintAnalysis(){
     if(myRequestId !== aiRequestSeq) return; // คำขอเก่ากว่าที่เพิ่งตอบกลับมาช้า — มีคำขอใหม่แทนที่ไปแล้ว ไม่ต้องเอาผลนี้มาใช้
     aiAnalysis = data;
     recordLearnedPreferences(data.learnedPreferences || []);
+    syncAIPreferenceConstraints(data.preferenceConstraints || []);
   } catch(err){
     // ถ้าเรียก AI ไม่สำเร็จ (ยังไม่ตั้งค่า API key, quota เต็ม, network error ฯลฯ)
     // ให้ทำงานต่อด้วย Rule Engine/ข้อมูล structured ที่มีอยู่ แทนที่จะพังทั้งหน้า
@@ -4022,6 +4048,9 @@ function generateMockAnalysis(notesRaw, places, lang){
   const restaurantAdvice = {};
   const noteText = String(notesRaw || "").toLowerCase();
   const avoidWaterAfternoon = /ไม่อยาก.*(เล่นน้ำ|ลงน้ำ|เปียก|กิจกรรมทางน้ำ).*บ่าย|บ่าย.*(ไม่เอา|ไม่อยาก|ไม่ต้อง).*?(เล่นน้ำ|ลงน้ำ|เปียก|กิจกรรมทางน้ำ)|ไม่เอาเปียก.*บ่าย/.test(noteText);
+  const genericPreferenceConstraints = [];
+  if(avoidWaterAfternoon) genericPreferenceConstraints.push({mode:"avoid",targetType:"category",target:"water",placeIds:[],periods:["afternoon"],days:[],strength:"hard",confidence:.95});
+  if(/(ไม่อยาก|ไม่เอา|ไม่ไป|ห้าม).*?(วัด|temple).*?(วันที่\s*4|วัน\s*4)/i.test(noteText)) genericPreferenceConstraints.push({mode:"avoid",targetType:"category",target:"temple",placeIds:[],periods:["any"],days:[4],strength:"hard",confidence:.95});
 
   places.forEach(place => {
     // คำเตือนเรื่องความเหมาะสมของสถานที่
@@ -4073,6 +4102,7 @@ function generateMockAnalysis(notesRaw, places, lang){
     placeNotes,
     restaurantAdvice,
     timingPreference: avoidWaterAfternoon ? { preferredStartTime: null, mustReturnBy: null, extraBufferMinutes: null, avoidWaterAfternoon: true } : null,
+    preferenceConstraints: genericPreferenceConstraints,
     learnedPreferences: avoidWaterAfternoon ? [{ key: "avoid_water_afternoon", value: "true", confidence: 0.95, scope: "trip", day: null }] : []
   };
 }
@@ -4331,7 +4361,7 @@ const app = {
     lastTransferOnlyConflicts = [];
     resetItineraryAdjustments();
     itineraryChatHistory = [];
-    formData = { age: null, origin: { mode: "none", lat: null, lng: null, label: "", nearbyFirst: false }, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
+    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
     pushHistoryState({ screen: "home" });
     showScreen("homeScreen");
     renderCarousel();
@@ -4360,21 +4390,11 @@ const app = {
     lastTransferOnlyConflicts = [];
     resetItineraryAdjustments();
     itineraryChatHistory = [];
-    formData = { age: null, origin: { mode: "none", lat: null, lng: null, label: "", nearbyFirst: false }, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
+    formData = { age: null, style: [], subStyle: [], budget: null, transport: null, duration: null, dayTripWindow: { start: "08:00", end: "18:00" }, travelMonth: null, specialNeeds: [], mustHave: [], notes: "" };
     pushHistoryState({ screen: "aiFilter", step: 0 });
     showScreen("aiFilterScreen");
     renderAIFilterSteps();
   },
-  setOriginMode(mode){
-    formData.origin=formData.origin||{mode:'none',lat:null,lng:null,label:'',nearbyFirst:false};
-    if(mode==='map'){ formData.origin.mode='map'; if(formData.origin.lat==null||formData.origin.lng==null){formData.origin.lat=null;formData.origin.lng=null;formData.origin.label='';} }
-    if(mode==='zone'){ formData.origin.mode='zone'; }
-    renderAIFilterSteps();
-  },
-  setOrigin(mode,lat,lng,label,nearbyFirst){ setOrigin(mode,lat,lng,label,nearbyFirst); },
-  setOriginZone(zoneId){ setOriginZone(zoneId); },
-  useCurrentLocation(){ useCurrentLocation(); },
-  toggleOriginNearby(checked){ toggleOriginNearby(checked); },
   handleStepInput(stepId, value, element){
     const stepConfig = STEPS_CONFIG.find(s => s.id === stepId);
     if(stepConfig && stepConfig.type === "checkbox" && stepConfig.maxSelect){
@@ -4471,6 +4491,7 @@ const app = {
     const text=input?input.value.trim():""; if(!text||itineraryChatBusy)return;
     if(input)input.value=""; await submitItineraryAdjustmentRequest(text);
   },
+  async submitItineraryChatText(text){ if(text&&!itineraryChatBusy) await submitItineraryAdjustmentRequest(String(text)); },
   toggleAccordion(header){
     const body = header.nextElementSibling;
     const isActive = header.classList.contains("active");
@@ -4506,23 +4527,18 @@ const app = {
     // ถ้าฟอร์มปัจจุบันมีข้อมูลที่ผู้ใช้กรอกไปแล้ว (ไม่ใช่ค่าเริ่มต้นล้วนๆ) ให้ถามยืนยันก่อน ป้องกันการเขียนทับโดยไม่ตั้งใจ
   const currentHasData = Object.keys(formData).some(k => {
       const v = formData[k];
-      if(k === "origin") return !!(v && v.mode && v.mode !== "none");
       return Array.isArray(v) ? v.length > 0 : (v !== null && v !== undefined && v !== "");
     });
     if(currentHasData && !confirm(t("loadSavedConfirmOverwrite"))) return;
 
     if(data.formData && typeof data.formData === "object" && !Array.isArray(data.formData)){
       formData = data.formData;
-      itineraryAdjustments = (data.itineraryAdjustments && typeof data.itineraryAdjustments === "object") ? data.itineraryAdjustments : {dayWindows:{},dayBufferDelta:{},daySlotsOverride:{},activityTiming:{}};
+      itineraryAdjustments = (data.itineraryAdjustments && typeof data.itineraryAdjustments === "object") ? data.itineraryAdjustments : {dayWindows:{},dayBufferDelta:{},daySlotsOverride:{},activityTiming:{},preferenceConstraints:[]};
       if(data.userPreferenceMemory && typeof data.userPreferenceMemory === "object" && !Array.isArray(data.userPreferenceMemory)){ userPreferenceMemory = data.userPreferenceMemory; saveUserPreferenceMemory(); }
     } else { formData=data; resetItineraryAdjustments(); }
     if(!Array.isArray(formData.style)) formData.style = [];
     if(!Array.isArray(formData.subStyle)) formData.subStyle = formData.subStyle ? [formData.subStyle] : [];
     if(formData.travelMonth === undefined) formData.travelMonth = null;
-    if(!formData.origin || typeof formData.origin !== "object" || Array.isArray(formData.origin)) formData.origin={mode:"none",lat:null,lng:null,label:"",nearbyFirst:false};
-    if(formData.origin.lat != null) formData.origin.lat=Number(formData.origin.lat);
-    if(formData.origin.lng != null) formData.origin.lng=Number(formData.origin.lng);
-    if(typeof formData.origin.nearbyFirst !== "boolean") formData.origin.nearbyFirst=false;
     if(!Array.isArray(formData.specialNeeds)) formData.specialNeeds = formData.specialNeeds ? [formData.specialNeeds] : [];
     formData.specialNeeds = formData.specialNeeds.filter(v => typeof v === "string");
     if(!formData.dayTripWindow) formData.dayTripWindow = { start: "08:00", end: "18:00" }; // ลิงก์เก่าก่อนมี field นี้ — เติมค่า default ให้ ไม่งั้นจะ undefined ตอนใช้งาน
@@ -4615,7 +4631,7 @@ window.addEventListener("load", () => {
       lastTransferOnlyConflicts = [];
       if(data.formData && typeof data.formData === "object" && !Array.isArray(data.formData)){
         formData=data.formData;
-        itineraryAdjustments=(data.itineraryAdjustments&&typeof data.itineraryAdjustments==="object")?data.itineraryAdjustments:{dayWindows:{},dayBufferDelta:{},daySlotsOverride:{},activityTiming:{}};
+        itineraryAdjustments=(data.itineraryAdjustments&&typeof data.itineraryAdjustments==="object")?data.itineraryAdjustments:{dayWindows:{},dayBufferDelta:{},daySlotsOverride:{},activityTiming:{},preferenceConstraints:[]};
         if(data.userPreferenceMemory&&typeof data.userPreferenceMemory==="object"&&!Array.isArray(data.userPreferenceMemory)){userPreferenceMemory=data.userPreferenceMemory;saveUserPreferenceMemory();}
       } else { formData=data; resetItineraryAdjustments(); }
       // รองรับลิงก์เก่าที่แชร์ไว้ก่อนอัปเดต (ตอนนั้น subStyle ยังเป็น string เดี่ยว และยังไม่มี travelMonth/dayTripWindow) — กันไม่ให้เปิดลิงก์เก่าแล้วแอปพัง
