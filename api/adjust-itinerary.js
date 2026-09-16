@@ -64,24 +64,24 @@ set_preference({mode,targetType,target,placeIds,periods,days,strength})
 - targetType=category for semantic categories; targetType=place when referring to named places.
 - days=[] means all days in the trip.
 - periods=[] or ["any"] means all periods.
-- strength=hard for explicit prohibitions/requirements such as "ไม่เอา/ห้าม/ต้อง", otherwise soft.
+- strength=hard for explicit prohibitions/requirements such as “ไม่เอา/ห้าม/ต้อง”, otherwise soft.
 
 Examples of semantic normalization (examples are illustrative, not a closed list):
-"ไม่อยากเล่นน้ำช่วงเช้า" => avoid water, periods=[morning]
-"บ่ายไม่เอาเปียก" => avoid water, periods=[afternoon]
-"อยากเล่นน้ำทั้งเช้าเย็น" => prefer water, periods=[morning,evening]
-"ไม่เอาเล่นน้ำทั้งเช้าเย็น" => avoid water, periods=[morning,evening]
-"ไม่เล่นน้ำสองวันเลย" => avoid water, days=all trip days
-"วันที่ 1 และวันที่ 4 ไม่เอาเล่นน้ำ" => avoid water, days=[1,4], periods=any
-"วันที่ 2 อยากไปวัด แต่วันที่ 4 ไม่อยากไปวัดแล้ว" => require/prefer temple on day 2 AND avoid temple on day 4 (two commands)
-"ไม่อยากไปวัดแล้ววันที่ 4" => avoid temple, days=[4], periods=any
-"วัดถ้ำเสือไม่เอาวันที่ 4" => targetType=place with matching placeId, avoid, days=[4].
+“ไม่อยากเล่นน้ำช่วงเช้า” => avoid water, periods=[morning]
+“บ่ายไม่เอาเปียก” => avoid water, periods=[afternoon]
+“อยากเล่นน้ำทั้งเช้าเย็น” => prefer water, periods=[morning,evening]
+“ไม่เอาเล่นน้ำทั้งเช้าเย็น” => avoid water, periods=[morning,evening]
+“ไม่เล่นน้ำสองวันเลย” => avoid water, days=all trip days
+“วันที่ 1 และวันที่ 4 ไม่เอาเล่นน้ำ” => avoid water, days=[1,4], periods=any
+“วันที่ 2 อยากไปวัด แต่วันที่ 4 ไม่อยากไปวัดแล้ว” => require/prefer temple on day 2 AND avoid temple on day 4 (two commands)
+“ไม่อยากไปวัดแล้ววันที่ 4” => avoid temple, days=[4], periods=any
+“วัดถ้ำเสือไม่เอาวันที่ 4” => targetType=place with matching placeId, avoid, days=[4].
 
-Use current itinerary context and the recent conversation to understand references such as "อีกวัน", "วันนั้น", "ที่นี่", "อันนั้น", and answers to your own previous clarification questions. The conversation is cumulative: do not treat the latest user message as isolated. If a critical reference is genuinely ambiguous, set status=clarify and ask ONE concise, specific question in the user's language. Do not guess a day or place when ambiguity changes the meaning.
+Use current itinerary context and the recent conversation to understand references such as “อีกวัน”, “วันนั้น”, “ที่นี่”, “อันนั้น”, and answers to your own previous clarification questions. The conversation is cumulative: do not treat the latest user message as isolated. If a critical reference is genuinely ambiguous, set status=clarify and ask ONE concise, specific question in the user's language. Do not guess a day or place when ambiguity changes the meaning.
 
 IMPORTANT CONVERSATION RULE: Never use no_match merely because the user uses an unfamiliar word, slang, typo, indirect wording, or a phrase not listed in the examples. First infer its likely meaning from context. If there is still insufficient evidence, use status=clarify and ask a useful question that helps you learn the missing meaning. After the user answers, use the previous turns to resolve it. Do not discard the request.
 
-Persistence: If the user clearly states a stable preference (e.g. "โดยปกติฉันไม่ชอบ...", "จำไว้ว่าฉัน..." or an unqualified recurring preference), return learnedPreferences with a canonical key/value and confidence >= 0.80. A one-off day-specific instruction should normally remain a trip command, not a permanent preference.
+Persistence: If the user clearly states a stable preference (e.g. “โดยปกติฉันไม่ชอบ...”, “จำไว้ว่าฉัน...” or an unqualified recurring preference), return learnedPreferences with a canonical key/value and confidence >= 0.80. A one-off day-specific instruction should normally remain a trip command, not a permanent preference.
 
 Other supported edits remain: set_day_window(day,startTime,endTime), set_buffer(day,bufferDeltaMinutes), add_place(day,placeId), remove_place(day,placeId), swap_places(day,placeId,toPlaceId).
 
@@ -150,13 +150,12 @@ export default async function handler(req,res){
     status='apply';
   }else if(result.status==='clarify' || clarificationQuestion || result.status==='no_match'){
     // no_match is intentionally converted into a conversational clarification state.
-    // This prevents the UI from saying "unsupported" and ending the learning loop.
+    // This prevents the UI from saying “unsupported” and ending the learning loop.
     status='clarify';
     if(!clarificationQuestion){
       clarificationQuestion=lang==='th'
         ? 'ฉันยังไม่แน่ใจว่าคุณหมายถึงอะไร ขอรายละเอียดเพิ่มนิดหนึ่งได้ไหม — คุณต้องการปรับสถานที่ กิจกรรม ช่วงเวลา หรือวันที่ไหน? ถ้ามีคำเฉพาะที่ใช้เรียกสิ่งนั้น บอกความหมายหรือยกตัวอย่างให้ฉันได้เลย'
         : 'I am not fully sure what you mean yet. Could you clarify the place, activity, time period, or day? If you used a special term, briefly explain what it means or give an example.';
-    }
   }else{
     status='clarify';
     clarificationQuestion=lang==='th'?'ขอรายละเอียดเพิ่มอีกนิด เพื่อให้ฉันตีความและปรับโปรแกรมได้ถูกต้อง':'I need one more detail so I can interpret and adjust the itinerary correctly.';
