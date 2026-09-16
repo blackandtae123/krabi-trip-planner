@@ -3,55 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>AI Planner Krabi for Foreigners — Smart Krabi Travel Planning</title>
-<meta name="description" content="AI Planner Krabi for Foreigners — plan a personalized Krabi trip with an AI travel companion.">
+<title>Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด</title>
+<meta name="description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
-<meta property="og:title" content="AI Planner Krabi for Foreigners">
-<meta property="og:description" content="A natural, modern AI travel planner for discovering and planning Krabi.">
+<meta property="og:title" content="Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด">
+<meta property="og:description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
 <meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=1200">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AI Planner Krabi for Foreigners">
-<meta name="twitter:description" content="A natural, modern AI travel planner for discovering and planning Krabi.">
+<meta name="twitter:title" content="Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด">
+<meta name="twitter:description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
 <meta name="twitter:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=1200">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/design-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --green:#6B9B7E;
-    --turquoise:#2FA9A4;
-    --turquoise-dark:#238984;
-    --cream:#F8F6F1;
-    --gray:#9C9A94;
-    --gray-light:#E8DCC8;
-    --brown:#C9A876;
-    --text:#2E3B3A;
-    --text-muted:#77837F;
-    --border:#E7E2D6;
-    --radius-xl:28px;
-    --radius-lg:22px;
-    --radius-md:16px;
-    --radius-sm:12px;
-    --shadow-sm: 0 2px 8px rgba(46,59,58,0.06);
-    --shadow-md: 0 8px 24px rgba(47,169,164,0.12), 0 2px 6px rgba(46,59,58,0.05);
-    --shadow-lg: 0 16px 40px rgba(47,169,164,0.16), 0 4px 12px rgba(46,59,58,0.06);
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    /* ==========================================================
+       AI PLANNER KRABI — NATURAL EARTHY HARMONY
+       60% Meadow Olive / 30% Horizon Blue / 10% Wild Poppy Amber
+       ========================================================== */
+    --olive-900:#23291B;
+    --olive-800:#3A462A;
+    --olive-700:#445234;
+    --olive-600:#536338;
+    --olive-400:#7C8C5E;
+    --olive-200:#C3CDAF;
+    --olive-100:#EDF0E5;
+    --olive-050:#F6F7F1;
+
+    --blue-800:#2E4C66;
+    --blue-700:#3F6280;
+    --blue-600:#5A83A2;
+    --blue-300:#A9C1D4;
+    --blue-100:#E7EEF4;
+
+    --amber-700:#A84D1F;
+    --amber-600:#C75E29;
+    --amber-500:#E57338;
+    --amber-200:#F5C5A5;
+    --amber-100:#FBEADF;
+
+    --neutral-000:#FFFFFF;
+    --neutral-050:#F6F5F0;
+    --neutral-100:#EFEDE5;
+    --neutral-200:#E2E0D6;
+    --neutral-400:#A9A79A;
+    --neutral-600:#6E7264;
+    --neutral-800:#3D4036;
+
+    /* Legacy aliases kept so existing components keep working. */
+    --green:var(--olive-600);
+    --turquoise:var(--blue-600);
+    --turquoise-dark:var(--blue-700);
+    --cream:var(--neutral-050);
+    --gray:var(--neutral-400);
+    --gray-light:var(--neutral-200);
+    --brown:var(--amber-500);
+    --text:var(--olive-900);
+    --text-muted:var(--neutral-600);
+    --border:var(--neutral-200);
+
+    --shadow-sm:0 2px 8px rgba(35,41,27,0.06);
+    --shadow-md:0 10px 28px rgba(35,41,27,0.10);
+    --shadow-lg:0 24px 56px rgba(35,41,27,0.16);
+
+    --safe-top:env(safe-area-inset-top, 0px);
+    --safe-bottom:env(safe-area-inset-bottom, 0px);
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
   html, body{
-    background:linear-gradient(180deg, #F4FAF8 0%, var(--cream) 320px);
+    background:linear-gradient(180deg, #F6F7F1 0%, var(--cream) 320px);
     color:var(--text);
-    font-family:'Inter', sans-serif;
+    font-family:'Anuphan', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing:antialiased;
     line-height:1.6;
   }
   body{
     min-height:100vh;
+    overflow-x:hidden;
   }
-  h1, h2, h3, h4{ font-family:'Poppins', sans-serif; font-weight:600; }
+  button, input, textarea, select{ font-family:inherit; }
+  :focus-visible{
+    outline:3px solid rgba(63,98,128,.35);
+    outline-offset:2px;
+  }
+  h1, h2, h3, h4{ font-family:'Anuphan', system-ui, -apple-system, sans-serif; font-weight:600; }
 
   /* ---------- screen container ---------- */
   .container{
@@ -71,7 +108,7 @@
   }
   .home-header{
     padding: calc(32px + var(--safe-top)) 24px 28px;
-    background:linear-gradient(135deg, var(--turquoise) 0%, var(--green) 100%);
+    background:linear-gradient(135deg, var(--olive-600) 0%, var(--olive-700) 100%);
     color:#fff;
     text-align:center;
     border-radius: 0 0 var(--radius-xl) var(--radius-xl);
@@ -108,7 +145,7 @@
     margin:24px 20px;
     padding:26px 22px;
     background:#fff;
-    border:1.5px solid rgba(47,169,164,0.35);
+    border:1.5px solid rgba(90,131,162,0.35);
     border-radius:var(--radius-lg);
     box-shadow: var(--shadow-sm);
     text-align:center;
@@ -146,7 +183,7 @@
     display:flex;
     flex-direction:column;
   }
-  .place-card:hover{ box-shadow: var(--shadow-lg); transform: translateY(-5px); border-color: rgba(47,169,164,0.3); }
+  .place-card:hover{ box-shadow: var(--shadow-lg); transform: translateY(-5px); border-color: rgba(90,131,162,0.3); }
   .place-card:focus-visible, .recommendation-card:focus-visible{
     outline: 3px solid var(--turquoise);
     outline-offset: 2px;
@@ -154,7 +191,7 @@
   
   .place-image{
     height:200px;
-    background:linear-gradient(135deg, #EAF7F5, #DCEEE9);
+    background:linear-gradient(135deg, #E7EEF4, #E7EEF4);
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -172,7 +209,7 @@
     position:absolute;
     bottom:8px;
     right:8px;
-    background:rgba(46,59,58,0.72);
+    background:rgba(35,41,27,0.72);
     color:#fff;
     font-size:10px;
     font-weight:600;
@@ -336,7 +373,7 @@
     background:#fff;
   }
   .chip-option input:checked + label{
-    background:linear-gradient(135deg, var(--turquoise) 0%, var(--green) 100%);
+    background:linear-gradient(135deg, var(--olive-600) 0%, var(--olive-700) 100%);
     border-color:transparent;
     color:#fff;
     box-shadow: var(--shadow-sm);
@@ -364,21 +401,21 @@
     font-size:10.5px;
     font-weight:700;
     color:#fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    box-shadow: 0 2px 8px rgba(35,41,27,0.16);
     backdrop-filter: blur(2px);
     white-space:nowrap;
   }
-  .place-badge.badge-popular{ background:linear-gradient(135deg, #E8A33D, #D9822A); }
+  .place-badge.badge-popular{ background:linear-gradient(135deg, #E57338, #C75E29); }
   .place-badge.badge-kid{ background:linear-gradient(135deg, var(--turquoise), var(--turquoise-dark)); }
-  .place-badge.badge-pinned{ background:linear-gradient(135deg, var(--green), #4E7A5E); }
-  .place-badge.badge-closed{ background:linear-gradient(135deg, #8a8a8a, #5c5c5c); }
+  .place-badge.badge-pinned{ background:linear-gradient(135deg, var(--green), #445234); }
+  .place-badge.badge-closed{ background:linear-gradient(135deg, #6E7264, #3D4036); }
 
   .text-input{
     width:100%;
     padding:14px 16px;
     border:1.5px solid var(--border);
     border-radius:var(--radius-md);
-    font-family:'Inter', sans-serif;
+    font-family:'Anuphan', system-ui, -apple-system, sans-serif;
     font-size:14px;
     background:var(--cream);
     color:var(--text);
@@ -388,7 +425,7 @@
     outline:none;
     border-color:var(--turquoise);
     background:#fff;
-    box-shadow: 0 0 0 4px rgba(47,169,164,0.12);
+    box-shadow: 0 0 0 4px rgba(90,131,162,0.12);
   }
 
   .step-progress{
@@ -435,10 +472,10 @@
     border:1.5px solid var(--border);
     color:var(--text);
   }
-  .btn-back:hover{ background:#EFEAE0; }
+  .btn-back:hover{ background:#EFEDE5; }
   .btn-back:disabled{ opacity:.5; cursor:not-allowed; }
   .btn-next{
-    background:linear-gradient(135deg, var(--turquoise) 0%, var(--green) 100%);
+    background:linear-gradient(135deg, var(--olive-600) 0%, var(--olive-700) 100%);
     color:#fff;
     box-shadow: var(--shadow-md);
   }
@@ -495,7 +532,7 @@
     margin-bottom:14px;
     transition: all .2s ease;
   }
-  .recommendation-card:hover{ box-shadow: var(--shadow-sm); border-color: rgba(47,169,164,0.3); }
+  .recommendation-card:hover{ box-shadow: var(--shadow-sm); border-color: rgba(90,131,162,0.3); }
   .recommendation-card:last-child{ margin-bottom:0; }
   .rec-name{ font-size:15.5px; font-weight:700; color:var(--text); margin-bottom:5px; }
   .rec-reason{ font-size:13px; color:var(--text-muted); line-height:1.6; }
@@ -575,7 +612,7 @@
 
   .ai-warning-card{
     padding:16px 18px;
-    background:#FFF8EA;
+    background:#FBEADF;
     border:1.5px solid var(--brown);
     border-radius:var(--radius-md);
     box-shadow: var(--shadow-sm);
@@ -586,7 +623,7 @@
 
   .ai-restaurant-advice{
     padding:14px 16px;
-    background:#EAF7F5;
+    background:#E7EEF4;
     border-left:3.5px solid var(--turquoise);
     border-radius:var(--radius-sm);
     font-size:13px;
@@ -603,8 +640,8 @@
   }
 
   .day-guide-intro{
-    background:linear-gradient(135deg, #F0F7F4 0%, #EAF7F5 100%);
-    border:1px solid rgba(47,169,164,0.22);
+    background:linear-gradient(135deg, #EDF0E5 0%, #E7EEF4 100%);
+    border:1px solid rgba(90,131,162,0.22);
     border-radius:var(--radius-md);
     padding:16px 17px;
     margin-bottom:16px;
@@ -614,7 +651,7 @@
   .place-guide-note{
     margin-top:8px;
     padding:10px 12px;
-    background:#F8FBFA;
+    background:#F6F7F1;
     border-left:3px solid var(--green);
     border-radius:var(--radius-sm);
     font-size:12.5px;
@@ -651,7 +688,7 @@
     color:var(--text);
   }
   .accordion-header:hover{ background:var(--cream); }
-  .accordion-header.active{ background:#EAF7F5; color:var(--turquoise-dark); }
+  .accordion-header.active{ background:#E7EEF4; color:var(--turquoise-dark); }
   .accordion-icon{
     width:20px;
     height:20px;
@@ -695,7 +732,7 @@
   .activity-cost{ font-size:12px; color:var(--brown); font-weight:600; }
 
   .day-summary{
-    background:#F0F7F4;
+    background:#EDF0E5;
     padding:14px 16px;
     border-radius:var(--radius-md);
     margin-top:18px;
@@ -714,15 +751,15 @@
   .itinerary-chat-input:focus{ border-color:var(--turquoise); }
   .itinerary-chat-send{ min-width:82px; min-height:44px; border:none; border-radius:var(--radius-md); background:linear-gradient(135deg,var(--turquoise) 0%,var(--green) 100%); color:#fff; font-weight:700; cursor:pointer; }
   .itinerary-chat-send:disabled{ opacity:.55; cursor:wait; }
-  .itinerary-chat-quick{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}.itinerary-chat-chip{border:1px solid #cfe3df;background:#f3faf8;border-radius:999px;padding:7px 11px;cursor:pointer;font:inherit}.itinerary-chat-chip:hover{filter:brightness(.97)}
+  .itinerary-chat-quick{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}.itinerary-chat-chip{border:1px solid #C3CDAF;background:#EDF0E5;border-radius:999px;padding:7px 11px;cursor:pointer;font:inherit}.itinerary-chat-chip:hover{filter:brightness(.97)}
     .itinerary-chat-status{ margin-top:10px; font-size:12.5px; line-height:1.55; white-space:pre-line; }
   .itinerary-chat-status.ok{ color:var(--turquoise-dark); }
-  .itinerary-chat-status.error{ color:#B94B30; }
+  .itinerary-chat-status.error{ color:#A84D1F; }
   .itinerary-chat-status.loading{ color:var(--text-muted); }
   .itinerary-chat-history{ display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
   .itinerary-chat-bubble{ max-width:92%; padding:9px 11px; border-radius:12px; font-size:12.5px; line-height:1.5; white-space:pre-line; }
-  .itinerary-chat-bubble.user{ align-self:flex-end; background:#F0F7F4; color:var(--text); }
-  .itinerary-chat-bubble.assistant{ align-self:flex-start; background:#F7F3EA; color:var(--text); }
+  .itinerary-chat-bubble.user{ align-self:flex-end; background:#EDF0E5; color:var(--text); }
+  .itinerary-chat-bubble.assistant{ align-self:flex-start; background:#F6F5F0; color:var(--text); }
   @media(max-width:600px){ .itinerary-chat-row{ align-items:stretch; } .itinerary-chat-send{ min-width:72px; } }
 
   .share-buttons{
@@ -759,7 +796,7 @@
   .back-btn-results{
     width:100%;
     padding:15px;
-    background:linear-gradient(135deg, var(--turquoise) 0%, var(--green) 100%);
+    background:linear-gradient(135deg, var(--olive-600) 0%, var(--olive-700) 100%);
     color:#fff;
     border:none;
     border-radius:var(--radius-md);
@@ -785,7 +822,7 @@
     width:100%;
     text-align:center;
     padding:13px;
-    background:linear-gradient(135deg, var(--turquoise) 0%, var(--green) 100%);
+    background:linear-gradient(135deg, var(--olive-600) 0%, var(--olive-700) 100%);
     color:#fff;
     text-decoration:none;
     border-radius:var(--radius-md);
@@ -798,7 +835,7 @@
 
   .map-box{
     height:160px;
-    background:linear-gradient(135deg, #EAF7F5, #F0EDE4);
+    background:linear-gradient(135deg, #E7EEF4, #EFEDE5);
     border:1.5px dashed var(--border);
     border-radius:var(--radius-md);
     display:flex;
@@ -832,7 +869,7 @@
   .qr-modal-backdrop{
     position:fixed;
     inset:0;
-    background:rgba(46,59,58,0.55);
+    background:rgba(35,41,27,0.55);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -865,7 +902,7 @@
     padding:12px;
     border:none;
     border-radius:var(--radius-md);
-    background:linear-gradient(135deg, var(--turquoise) 0%, var(--green) 100%);
+    background:linear-gradient(135deg, var(--olive-600) 0%, var(--olive-700) 100%);
     color:#fff;
     font-weight:600;
     font-size:13.5px;
@@ -882,7 +919,7 @@
     .home-header{ background:#fff !important; color:var(--text) !important; box-shadow:none !important; border-radius:0 !important; }
     .recommendations-section, .itinerary-section, .recommendation-card{
       box-shadow:none !important;
-      border:1px solid #ccc !important;
+      border:1px solid #A9A79A !important;
       break-inside: avoid;
     }
     .accordion-body{ max-height:none !important; }
@@ -893,246 +930,6 @@
     #resultsScreen{ display:block !important; }
   }
 </style>
-
-<style id="ai-planner-phase2-overrides">
-/* ============================================================
-   AI PLANNER KRABI — PHASE 2 VISUAL IMPLEMENTATION
-   Tokens live in /design-tokens.css. This layer intentionally
-   overrides the legacy visual shell without rewriting app logic.
-   ============================================================ */
-:root{
-  --green:var(--olive-600);
-  --turquoise:var(--blue-600);
-  --turquoise-dark:var(--blue-700);
-  --cream:var(--neutral-050);
-  --gray:var(--neutral-400);
-  --gray-light:var(--neutral-100);
-  --brown:var(--amber-500);
-  --text:var(--color-text-primary);
-  --text-muted:var(--color-text-secondary);
-  --border:var(--color-border);
-  --radius-xl:var(--radius-lg);
-  --radius-lg:20px;
-  --radius-md:14px;
-  --radius-sm:10px;
-  --shadow-sm:var(--shadow-sm);
-  --shadow-md:var(--shadow-md);
-  --shadow-lg:var(--shadow-lg);
-}
-
-html,body{
-  background:var(--color-background);
-  color:var(--color-text-primary);
-  font-family:var(--font-sans);
-}
-body{line-height:var(--leading-normal);}
-h1,h2,h3,h4{font-family:var(--font-sans);}
-
-/* ---------- shared shell ---------- */
-.screen{background:var(--color-background);}
-.container{max-width:var(--container-max); padding-inline:var(--gutter);}
-
-/* ---------- home ---------- */
-.home-header{
-  position:relative;
-  isolation:isolate;
-  text-align:left;
-  padding:clamp(52px,8vw,92px) clamp(22px,5vw,72px) clamp(44px,7vw,72px);
-  background:var(--olive-900);
-  color:var(--color-text-on-dark);
-  border-radius:0 0 var(--radius-lg) var(--radius-lg);
-  box-shadow:none;
-  overflow:hidden;
-}
-.home-header::after{
-  content:"";
-  position:absolute;
-  inset:auto -8% -45% auto;
-  width:min(50vw,520px);
-  aspect-ratio:1;
-  border:1px solid rgba(242,243,236,.08);
-  border-radius:50%;
-  pointer-events:none;
-}
-.home-header h1{
-  max-width:9ch;
-  font-size:clamp(34px,7vw,62px);
-  line-height:1.02;
-  letter-spacing:-.02em;
-  margin:0 0 16px;
-}
-.home-header p{
-  max-width:52ch;
-  font-size:clamp(14px,2vw,18px);
-  line-height:1.65;
-  color:rgba(242,243,236,.78);
-  margin:0;
-}
-.lang-switch-home{
-  position:absolute;
-  top:calc(18px + var(--safe-top));
-  right:clamp(18px,4vw,56px);
-  gap:6px;
-  z-index:2;
-  padding:4px;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:var(--radius-pill);
-  background:rgba(35,41,27,.45);
-  -webkit-backdrop-filter:blur(16px);
-  backdrop-filter:blur(16px);
-}
-.lang-btn{
-  padding:7px 11px;
-  border:0;
-  border-radius:999px;
-  background:transparent;
-  color:rgba(255,255,255,.78);
-  box-shadow:none;
-}
-.lang-btn.active{background:rgba(255,255,255,.14);color:#fff;}
-
-.ai-filter-banner{
-  margin:28px clamp(18px,4vw,56px);
-  padding:24px 24px;
-  background:var(--color-surface);
-  border:1px solid var(--color-border);
-  border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-sm);
-  text-align:left;
-}
-.ai-filter-banner#aiFilterBtn{
-  background:var(--olive-600);
-  color:#fff;
-  border-color:var(--olive-600);
-  position:relative;
-  overflow:hidden;
-}
-.ai-filter-banner#aiFilterBtn::after{
-  content:"";
-  position:absolute;
-  width:180px;height:180px;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:50%;
-  right:-50px;top:-70px;
-}
-.ai-filter-banner#aiFilterBtn h3{color:#fff;position:relative;z-index:1;}
-.ai-filter-banner#aiFilterBtn p{color:rgba(255,255,255,.78);position:relative;z-index:1;}
-.ai-filter-banner:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
-.ai-filter-banner#aiFilterBtn:hover{border-color:var(--olive-700);background:var(--olive-700);}
-.ai-filter-banner h3{font-size:19px;color:var(--color-primary-strong);}
-.ai-filter-banner p{font-size:14px;}
-
-.place-carousel-container{padding:10px clamp(18px,4vw,56px) 44px;}
-.carousel-label{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;}
-.carousel{gap:14px;padding:2px 2px 14px;}
-.place-card{
-  flex-basis:clamp(255px,28vw,310px);
-  min-height:350px;
-  border-radius:18px;
-  border:1px solid var(--color-border);
-  box-shadow:var(--shadow-sm);
-}
-.place-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--olive-200);}
-.place-image{height:210px;background:var(--olive-100);}
-.place-region{color:var(--blue-700);}
-.place-name{font-size:18px;}
-.place-season{color:var(--amber-700);}
-.illustrative-badge{background:rgba(35,41,27,.62);backdrop-filter:blur(8px);}
-
-/* ---------- AI flow ---------- */
-.ai-filter-screen{padding:clamp(20px,5vw,48px) clamp(18px,4vw,48px) calc(28px + var(--safe-bottom));}
-.ai-filter-header{text-align:left;max-width:720px;margin:0 auto 28px;}
-.ai-filter-header h2{font-size:clamp(30px,5vw,46px);line-height:1.1;color:var(--olive-900);margin-bottom:10px;}
-.ai-filter-header p{font-size:15px;color:var(--neutral-600);}
-.ai-steps-container{max-width:760px;}
-.step-card{
-  background:var(--color-surface);
-  border:1px solid var(--color-border);
-  border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-sm);
-  padding:clamp(22px,4vw,36px);
-  text-align:left;
-}
-.step-card h3{font-size:clamp(22px,4vw,30px);color:var(--olive-900);}
-.step-number{color:var(--blue-700);}
-.step-card .subtitle{color:var(--neutral-600);}
-.step-buttons{display:flex;gap:12px;justify-content:space-between;margin-top:16px;}
-.btn-back,.btn-next{
-  min-height:48px;
-  border-radius:12px;
-  padding:0 20px;
-  font:inherit;
-  font-weight:600;
-  cursor:pointer;
-  transition:transform .2s var(--ease-out),box-shadow .2s var(--ease-out),background .2s ease;
-}
-.btn-back{background:transparent;border:1px solid var(--color-border);color:var(--olive-900);}
-.btn-next{background:var(--amber-600);border:1px solid var(--amber-600);color:#fff;box-shadow:var(--shadow-sm);}
-.btn-back:hover,.btn-next:hover{transform:translateY(-1px);}
-.btn-next:hover{background:var(--amber-700);}
-
-/* ---------- results ---------- */
-.results-screen,.place-detail-screen{padding:clamp(22px,4vw,48px) clamp(18px,4vw,56px) calc(28px + var(--safe-bottom));}
-.results-header{text-align:left;max-width:1180px;margin:0 auto 24px;}
-.results-header h2{font-size:clamp(30px,5vw,46px);line-height:1.08;color:var(--olive-900);}
-.results-header p{font-size:15px;color:var(--neutral-600);}
-.results-container{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr);gap:20px;align-items:start;}
-.itinerary-chat-section{grid-column:1/-1;margin:0;}
-.itinerary-chat-card{background:var(--olive-900);border:1px solid rgba(255,255,255,.08);color:var(--color-text-on-dark);border-radius:20px;box-shadow:none;padding:20px;}
-.itinerary-chat-title{color:#fff;font-size:18px;}
-.itinerary-chat-hint{color:rgba(242,243,236,.7);}
-.itinerary-chat-input{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;border-radius:12px;}
-.itinerary-chat-input::placeholder{color:rgba(255,255,255,.5);}
-.itinerary-chat-input:focus{border-color:var(--blue-300);}
-.itinerary-chat-send{background:var(--amber-600);border-radius:12px;}
-.recommendations-section,.itinerary-section,.budget-summary-section{
-  background:var(--color-surface);
-  border:1px solid var(--color-border);
-  border-radius:20px;
-  box-shadow:var(--shadow-sm);
-}
-.recommendations-section{padding:22px;margin:0;}
-.itinerary-section{margin:0;overflow:hidden;}
-.budget-summary-section{margin:0;padding:22px;}
-.share-buttons{margin:0;}
-.section-title{font-size:17px;color:var(--olive-900);}
-.section-title::before{background:var(--amber-600);width:3px;}
-.recommendation-card{background:var(--neutral-050);border-color:var(--color-border);border-radius:14px;}
-.recommendation-card:hover{border-color:var(--olive-200);box-shadow:var(--shadow-sm);}
-.rec-name{color:var(--olive-900);}
-.rec-reason{color:var(--neutral-600);}
-.day-guide-intro{background:var(--olive-050);border-color:var(--olive-200);}
-.day-guide-title{color:var(--olive-800);}
-.ai-warning-card{background:var(--amber-100);border-color:var(--amber-200);}
-.ai-restaurant-advice{background:var(--blue-100);border-left-color:var(--blue-700);}
-.accordion-header{background:var(--color-surface);color:var(--olive-900);padding:20px 22px;}
-.accordion-header:hover{background:var(--olive-050);}
-.accordion-header.active{background:var(--olive-100);color:var(--olive-800);}
-.accordion-icon{color:var(--blue-700);}
-.accordion-content{background:var(--color-surface);}
-.time-badge{color:var(--blue-700);}
-.activity-cost{color:var(--amber-700);}
-.day-summary{background:var(--olive-050);}
-.day-summary strong{color:var(--olive-800);}
-
-/* ---------- selective glass ---------- */
-.ai-status-glass,.floating-glass,.map-glass{border-radius:14px;}
-
-/* ---------- responsive ---------- */
-@media (max-width:900px){
-  .results-container{grid-template-columns:1fr;}
-  .budget-summary-section,.share-buttons{grid-column:auto;}
-}
-@media (max-width:640px){
-  .home-header h1{max-width:11ch;font-size:38px;}
-  .home-header{padding-top:74px;}
-  .ai-filter-banner{margin-left:18px;margin-right:18px;}
-  .step-buttons{position:sticky;bottom:10px;z-index:20;background:rgba(246,247,241,.88);backdrop-filter:blur(12px);padding:8px;border:1px solid rgba(35,41,27,.08);border-radius:14px;}
-  .results-container{gap:14px;}
-  .results-header h2{font-size:32px;}
-}
-</style>
-
 </head>
 <body>
 
@@ -1143,7 +940,7 @@ h1,h2,h3,h4{font-family:var(--font-sans);}
       <button class="lang-btn active" data-lang="th" aria-pressed="true">TH</button>
       <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
     </div>
-    <h1 data-i18n="homeTitle">AI Planner Krabi for Foreigners</h1>
+    <h1 data-i18n="homeTitle">Krabi Trip Planner</h1>
     <p data-i18n="homeSubtitle">ค้นหาสถานที่ที่เหมาะสมกับคุณ หรือให้เอไอช่วยจัดโปรแกรมตามที่ต้องการ</p>
   </div>
 
@@ -4830,7 +4627,7 @@ const app = {
 
     const wrap = document.getElementById("qrCanvasWrap");
     if(typeof QRCode !== "undefined"){
-      new QRCode(wrap, { text: link, width: 200, height: 200, colorDark: "#2E3B3A", colorLight: "#ffffff" });
+      new QRCode(wrap, { text: link, width: 200, height: 200, colorDark: "#23291B", colorLight: "#ffffff" });
     } else {
       // ถ้าโหลด library จาก CDN ไม่สำเร็จ (เช่น ไม่มีอินเทอร์เน็ตตอนนั้น) ให้ fallback เป็นลิงก์ให้คัดลอกแทน ไม่ปล่อยว่างเปล่า
       wrap.innerHTML = `<div style="width:200px; padding:20px; font-size:12px; color:var(--text-muted); line-height:1.5;">${currentLang === "th" ? "โหลด QR ไม่สำเร็จ (ต้องมีอินเทอร์เน็ต) — คัดลอกลิงก์แทนได้:" : "QR failed to load (needs internet) — copy the link instead:"}<br><br><code style="word-break:break-all; font-size:10px;">${link}</code></div>`;
