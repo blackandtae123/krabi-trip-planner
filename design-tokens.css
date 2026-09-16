@@ -1,0 +1,264 @@
+/* ============================================================
+   AI PLANNER KRABI — DESIGN TOKENS  (Phase 2)
+   วางแทนบล็อก :root เดิม (index.html บรรทัด 21–41)
+
+   และเปลี่ยน <link> ฟอนต์ในบรรทัด 19 เป็น:
+   <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@200..700&display=swap" rel="stylesheet">
+   ============================================================ */
+
+:root{
+
+  /* ---------- 1. BRAND / 60-30-10 ---------- */
+  /* 60% olive — สีหลัก ตัวตนของแบรนด์ พื้นเข้ม หัวเรื่อง */
+  --olive-900:#23291B;
+  --olive-800:#3A462A;
+  --olive-700:#445234;
+  --olive-600:#536338;   /* base ตาม brief */
+  --olive-400:#7C8C5E;
+  --olive-200:#C3CDAF;
+  --olive-100:#EDF0E5;
+  --olive-050:#F6F7F1;
+
+  /* 30% blue — สีรอง ทะเล ข้อมูล สถานะ */
+  --blue-800:#2E4C66;
+  --blue-700:#3F6280;   /* ใช้เป็นตัวหนังสือได้ (~5.9:1 บนขาว) */
+  --blue-600:#5A83A2;   /* base ตาม brief — พื้น/เส้น/ไอคอน ไม่ใช่ตัวหนังสือเล็ก */
+  --blue-300:#A9C1D4;
+  --blue-100:#E7EEF4;
+
+  /* 10% amber — สีเน้น การกระทำหลัก */
+  --amber-700:#A84D1F;
+  --amber-600:#C75E29;   /* พื้นปุ่มหลัก ขาวบนนี้ผ่าน AA (~4.6:1) */
+  --amber-500:#E57338;   /* base ตาม brief — เส้น ไอคอน ไฮไลต์ ห้ามใช้เป็นตัวหนังสือเล็ก */
+  --amber-200:#F5C5A5;
+  --amber-100:#FBEADF;
+
+  /* ---------- 2. NEUTRAL ---------- */
+  --neutral-000:#FFFFFF;
+  --neutral-050:#F6F5F0;   /* พื้นหลังหลัก อมมะกอกจางๆ */
+  --neutral-100:#EFEDE5;
+  --neutral-200:#E2E0D6;
+  --neutral-400:#A9A79A;
+  --neutral-600:#6E7264;
+  --neutral-800:#3D4036;
+
+  /* ---------- 3. SEMANTIC ---------- */
+  --color-primary:var(--olive-600);
+  --color-primary-hover:var(--olive-700);
+  --color-primary-strong:var(--olive-800);
+  --color-primary-soft:var(--olive-100);
+
+  --color-secondary:var(--blue-600);
+  --color-secondary-text:var(--blue-700);
+  --color-secondary-soft:var(--blue-100);
+
+  --color-accent:var(--amber-500);
+  --color-accent-action:var(--amber-600);  /* พื้นปุ่ม CTA */
+  --color-accent-hover:var(--amber-700);
+  --color-accent-soft:var(--amber-100);
+
+  --color-background:var(--neutral-050);
+  --color-surface:var(--neutral-000);
+  --color-surface-sunken:var(--neutral-100);
+  --color-surface-inverse:var(--olive-900);
+
+  --color-text-primary:var(--olive-900);
+  --color-text-secondary:var(--neutral-600);
+  --color-text-muted:var(--neutral-400);
+  --color-text-on-dark:#F2F3EC;
+  --color-text-on-accent:#FFFFFF;
+
+  --color-border:var(--neutral-200);
+  --color-border-strong:var(--olive-200);
+  --color-focus:var(--blue-700);
+  --color-overlay:rgba(35,41,27,0.48);
+
+  /* สถานะ — ดึงจาก palette เดิม ไม่เติมสีแบรนด์ใหม่ */
+  --color-info:var(--blue-700);
+  --color-info-soft:var(--blue-100);
+  --color-caution:var(--amber-600);
+  --color-caution-soft:var(--amber-100);
+  --color-positive:var(--olive-600);
+  --color-positive-soft:var(--olive-100);
+
+  /* ---------- 4. TYPE ---------- */
+  --font-sans:'Anuphan', system-ui, -apple-system, sans-serif;
+
+  --text-caption:0.75rem;    /* 12 */
+  --text-small:0.875rem;     /* 14 */
+  --text-body:1rem;          /* 16 */
+  --text-body-lg:1.125rem;   /* 18 */
+  --text-h4:1.25rem;         /* 20 */
+  --text-h3:1.5rem;          /* 24 */
+  --text-h2:1.875rem;        /* 30 */
+  --text-h1:2.375rem;        /* 38 */
+  --text-display:3rem;       /* 48 */
+
+  --weight-regular:400;
+  --weight-medium:500;
+  --weight-semibold:600;
+  --weight-bold:700;
+
+  /* ไทยต้องการ line-height สูงกว่าละตินเพื่อไม่ให้สระบน/ล่างชนบรรทัดข้างเคียง */
+  --leading-tight:1.25;      /* หัวเรื่องใหญ่ */
+  --leading-snug:1.45;       /* หัวเรื่องย่อย ปุ่ม */
+  --leading-normal:1.7;      /* เนื้อความ */
+  --tracking-tight:-0.01em;  /* ใช้เฉพาะ display ละติน ห้ามใช้กับไทย */
+  --measure:64ch;            /* ความยาวบรรทัดสูงสุดของเนื้อความ */
+
+  /* ---------- 5. SPACE ---------- */
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:20px;
+  --space-6:24px;
+  --space-8:32px;
+  --space-10:40px;
+  --space-14:56px;
+  --space-18:72px;
+  --space-24:96px;
+
+  --container-max:1180px;
+  --container-text:720px;
+  --gutter:var(--space-5);
+
+  /* ---------- 6. RADIUS ---------- */
+  --radius-xs:6px;    /* input, chip, tag */
+  --radius-sm:10px;   /* ปุ่ม */
+  --radius-md:14px;   /* การ์ด */
+  --radius-lg:20px;   /* sheet, modal, hero */
+  --radius-pill:999px;
+
+  /* ---------- 7. ELEVATION ---------- */
+  /* เงาอมมะกอก ไม่ใช่เทากลางๆ ให้มันอยู่ในโลกเดียวกับ palette */
+  --shadow-xs:0 1px 2px rgba(35,41,27,0.05);
+  --shadow-sm:0 2px 8px rgba(35,41,27,0.06);
+  --shadow-md:0 10px 28px rgba(35,41,27,0.10);
+  --shadow-lg:0 24px 56px rgba(35,41,27,0.16);
+
+  /* ---------- 8. GLASS ---------- */
+  /* ใช้เฉพาะของที่ "ลอยอยู่เหนือ" เนื้อหาจริงเท่านั้น: nav, ปุ่มลอย, ป้ายบนรูป, แถบควบคุมแผนที่ */
+  --blur-sm:8px;
+  --blur-md:16px;
+  --blur-lg:24px;
+
+  --glass-light-bg:rgba(255,255,255,0.72);
+  --glass-light-border:rgba(255,255,255,0.55);
+  --glass-light-shadow:0 8px 32px rgba(35,41,27,0.12);
+
+  --glass-dark-bg:rgba(35,41,27,0.55);
+  --glass-dark-border:rgba(242,243,236,0.16);
+  --glass-dark-shadow:0 8px 32px rgba(0,0,0,0.30);
+
+  --glass-accent-bg:rgba(229,115,56,0.16);
+  --glass-accent-border:rgba(229,115,56,0.34);
+
+  /* ---------- 9. MOTION ---------- */
+  --ease-out:cubic-bezier(0.25,0.9,0.35,1);
+  --ease-inout:cubic-bezier(0.5,0,0.2,1);
+  --duration-fast:120ms;
+  --duration-base:200ms;
+  --duration-slow:320ms;
+
+  /* ---------- 10. Z-INDEX ---------- */
+  --z-base:0;
+  --z-sticky:100;
+  --z-nav:200;
+  --z-float:300;
+  --z-sheet:400;
+  --z-modal:500;
+  --z-toast:600;
+
+  /* ---------- 11. SAFE AREA ---------- */
+  --safe-top:env(safe-area-inset-top, 0px);
+  --safe-bottom:env(safe-area-inset-bottom, 0px);
+
+
+  /* ============================================================
+     LEGACY ALIAS — ชั่วคราว
+     CSS เดิมเรียกชื่อพวกนี้อยู่ 144 จุด บล็อกนี้ทำให้ของเดิม
+     เปลี่ยนเป็นโทนมะกอกทันทีโดยไม่พัง แล้วค่อยทยอยลบทีละส่วน
+     ใน Phase 4 — ห้ามเขียนโค้ดใหม่โดยใช้ชื่อในบล็อกนี้
+     ============================================================ */
+  --green:var(--olive-400);
+  --turquoise:var(--blue-600);
+  --turquoise-dark:var(--blue-700);
+  --cream:var(--neutral-050);
+  --gray-light:var(--neutral-200);
+  --brown:var(--amber-500);
+  --text:var(--color-text-primary);
+  --text-muted:var(--color-text-secondary);
+  --border:var(--color-border);
+  --radius-xl:var(--radius-lg);
+  /* หมายเหตุ: --gray เดิมไม่ถูกใช้เลยสักจุด จึงไม่ทำ alias ให้ */
+}
+
+
+/* ---------- BASE ---------- */
+html, body{
+  background:var(--color-background);
+  color:var(--color-text-primary);
+  font-family:var(--font-sans);
+  font-size:var(--text-body);
+  font-weight:var(--weight-regular);
+  line-height:var(--leading-normal);
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4{
+  font-family:var(--font-sans);
+  font-weight:var(--weight-semibold);
+  line-height:var(--leading-snug);
+  letter-spacing:0;          /* ห้ามยืดช่องไฟภาษาไทย */
+}
+h1{ font-size:var(--text-h1); line-height:var(--leading-tight); }
+h2{ font-size:var(--text-h2); line-height:var(--leading-tight); }
+h3{ font-size:var(--text-h3); }
+h4{ font-size:var(--text-h4); }
+
+p{ max-width:var(--measure); }
+
+
+/* ---------- FOCUS ---------- */
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{
+  outline:2px solid var(--color-focus);
+  outline-offset:2px;
+  border-radius:var(--radius-xs);
+}
+
+
+/* ---------- REDUCED MOTION ---------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+
+
+/* ---------- GLASS UTILITY ---------- */
+/* ใช้ได้เฉพาะเมื่อมีภาพหรือสีเข้มอยู่ข้างหลังจริงๆ ถ้าพื้นหลังเป็นสีเรียบ
+   glass จะกลายเป็นแค่กล่องขุ่นที่ไม่สื่ออะไร — ให้ใช้ .surface ธรรมดาแทน */
+.glass-light{
+  background:var(--glass-light-bg);
+  -webkit-backdrop-filter:blur(var(--blur-md));
+  backdrop-filter:blur(var(--blur-md));
+  border:1px solid var(--glass-light-border);
+  box-shadow:var(--glass-light-shadow);
+}
+.glass-dark{
+  background:var(--glass-dark-bg);
+  -webkit-backdrop-filter:blur(var(--blur-lg));
+  backdrop-filter:blur(var(--blur-lg));
+  border:1px solid var(--glass-dark-border);
+  box-shadow:var(--glass-dark-shadow);
+  color:var(--color-text-on-dark);
+}
+/* เบราว์เซอร์ที่ไม่รองรับ backdrop-filter ต้องยังอ่านออก */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .glass-light{ background:rgba(255,255,255,0.95); }
+  .glass-dark{ background:rgba(35,41,27,0.92); }
+}
