@@ -892,11 +892,416 @@
     #resultsScreen{ display:block !important; }
   }
 </style>
+
+<!-- ========== CINEMATIC HERO (landing) — inline styles kept separate from the rest of the app's CSS ========== -->
+<style>
+  html:has(.hero-screen.active){ overflow:hidden; }
+  .hero-screen{
+    position:fixed; inset:0; z-index:50;
+    background:#000; overflow:hidden;
+    display:none;
+  }
+  .hero-screen.active{ display:block; }
+
+  .hero-screen{
+    --hero-gutter-start: clamp(20px, 4.177vw, 96px);
+    --hero-gutter-end: clamp(20px, 4.04vw, 96px);
+    --hero-header-top: clamp(18px, 2.264vh, 30px);
+    --hero-bottom: clamp(28px, 5.19vh, 64px);
+    --hero-display-size: clamp(34px, 6.6vh, 72px);
+    --hero-display-leading: clamp(44px, 8vh, 86px);
+    --hero-card-width: clamp(140px, 18.5vh, 205px);
+  }
+
+  .hero-video{
+    position:absolute; inset:0; z-index:0;
+    width:100%; height:100%;
+    object-fit:cover; object-position:center;
+    pointer-events:none; user-select:none;
+  }
+  .hero-screen::before{
+    content:""; position:absolute; inset:0; z-index:1;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.05), transparent 22%, transparent 78%, rgba(0,0,0,.35)),
+      radial-gradient(ellipse at 44% 54%, transparent 30%, rgba(0,0,0,.12) 100%);
+  }
+
+  .hero-header{
+    position:absolute; z-index:3;
+    inset: var(--hero-header-top) var(--hero-gutter-end) auto var(--hero-gutter-start);
+    height:48px; display:flex; align-items:flex-start; white-space:nowrap;
+  }
+  .hero-brand{ position:relative; top:9px; display:inline-flex; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); text-decoration:none; }
+  .hero-brand svg{ display:block; width:26px; height:26px; }
+  .hero-header-actions{ display:flex; align-items:flex-start; margin-left:auto; }
+
+  .hero-nav{ display:flex; margin-left:clamp(24px,3vw,44px); gap:clamp(18px,2.6vw,34px); position:relative; top:8px; }
+  .hero-nav a{ position:relative; font-size:15px; font-weight:500; letter-spacing:-.2px; color:rgba(255,255,255,.78); text-shadow:0 1px 3px rgba(0,0,0,.6); text-decoration:none; }
+  .hero-nav a[aria-current="page"]{ color:#fff; }
+  .hero-nav a[aria-current="page"]::after{ content:""; position:absolute; left:0; bottom:-8px; width:36px; height:2px; background:var(--turquoise); }
+
+  .hero-clock{ margin-left:clamp(20px,2.4vw,34px); padding-left:12px; border-left:2px solid rgba(255,255,255,.28); display:flex; flex-direction:column; justify-content:center; height:40px; }
+  .hero-clock .hero-clock-label{ font-size:12px; font-weight:500; color:rgba(255,255,255,.6); }
+  .hero-clock .hero-clock-value{ font-size:14px; font-weight:600; color:#fff; font-variant-numeric:tabular-nums; }
+
+  .hero-cta-pill{
+    margin-left:clamp(16px,2vw,28px);
+    height:40px; padding:0 18px;
+    border:none; border-radius:20px;
+    background:var(--turquoise); color:#fff;
+    font-family:inherit; font-size:14px; font-weight:600; letter-spacing:-.1px;
+    box-shadow:0 4px 14px rgba(47,169,164,.4);
+    cursor:pointer;
+  }
+
+  .hero-menu-toggle{
+    display:none; margin-left:14px;
+    width:44px; height:44px; border:1px solid rgba(255,255,255,.22); border-radius:11px;
+    background:rgba(10,14,14,.55); backdrop-filter:blur(14px);
+    align-items:center; justify-content:center; cursor:pointer;
+  }
+  .hero-menu-toggle .hero-x-line{ opacity:0; }
+  .hero-header.menu-open .hero-menu-toggle .hero-bar-line{ opacity:0; }
+  .hero-header.menu-open .hero-menu-toggle .hero-x-line{ opacity:1; }
+
+  .hero-content{
+    position:absolute; z-index:3;
+    left:var(--hero-gutter-start); bottom:var(--hero-bottom);
+    display:flex; flex-direction:column; align-items:flex-start;
+    max-width:min(600px,60vw);
+  }
+  .hero-title{
+    margin:0; color:#fff;
+    font-family:'Poppins','Inter',sans-serif; font-weight:600;
+    font-size:var(--hero-display-size); line-height:var(--hero-display-leading);
+    letter-spacing:-.5px;
+    text-shadow:0 2px 10px rgba(0,0,0,.5);
+  }
+  .hero-title .hero-line{ display:block; overflow:hidden; transform-origin:left center; }
+  .hero-title .hero-line-reveal{ display:inline-block; }
+  .hero-line-two{ color:var(--turquoise); }
+
+  .hero-copy{
+    margin: clamp(14px,2vh,22px) 0 0;
+    width:clamp(280px,30vw,440px);
+    color:rgba(255,255,255,.82);
+    font-size:clamp(14px,1.6vh,17px); line-height:1.55; font-weight:400;
+    text-shadow:0 1px 4px rgba(0,0,0,.6);
+  }
+
+  .hero-primary-cta{
+    margin-top:clamp(20px,2.8vh,32px);
+    position:relative; height:48px; padding:0 8px 0 22px;
+    border:none; border-radius:24px; background:#fff;
+    display:inline-flex; align-items:center; gap:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,.35);
+    cursor:pointer;
+  }
+  .hero-primary-cta .hero-cta-label{ color:#101010; font-family:inherit; font-size:16px; font-weight:600; letter-spacing:-.2px; white-space:nowrap; }
+  .hero-primary-cta .hero-arrow-box{
+    width:36px; height:36px; border-radius:50%;
+    background:var(--turquoise-dark);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+
+  .hero-demo-card{
+    position:absolute; z-index:3;
+    right:var(--hero-gutter-end); bottom:var(--hero-bottom);
+    width:var(--hero-card-width); aspect-ratio:201/265;
+    container-type:inline-size;
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:clamp(12px,1.5vh,18px);
+    background:linear-gradient(145deg, rgba(20,30,29,.72), rgba(5,14,14,.82));
+    box-shadow:0 8px 26px rgba(0,0,0,.4), 0 0 0 1px rgba(0,0,0,.6) inset;
+    backdrop-filter:blur(16px) saturate(110%);
+    padding:4cqw;
+    text-align:left;
+  }
+  .hero-demo-visual{ position:relative; width:92cqw; height:92cqw; border-radius:4cqw; overflow:hidden; background:#0d1717; }
+  .hero-demo-visual img{ width:100%; height:100%; object-fit:cover; display:block; filter:brightness(.92) saturate(1.05); }
+  .hero-demo-badge{
+    position:absolute; left:5cqw; top:5cqw;
+    padding:1.6cqw 3cqw; border-radius:20px;
+    background:rgba(0,0,0,.5); backdrop-filter:blur(6px);
+    color:#fff; font-size:2.9cqw; font-weight:600; letter-spacing:.2px;
+  }
+  .hero-demo-name{ margin-top:3.5cqw; color:#fff; font-size:4.4cqw; font-weight:600; line-height:1.25; }
+  .hero-demo-region{ margin-top:.6cqw; color:rgba(255,255,255,.6); font-size:3.4cqw; }
+  .hero-demo-button{
+    margin-top:3.5cqw; width:100%; height:10.5cqw; min-height:34px;
+    border:1px solid rgba(255,255,255,.22); border-radius:clamp(8px,1.2vh,10px);
+    background:linear-gradient(145deg, rgba(47,169,164,.28), rgba(35,137,132,.4));
+    color:#fff; font-family:inherit; font-weight:600; font-size:13px;
+    cursor:pointer;
+  }
+
+  .hero-screen button, .hero-screen a{ transition:filter 140ms, opacity 140ms; }
+  @media (prefers-reduced-motion:no-preference){
+    .hero-screen button:hover, .hero-screen a:hover{ filter:brightness(1.08); }
+  }
+  .hero-screen :focus-visible{ outline:2px solid #fff; outline-offset:3px; }
+
+  /* entrance motion */
+  html.hero-motion-pending .hero-header,
+  html.hero-motion-pending .hero-nav a,
+  html.hero-motion-pending .hero-clock,
+  html.hero-motion-pending .hero-cta-pill,
+  html.hero-motion-pending .hero-menu-toggle,
+  html.hero-motion-pending .hero-copy,
+  html.hero-motion-pending .hero-primary-cta,
+  html.hero-motion-pending .hero-demo-card{ opacity:0; }
+  html.hero-motion-pending .hero-title .hero-line-reveal{ transform:translate3d(0,110%,0) skewY(2deg); }
+  html.hero-motion-pending .hero-copy{ transform:translateY(6px); }
+  html.hero-motion-pending .hero-primary-cta{ transform:translateY(8px) scale(.985); }
+  html.hero-motion-pending .hero-demo-card{ transform:translateY(12px) scale(.968); transform-origin:82% 50%; }
+
+  @media (prefers-reduced-motion:no-preference){
+    @keyframes hero-in-brand{ from{opacity:0; transform:translateY(7px) scale(.94);} to{opacity:1; transform:translateY(0) scale(1);} }
+    @keyframes hero-in-nav{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+    @keyframes hero-in-action{ from{opacity:0; transform:translateY(8px) scale(.985);} to{opacity:1; transform:translateY(0) scale(1);} }
+    @keyframes hero-in-line{ from{transform:translate3d(0,110%,0) skewY(2deg);} to{transform:translate3d(0,0,0) skewY(0);} }
+    @keyframes hero-in-copy{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+    @keyframes hero-in-card{ from{opacity:0; transform:translateY(12px) scale(.968);} to{opacity:1; transform:translateY(0) scale(1);} }
+
+    .hero-brand{ animation:hero-in-brand 580ms cubic-bezier(.16,1,.3,1) 60ms both; }
+    .hero-nav a:nth-child(1){ animation:hero-in-nav 480ms cubic-bezier(.16,1,.3,1) 130ms both; }
+    .hero-nav a:nth-child(2){ animation:hero-in-nav 480ms cubic-bezier(.16,1,.3,1) 175ms both; }
+    .hero-clock{ animation:hero-in-nav 520ms cubic-bezier(.16,1,.3,1) 200ms both; }
+    .hero-cta-pill{ animation:hero-in-action 520ms cubic-bezier(.16,1,.3,1) 240ms both; }
+    .hero-menu-toggle{ animation:hero-in-action 520ms cubic-bezier(.16,1,.3,1) 140ms both; }
+    .hero-line-one .hero-line-reveal{ animation:hero-in-line 800ms cubic-bezier(.22,1,.36,1) 300ms both; }
+    .hero-line-two .hero-line-reveal{ animation:hero-in-line 850ms cubic-bezier(.22,1,.36,1) 440ms both; }
+    .hero-copy{ animation:hero-in-copy 620ms cubic-bezier(.16,1,.3,1) 740ms both; }
+    .hero-primary-cta{ animation:hero-in-action 560ms cubic-bezier(.16,1,.3,1) 960ms both; }
+    .hero-demo-card{ animation:hero-in-card 920ms cubic-bezier(.22,1,.36,1) 1040ms both; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    html.hero-motion-pending *{ opacity:1 !important; transform:none !important; }
+  }
+
+  @media (min-width:620px) and (max-width:900px), (min-width:620px) and (max-width:1100px) and (orientation:portrait){
+    .hero-menu-toggle{ display:flex; }
+    .hero-header-actions{
+      position:fixed; inset:calc(var(--hero-header-top) + 56px) var(--hero-gutter-end) auto auto;
+      width:min(300px, calc(100vw - 2*var(--hero-gutter-end)));
+      flex-direction:column; align-items:stretch; padding:18px;
+      border:1px solid rgba(255,255,255,.14); border-radius:16px;
+      background:linear-gradient(145deg, rgba(20,30,29,.9), rgba(5,14,14,.94));
+      backdrop-filter:blur(18px) saturate(108%);
+      opacity:0; visibility:hidden; transform:translateY(-8px) scale(.985);
+      transition:opacity 180ms ease, transform 180ms ease, visibility 180ms;
+    }
+    .hero-header.menu-open .hero-header-actions{ opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+    .hero-nav{ flex-direction:column; margin-left:0; gap:14px; top:0; }
+    .hero-clock{ margin:14px 0 0; border-left:none; border-top:1px solid rgba(255,255,255,.2); padding:10px 0 0; height:auto; }
+    .hero-cta-pill{ margin:14px 0 0; width:100%; }
+    .hero-content{ max-width:72vw; }
+  }
+  @media (max-width:619px){
+    .hero-header{ left:20px; right:20px; }
+    .hero-menu-toggle{ display:flex; }
+    .hero-header-actions{
+      position:fixed; inset:calc(var(--hero-header-top) + 56px) 20px auto auto;
+      width:min(300px, calc(100vw - 40px));
+      flex-direction:column; align-items:stretch; padding:18px;
+      border:1px solid rgba(255,255,255,.14); border-radius:16px;
+      background:linear-gradient(145deg, rgba(20,30,29,.9), rgba(5,14,14,.94));
+      backdrop-filter:blur(18px) saturate(108%);
+      opacity:0; visibility:hidden; transform:translateY(-8px) scale(.985);
+      transition:opacity 180ms ease, transform 180ms ease, visibility 180ms;
+    }
+    .hero-header.menu-open .hero-header-actions{ opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+    .hero-nav{ flex-direction:column; margin-left:0; gap:14px; top:0; }
+    .hero-clock{ margin:14px 0 0; border-left:none; border-top:1px solid rgba(255,255,255,.2); padding:10px 0 0; height:auto; }
+    .hero-cta-pill{ margin:14px 0 0; width:100%; }
+    .hero-content{ left:20px; right:20px; bottom:calc(var(--hero-bottom) + env(safe-area-inset-bottom,0px)); max-width:none; }
+    .hero-title{ font-size:clamp(28px,8.6vw,38px); line-height:1.18; }
+    .hero-copy{ width:auto; }
+    .hero-demo-card{ position:absolute; top:clamp(90px,20svh,170px); right:20px; bottom:auto; width:clamp(92px,28vw,124px); }
+  }
+</style>
 </head>
 <body>
 
+<!-- ========== CINEMATIC HERO SCREEN (new landing, shown first) ========== -->
+<div class="screen hero-screen active" id="heroScreen">
+  <video class="hero-video" autoplay muted loop playsinline disablepictureinpicture aria-hidden="true">
+    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260808_064556_051587f1-74a1-4336-8c05-4dde3594ed05.mp4" type="video/mp4">
+  </video>
+
+  <header class="hero-header" id="heroHeader">
+    <a class="hero-brand" href="#" aria-label="Krabi Trip Planner หน้าแรก">
+      <svg viewBox="0 0 26 26" width="26" height="26">
+        <defs><clipPath id="heroDiscClip"><circle cx="13" cy="13" r="13"/></clipPath></defs>
+        <g clip-path="url(#heroDiscClip)">
+          <rect width="26" height="26" fill="#0b1414"/>
+          <path d="M13 0 L26 13 L13 26 L0 13 Z" fill="#2FA9A4"/>
+          <path d="M13 4.5 L21.5 13 L13 21.5 L4.5 13 Z" fill="#6B9B7E"/>
+          <path d="M13 9 L17.5 13 L13 17.5 L8.5 13 Z" fill="#F8F6F1"/>
+        </g>
+      </svg>
+    </a>
+
+    <div class="hero-header-actions" id="heroNavPanel">
+      <nav class="hero-nav" aria-label="เมนูหลัก">
+        <a href="#" aria-current="page">หน้าแรก</a>
+        <a href="#" id="heroNavAiFilter">ให้ AI ช่วยจัดทริป</a>
+      </nav>
+      <div class="hero-clock">
+        <span class="hero-clock-label">เวลาที่กระบี่ตอนนี้</span>
+        <span class="hero-clock-value" id="heroClockValue">–:––</span>
+      </div>
+      <button class="hero-cta-pill" type="button" id="heroPillCta">เริ่มวางแผน</button>
+    </div>
+
+    <button class="hero-menu-toggle" type="button" id="heroMenuToggle" aria-expanded="false" aria-controls="heroNavPanel" aria-label="เปิดเมนู">
+      <svg width="18" height="12" viewBox="0 0 18 12">
+        <g class="hero-bar-line" stroke="#fff" stroke-width="1.6" stroke-linecap="round">
+          <line x1="0" y1="1" x2="18" y2="1"/><line x1="0" y1="11" x2="18" y2="11"/>
+        </g>
+        <g class="hero-x-line" stroke="#fff" stroke-width="1.6" stroke-linecap="round">
+          <line x1="1" y1="1" x2="17" y2="11"/><line x1="1" y1="11" x2="17" y2="1"/>
+        </g>
+      </svg>
+    </button>
+  </header>
+
+  <div class="hero-content">
+    <h1 class="hero-title">
+      <span class="hero-line hero-line-one"><span class="hero-line-reveal">เลิกงมหาข้อมูล</span></span>
+      <span class="hero-line hero-line-two"><span class="hero-line-reveal">วางแผนทริปกระบี่เอง</span></span>
+    </h1>
+    <p class="hero-copy">
+      ข้อมูลเที่ยวกระบี่กระจัดกระจายอยู่นับสิบเว็บ Krabi Trip Planner
+      รวมมันไว้ที่เดียว พร้อม AI ช่วยจัดโปรแกรมที่เหมาะกับคุณจริง ๆ ฟรี
+    </p>
+    <button class="hero-primary-cta" type="button" id="heroPrimaryCta">
+      <span class="hero-cta-label">เริ่มวางแผน</span>
+      <span class="hero-arrow-box">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M3 11L11 3M11 3H4.5M11 3V9.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+  </div>
+
+  <article class="hero-demo-card">
+    <div class="hero-demo-visual">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=400" alt="อ่าวไร่เลย์ กระบี่">
+      <span class="hero-demo-badge">แนะนำวันนี้</span>
+    </div>
+    <div class="hero-demo-name">อ่าวไร่เลย์</div>
+    <div class="hero-demo-region">หน้าผาหินปูน • เข้าถึงทางเรือ</div>
+    <button class="hero-demo-button" type="button" id="heroDemoButton">ดูรายละเอียด</button>
+  </article>
+</div>
+
+<script>
+(function(){
+  document.documentElement.classList.add('hero-motion-pending');
+  var heroMotionFallback = setTimeout(function(){
+    document.documentElement.classList.remove('hero-motion-pending');
+  }, 3500);
+
+  var heroScreen = document.getElementById('heroScreen');
+  var demoCard = heroScreen.querySelector('.hero-demo-card');
+  function clearHeroMotion(){
+    document.documentElement.classList.remove('hero-motion-pending');
+    clearTimeout(heroMotionFallback);
+  }
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    clearHeroMotion();
+  } else if(demoCard){
+    demoCard.addEventListener('animationend', clearHeroMotion, { once:true });
+  }
+
+  // Live clock — real Asia/Bangkok time, not a static placeholder.
+  var clockEl = document.getElementById('heroClockValue');
+  function tickClock(){
+    if(!clockEl) return;
+    var now = new Date();
+    var time = new Intl.DateTimeFormat('th-TH', { hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'Asia/Bangkok' }).format(now);
+    var date = new Intl.DateTimeFormat('th-TH', { day:'numeric', month:'short', timeZone:'Asia/Bangkok' }).format(now);
+    clockEl.textContent = time + ' น. · ' + date;
+  }
+  tickClock();
+  setInterval(tickClock, 30000);
+
+  // Hamburger menu (tablet/mobile only)
+  var header = document.getElementById('heroHeader');
+  var toggle = document.getElementById('heroMenuToggle');
+  var panel = document.getElementById('heroNavPanel');
+  function isMenuMode(){ return toggle && getComputedStyle(toggle).display !== 'none'; }
+  function openHeroMenu(){
+    header.classList.add('menu-open');
+    toggle.setAttribute('aria-expanded','true');
+    toggle.setAttribute('aria-label','ปิดเมนู');
+    panel.removeAttribute('inert');
+    var firstLink = panel.querySelector('a');
+    if(firstLink) firstLink.focus();
+  }
+  function closeHeroMenu(){
+    header.classList.remove('menu-open');
+    toggle.setAttribute('aria-expanded','false');
+    toggle.setAttribute('aria-label','เปิดเมนู');
+    if(isMenuMode()) panel.setAttribute('inert','');
+  }
+  function syncHeroInert(){
+    if(isMenuMode() && !header.classList.contains('menu-open')) panel.setAttribute('inert','');
+    else panel.removeAttribute('inert');
+  }
+  if(toggle && panel){
+    syncHeroInert();
+    window.addEventListener('resize', syncHeroInert);
+    toggle.addEventListener('click', function(){
+      header.classList.contains('menu-open') ? closeHeroMenu() : openHeroMenu();
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && header.classList.contains('menu-open')) closeHeroMenu();
+    });
+    document.addEventListener('pointerdown', function(e){
+      if(!header.classList.contains('menu-open')) return;
+      if(!header.contains(e.target)) closeHeroMenu();
+    });
+    panel.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){ if(isMenuMode()) closeHeroMenu(); });
+    });
+  }
+
+  // Leave the hero and enter the real app. `app`, `showScreen`, `pushHistoryState`
+  // and `renderCarousel` are defined later in this same document's main script,
+  // but that's fine here since these only run on click, well after the page has
+  // finished loading.
+  function enterApp(){
+    heroScreen.classList.remove('active');
+    pushHistoryState({ screen: 'home' });
+    showScreen('homeScreen');
+    renderCarousel();
+  }
+  var primaryCta = document.getElementById('heroPrimaryCta');
+  var pillCta = document.getElementById('heroPillCta');
+  var navAiFilter = document.getElementById('heroNavAiFilter');
+  var demoButton = document.getElementById('heroDemoButton');
+
+  if(primaryCta) primaryCta.addEventListener('click', enterApp);
+  if(pillCta) pillCta.addEventListener('click', function(){
+    heroScreen.classList.remove('active');
+    app.startAIFilter();
+  });
+  if(navAiFilter) navAiFilter.addEventListener('click', function(e){
+    e.preventDefault();
+    heroScreen.classList.remove('active');
+    app.startAIFilter();
+  });
+  if(demoButton) demoButton.addEventListener('click', function(){
+    heroScreen.classList.remove('active');
+    app.openPlaceDetail('railay');
+  });
+})();
+</script>
+
 <!-- ========== HOME SCREEN ========== -->
-<div class="screen home-screen active" id="homeScreen">
+<div class="screen home-screen" id="homeScreen">
   <div class="home-header">
     <div class="lang-switch-home" role="group" aria-label="Language / ภาษา">
       <button class="lang-btn active" data-lang="th" aria-pressed="true">TH</button>
