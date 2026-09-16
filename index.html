@@ -3,20 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด</title>
-<meta name="description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
+<title>AI Planner Krabi for Foreigners — Smart Krabi Travel Planning</title>
+<meta name="description" content="AI Planner Krabi for Foreigners — plan a personalized Krabi trip with an AI travel companion.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด">
-<meta property="og:description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
+<meta property="og:title" content="AI Planner Krabi for Foreigners">
+<meta property="og:description" content="A natural, modern AI travel planner for discovering and planning Krabi.">
 <meta property="og:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=1200">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Krabi Trip Planner — ท่องเที่ยวกระบี่อย่างชาญฉลาด">
-<meta name="twitter:description" content="วางแผนทริปกระบี่ให้เหมาะกับคุณด้วย AI ฟรี — แนะนำสถานที่ท่องเที่ยว ร้านอาหาร งบประมาณ และจัดโปรแกรมรายวันให้อัตโนมัติ">
+<meta name="twitter:title" content="AI Planner Krabi for Foreigners">
+<meta name="twitter:description" content="A natural, modern AI travel planner for discovering and planning Krabi.">
 <meta name="twitter:image" content="https://commons.wikimedia.org/wiki/Special:FilePath/Railay.jpg?width=1200">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/design-tokens.css">
 <style>
   :root{
     --green:#6B9B7E;
@@ -892,6 +893,246 @@
     #resultsScreen{ display:block !important; }
   }
 </style>
+
+<style id="ai-planner-phase2-overrides">
+/* ============================================================
+   AI PLANNER KRABI — PHASE 2 VISUAL IMPLEMENTATION
+   Tokens live in /design-tokens.css. This layer intentionally
+   overrides the legacy visual shell without rewriting app logic.
+   ============================================================ */
+:root{
+  --green:var(--olive-600);
+  --turquoise:var(--blue-600);
+  --turquoise-dark:var(--blue-700);
+  --cream:var(--neutral-050);
+  --gray:var(--neutral-400);
+  --gray-light:var(--neutral-100);
+  --brown:var(--amber-500);
+  --text:var(--color-text-primary);
+  --text-muted:var(--color-text-secondary);
+  --border:var(--color-border);
+  --radius-xl:var(--radius-lg);
+  --radius-lg:20px;
+  --radius-md:14px;
+  --radius-sm:10px;
+  --shadow-sm:var(--shadow-sm);
+  --shadow-md:var(--shadow-md);
+  --shadow-lg:var(--shadow-lg);
+}
+
+html,body{
+  background:var(--color-background);
+  color:var(--color-text-primary);
+  font-family:var(--font-sans);
+}
+body{line-height:var(--leading-normal);}
+h1,h2,h3,h4{font-family:var(--font-sans);}
+
+/* ---------- shared shell ---------- */
+.screen{background:var(--color-background);}
+.container{max-width:var(--container-max); padding-inline:var(--gutter);}
+
+/* ---------- home ---------- */
+.home-header{
+  position:relative;
+  isolation:isolate;
+  text-align:left;
+  padding:clamp(52px,8vw,92px) clamp(22px,5vw,72px) clamp(44px,7vw,72px);
+  background:var(--olive-900);
+  color:var(--color-text-on-dark);
+  border-radius:0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow:none;
+  overflow:hidden;
+}
+.home-header::after{
+  content:"";
+  position:absolute;
+  inset:auto -8% -45% auto;
+  width:min(50vw,520px);
+  aspect-ratio:1;
+  border:1px solid rgba(242,243,236,.08);
+  border-radius:50%;
+  pointer-events:none;
+}
+.home-header h1{
+  max-width:9ch;
+  font-size:clamp(34px,7vw,62px);
+  line-height:1.02;
+  letter-spacing:-.02em;
+  margin:0 0 16px;
+}
+.home-header p{
+  max-width:52ch;
+  font-size:clamp(14px,2vw,18px);
+  line-height:1.65;
+  color:rgba(242,243,236,.78);
+  margin:0;
+}
+.lang-switch-home{
+  position:absolute;
+  top:calc(18px + var(--safe-top));
+  right:clamp(18px,4vw,56px);
+  gap:6px;
+  z-index:2;
+  padding:4px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:var(--radius-pill);
+  background:rgba(35,41,27,.45);
+  -webkit-backdrop-filter:blur(16px);
+  backdrop-filter:blur(16px);
+}
+.lang-btn{
+  padding:7px 11px;
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:rgba(255,255,255,.78);
+  box-shadow:none;
+}
+.lang-btn.active{background:rgba(255,255,255,.14);color:#fff;}
+
+.ai-filter-banner{
+  margin:28px clamp(18px,4vw,56px);
+  padding:24px 24px;
+  background:var(--color-surface);
+  border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);
+  text-align:left;
+}
+.ai-filter-banner#aiFilterBtn{
+  background:var(--olive-600);
+  color:#fff;
+  border-color:var(--olive-600);
+  position:relative;
+  overflow:hidden;
+}
+.ai-filter-banner#aiFilterBtn::after{
+  content:"";
+  position:absolute;
+  width:180px;height:180px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:50%;
+  right:-50px;top:-70px;
+}
+.ai-filter-banner#aiFilterBtn h3{color:#fff;position:relative;z-index:1;}
+.ai-filter-banner#aiFilterBtn p{color:rgba(255,255,255,.78);position:relative;z-index:1;}
+.ai-filter-banner:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.ai-filter-banner#aiFilterBtn:hover{border-color:var(--olive-700);background:var(--olive-700);}
+.ai-filter-banner h3{font-size:19px;color:var(--color-primary-strong);}
+.ai-filter-banner p{font-size:14px;}
+
+.place-carousel-container{padding:10px clamp(18px,4vw,56px) 44px;}
+.carousel-label{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;}
+.carousel{gap:14px;padding:2px 2px 14px;}
+.place-card{
+  flex-basis:clamp(255px,28vw,310px);
+  min-height:350px;
+  border-radius:18px;
+  border:1px solid var(--color-border);
+  box-shadow:var(--shadow-sm);
+}
+.place-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--olive-200);}
+.place-image{height:210px;background:var(--olive-100);}
+.place-region{color:var(--blue-700);}
+.place-name{font-size:18px;}
+.place-season{color:var(--amber-700);}
+.illustrative-badge{background:rgba(35,41,27,.62);backdrop-filter:blur(8px);}
+
+/* ---------- AI flow ---------- */
+.ai-filter-screen{padding:clamp(20px,5vw,48px) clamp(18px,4vw,48px) calc(28px + var(--safe-bottom));}
+.ai-filter-header{text-align:left;max-width:720px;margin:0 auto 28px;}
+.ai-filter-header h2{font-size:clamp(30px,5vw,46px);line-height:1.1;color:var(--olive-900);margin-bottom:10px;}
+.ai-filter-header p{font-size:15px;color:var(--neutral-600);}
+.ai-steps-container{max-width:760px;}
+.step-card{
+  background:var(--color-surface);
+  border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);
+  padding:clamp(22px,4vw,36px);
+  text-align:left;
+}
+.step-card h3{font-size:clamp(22px,4vw,30px);color:var(--olive-900);}
+.step-number{color:var(--blue-700);}
+.step-card .subtitle{color:var(--neutral-600);}
+.step-buttons{display:flex;gap:12px;justify-content:space-between;margin-top:16px;}
+.btn-back,.btn-next{
+  min-height:48px;
+  border-radius:12px;
+  padding:0 20px;
+  font:inherit;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .2s var(--ease-out),box-shadow .2s var(--ease-out),background .2s ease;
+}
+.btn-back{background:transparent;border:1px solid var(--color-border);color:var(--olive-900);}
+.btn-next{background:var(--amber-600);border:1px solid var(--amber-600);color:#fff;box-shadow:var(--shadow-sm);}
+.btn-back:hover,.btn-next:hover{transform:translateY(-1px);}
+.btn-next:hover{background:var(--amber-700);}
+
+/* ---------- results ---------- */
+.results-screen,.place-detail-screen{padding:clamp(22px,4vw,48px) clamp(18px,4vw,56px) calc(28px + var(--safe-bottom));}
+.results-header{text-align:left;max-width:1180px;margin:0 auto 24px;}
+.results-header h2{font-size:clamp(30px,5vw,46px);line-height:1.08;color:var(--olive-900);}
+.results-header p{font-size:15px;color:var(--neutral-600);}
+.results-container{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr);gap:20px;align-items:start;}
+.itinerary-chat-section{grid-column:1/-1;margin:0;}
+.itinerary-chat-card{background:var(--olive-900);border:1px solid rgba(255,255,255,.08);color:var(--color-text-on-dark);border-radius:20px;box-shadow:none;padding:20px;}
+.itinerary-chat-title{color:#fff;font-size:18px;}
+.itinerary-chat-hint{color:rgba(242,243,236,.7);}
+.itinerary-chat-input{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;border-radius:12px;}
+.itinerary-chat-input::placeholder{color:rgba(255,255,255,.5);}
+.itinerary-chat-input:focus{border-color:var(--blue-300);}
+.itinerary-chat-send{background:var(--amber-600);border-radius:12px;}
+.recommendations-section,.itinerary-section,.budget-summary-section{
+  background:var(--color-surface);
+  border:1px solid var(--color-border);
+  border-radius:20px;
+  box-shadow:var(--shadow-sm);
+}
+.recommendations-section{padding:22px;margin:0;}
+.itinerary-section{margin:0;overflow:hidden;}
+.budget-summary-section{margin:0;padding:22px;}
+.share-buttons{margin:0;}
+.section-title{font-size:17px;color:var(--olive-900);}
+.section-title::before{background:var(--amber-600);width:3px;}
+.recommendation-card{background:var(--neutral-050);border-color:var(--color-border);border-radius:14px;}
+.recommendation-card:hover{border-color:var(--olive-200);box-shadow:var(--shadow-sm);}
+.rec-name{color:var(--olive-900);}
+.rec-reason{color:var(--neutral-600);}
+.day-guide-intro{background:var(--olive-050);border-color:var(--olive-200);}
+.day-guide-title{color:var(--olive-800);}
+.ai-warning-card{background:var(--amber-100);border-color:var(--amber-200);}
+.ai-restaurant-advice{background:var(--blue-100);border-left-color:var(--blue-700);}
+.accordion-header{background:var(--color-surface);color:var(--olive-900);padding:20px 22px;}
+.accordion-header:hover{background:var(--olive-050);}
+.accordion-header.active{background:var(--olive-100);color:var(--olive-800);}
+.accordion-icon{color:var(--blue-700);}
+.accordion-content{background:var(--color-surface);}
+.time-badge{color:var(--blue-700);}
+.activity-cost{color:var(--amber-700);}
+.day-summary{background:var(--olive-050);}
+.day-summary strong{color:var(--olive-800);}
+
+/* ---------- selective glass ---------- */
+.ai-status-glass,.floating-glass,.map-glass{border-radius:14px;}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .results-container{grid-template-columns:1fr;}
+  .budget-summary-section,.share-buttons{grid-column:auto;}
+}
+@media (max-width:640px){
+  .home-header h1{max-width:11ch;font-size:38px;}
+  .home-header{padding-top:74px;}
+  .ai-filter-banner{margin-left:18px;margin-right:18px;}
+  .step-buttons{position:sticky;bottom:10px;z-index:20;background:rgba(246,247,241,.88);backdrop-filter:blur(12px);padding:8px;border:1px solid rgba(35,41,27,.08);border-radius:14px;}
+  .results-container{gap:14px;}
+  .results-header h2{font-size:32px;}
+}
+</style>
+
 </head>
 <body>
 
@@ -902,7 +1143,7 @@
       <button class="lang-btn active" data-lang="th" aria-pressed="true">TH</button>
       <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
     </div>
-    <h1 data-i18n="homeTitle">Krabi Trip Planner</h1>
+    <h1 data-i18n="homeTitle">AI Planner Krabi for Foreigners</h1>
     <p data-i18n="homeSubtitle">ค้นหาสถานที่ที่เหมาะสมกับคุณ หรือให้เอไอช่วยจัดโปรแกรมตามที่ต้องการ</p>
   </div>
 
