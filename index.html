@@ -1125,9 +1125,7 @@
 
 <!-- ========== CINEMATIC HERO SCREEN (new landing, shown first) ========== -->
 <div class="screen hero-screen active" id="heroScreen">
-  <video class="hero-video" autoplay muted loop playsinline disablepictureinpicture aria-hidden="true">
-    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260808_064556_051587f1-74a1-4336-8c05-4dde3594ed05.mp4" type="video/mp4">
-  </video>
+  <img class="hero-video" src="https://commons.wikimedia.org/wiki/Special:FilePath/2016-04-14%20Tup%20Island%2C%20Krabi%20Province%201.jpg?width=1600" alt="" aria-hidden="true">
 
   <header class="hero-header" id="heroHeader">
     <a class="hero-brand" href="#" aria-label="Krabi Trip Planner หน้าแรก">
@@ -2464,6 +2462,8 @@ const STEPS_CONFIG = [
   {
     id: "age",
     type: "radio",
+    label: { th: "ช่วงอายุ", en: "Age" },
+    question: { th: "คุณอยู่ในช่วงอายุไหนคะ", en: "What age range are you in?" },
     options: {
       th: [
         { label: "18 - 25 ปี", value: "18-25" },
@@ -2483,6 +2483,8 @@ const STEPS_CONFIG = [
     id: "style",
     type: "checkbox",
     maxSelect: 2,
+    label: { th: "สไตล์การเที่ยว", en: "Travel style" },
+    question: { th: "คุณต้องการท่องเที่ยวแบบไหน (เลือกได้ 2 อย่าง)", en: "What kind of trip do you want? (pick 2)" },
     options: {
       th: [
         { label: "ทะเล", value: "sea" },
@@ -2504,6 +2506,8 @@ const STEPS_CONFIG = [
     id: "subStyle",
     type: "checkbox",
     maxSelect: 2,
+    label: { th: "สไตล์เฉพาะทาง", en: "Specific interest" },
+    question: { th: "คุณเป็นสายไหนบ้าง (เลือกได้สูงสุด 2 สาย เรียงตามความสนใจ อันแรกที่เลือกจะถูกให้น้ำหนักมากกว่า)", en: "Which kind of traveler are you? (pick up to 2, in order of interest — the first pick is weighted more)" },
     // สไตล์เฉพาะทาง ใช้ทำคะแนนเพิ่มเติมกับ tag ของแต่ละสถานที่ (ดูใน filterPlaces) — เลือกได้สูงสุด 2 สาย
     // อันที่เลือกก่อนจะถูกถือว่าเป็นความสนใจหลัก (น้ำหนักคะแนนสูงกว่า) อันที่สองเป็นความสนใจรอง
     // "any" (ไม่มีสายเฉพาะ) เป็นตัวเลือกพิเศษ: เลือกแล้วจะเคลียร์ตัวเลือกอื่นทั้งหมดทันที (ดู handleStepInput)
@@ -2528,6 +2532,8 @@ const STEPS_CONFIG = [
   {
     id: "budget",
     type: "radio",
+    label: { th: "งบประมาณ", en: "Budget" },
+    question: { th: "งบประมาณของคุณอยู่ในช่วงไหนคะ (ต่อวัน)", en: "What's your budget range? (per day)" },
     options: {
       th: [
         { label: "ต่ำ (ต่ำกว่า 2,000 บาท/วัน)", value: "low" },
@@ -2544,6 +2550,8 @@ const STEPS_CONFIG = [
   {
     id: "transport",
     type: "radio",
+    label: { th: "วิธีเดินทาง", en: "Transport" },
+    question: { th: "คุณต้องการเดินทางด้วยวิธีไหนคะ", en: "How would you like to get around?" },
     options: {
       th: [
         { label: "เรือ", value: "boat" },
@@ -2560,6 +2568,8 @@ const STEPS_CONFIG = [
   {
     id: "duration",
     type: "radio",
+    label: { th: "ระยะเวลา", en: "Duration" },
+    question: { th: "คุณต้องการเที่ยวกี่วันกี่คืนคะ", en: "How many days and nights?" },
     options: {
       th: [
         { label: "ทริปหนึ่งวัน (0 คืน)", value: "daytrip" },
@@ -2588,6 +2598,8 @@ const STEPS_CONFIG = [
   {
     id: "travelMonth",
     type: "radio",
+    label: { th: "ช่วงเวลาที่จะไปเที่ยว", en: "When are you traveling" },
+    question: { th: "วางแผนจะไปกระบี่ช่วงไหนคะ (ช่วยเตือนล่วงหน้าถ้าโปรแกรมมีกิจกรรมทางเรือเยอะในช่วงมรสุม)", en: "When are you planning to visit Krabi? (we'll warn you in advance if the plan has lots of boat activities during monsoon season)" },
     // ช่วงเวลาที่จะเดินทาง ใช้เตือนความเสี่ยงทัวร์เรือถูกยกเลิกช่วงมรสุม (ดู applyMonsoonAdjustment)
     // แบ่งเป็น 3 ช่วงกว้างๆ แทนเลือกเป็นรายเดือน เพื่อให้เลือกง่ายแบบ chip เดียวกับคำถามอื่นๆ ในฟอร์ม
     options: {
@@ -2609,6 +2621,8 @@ const STEPS_CONFIG = [
     id: "specialNeeds",
     type: "checkbox",
     maxSelect: 6,
+    label: { th: "ความต้องการพิเศษ", en: "Special requirements" },
+    question: { th: "มีความต้องการพิเศษอะไรบ้างคะ (เลือกได้หลายข้อ)", en: "Any special requirements? (multiple choice)" },
     options: {
       th: [
         { label: "มีเด็กเล็ก", value: "youngChildren" },
@@ -2645,6 +2659,8 @@ const STEPS_CONFIG = [
   {
     id: "mustHave",
     type: "places",
+    label: { th: "สถานที่ที่ต้องมี", en: "Must-have places" },
+    question: { th: "มีสถานที่ไหนที่อยากไปแน่ๆ ไหมคะ (ไม่บังคับ เลือกได้สูงสุด 3 ที่ จะระบุวันเจาะจงหรือให้ระบบจัดวันให้ก็ได้)", en: "Any places you definitely want to visit? (optional, pick up to 3 — set a specific day or let the system schedule it)" },
     // ให้ผู้ใช้เจาะจงสถานที่ที่ "ต้องมี" ในทริปได้สูงสุด 3 ที่ จะระบุวันที่แน่นอน (1/2/3...) หรือปล่อยให้ระบบจัดวันให้ก็ได้
     // ไม่บังคับกรอก — ข้ามได้ถ้าอยากให้ระบบจัดเองทั้งหมดตามคะแนน/ความหลากหลายตามปกติ
     maxSelect: 3
@@ -3122,8 +3138,8 @@ function renderAIFilterSteps(){
 
     return `
       <div class="step-card ${isActive ? "active" : ""}">
-        <div class="step-number">${config.id === "specialNeeds" ? t("specialNeedsLabel") : (config.label ? config.label[currentLang] : t(`step${stepNumber}Label`))}</div>
-        <h3>${config.id === "specialNeeds" ? t("specialNeedsQuestion") : (config.question ? config.question[currentLang] : t(`step${stepNumber}Question`))}</h3>
+        <div class="step-number">${config.label[currentLang]}</div>
+        <h3>${config.question[currentLang]}</h3>
         <div class="subtitle"></div>
         <div class="input-group">
           ${config.type === "radio" || config.type === "checkbox" ? `
