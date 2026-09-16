@@ -85,6 +85,25 @@ Persistence: If the user clearly states a stable preference (e.g. "โดยป�
 
 Other supported edits remain: set_day_window(day,startTime,endTime), set_buffer(day,bufferDeltaMinutes), add_place(day,placeId), remove_place(day,placeId), swap_places(day,placeId,toPlaceId).
 
+IMPORTANT — requests naming ONE specific catalog place (e.g. "ไปวัดถ้ำเสือ", "อยากไป [place name]", "เพิ่ม [place name] วันที่ N"): these are add_place requests, not set_preference. Resolve the named place to its exact catalog id by matching name/tags (never invent an id). add_place ALWAYS requires a specific day — if the user gave one, use it; if they did not, do NOT guess a day and do NOT emit a set_preference instead — set status=clarify and ask specifically which day they want that place on. A mentioned time period (เช้า/บ่าย/เย็น) for a named place is informational only; add_place has no period field, so drop the period once the day is resolved — do not try to force it into set_preference.
+set_preference is for category-level or recurring rules (avoid/prefer/require across periods/days), not for a one-off "add this specific place" request.
+
+Worked examples (follow this exact JSON shape for analogous requests — do not copy the sample values, resolve placeId/day from the actual user request and catalog):
+
+Request: "ไปวัดถ้ำเสือในช่วงเช้าของวันที่ 1" (a named place + a specific day given)
+Correct response shape:
+{"status":"apply","commands":[{"type":"add_place","day":1,"placeId":"<resolved catalog id for the named place>"}],"clarificationQuestion":null,"understanding":"เพิ่มวัดถ้ำเสือในวันที่ 1"}
+
+Request: "ไปวัดถ้ำเสือในช่วงเช้า" (a named place, NO day given — do not guess, do not use set_preference)
+Correct response shape:
+{"status":"clarify","commands":[],"clarificationQuestion":"อยากให้จัดวัดถ้ำเสือไว้วันไหนคะ","clarificationContext":{"topic":"add_place","missing":"day","options":[]}}
+
+Request: "บ่ายไม่เอาเปียก" (a category-level recurring rule, no specific place named — this is the set_preference case)
+Correct response shape:
+{"status":"apply","commands":[{"type":"set_preference","mode":"avoid","targetType":"category","target":"water","placeIds":[],"periods":["afternoon"],"days":[],"strength":"hard"}],"clarificationQuestion":null,"understanding":"หลีกเลี่ยงกิจกรรมทางน้ำช่วงบ่ายทุกวัน"}
+
+Never emit a set_preference command with an empty target or a null mode — if either would be empty, that request did not actually match set_preference; re-classify it as add_place (if a specific place + day were given) or as clarify (if information is missing).
+
 Return status=apply when there is a sufficiently clear actionable interpretation; clarify whenever the request is related to the trip but you need more information. Use no_match only for clearly unrelated messages (for example, a weather joke or a greeting that contains no itinerary request), and even then prefer a clarification question if the message could reasonably be an itinerary request.
 
 Language: ${lang}. Trip has ${neededDays} day(s).
@@ -110,7 +129,7 @@ export default async function handler(req,res){
   const conversationHistory=Array.isArray(b.conversationHistory)?b.conversationHistory.slice(-12).map(x=>({role:x?.role==='assistant'?'assistant':'user',text:clean(x?.text,1200)})):[];
   const conversationState=(b.conversationState&&typeof b.conversationState==='object')?{pending:!!b.conversationState.pending,question:clean(b.conversationState.question,700),topic:clean(b.conversationState.topic,300),lastInterpretation:clean(b.conversationState.lastInterpretation,300)}:{};
   const prompt=buildPrompt({message,lang,neededDays,days,places,learnedPreferences:b.learnedPreferences,currentPreferences:b.currentPreferences,conversationHistory,conversationState});
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,{method:"POST",headers:{"x-goog-api-key":GEMINI_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({systemInstruction:{parts:[{text:"Return only JSON matching the supplied schema. Use semantic reasoning, not keyword matching. Never fabricate place IDs or facts."}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:0.1,responseMimeType:"application/json",responseSchema:schema}})});
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,{method:"POST",headers:{"x-goog-api-key":GEMINI_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({systemInstruction:{parts:[{text:"Return only JSON matching the supplied schema. Use semantic reasoning, not keyword matching. Never fabricate place IDs or facts."}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:0,responseMimeType:"application/json",responseSchema:schema}})});
   const raw=await r.text(); if(!r.ok)return send(res,502,{error:"Gemini API request failed"});
   let outer;try{outer=JSON.parse(raw)}catch{return send(res,502,{error:"Invalid Gemini response"})}
   const text=outer?.candidates?.[0]?.content?.parts?.map(x=>x.text||"").join("")||""; let result;try{result=JSON.parse(text)}catch{return send(res,502,{error:"Invalid structured response"})}
