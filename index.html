@@ -3467,8 +3467,13 @@ function validateAndApplyAdjustmentCommands(commands){
     const day=Number(c&&c.day); if(!Number.isInteger(day)||day<1||day>base.neededDays){errors.push(currentLang==='th'?`วันที่ ${c&&c.day||'?'} ไม่มีอยู่ในทริปนี้`:`Day ${c&&c.day||'?'} is outside this trip.`);continue;}
     const indexes=working.slotsForDay(day).filter(i=>i!==undefined); let cur=indexes.map(i=>working.daySlots[i]||null);
     if(c.type==='set_day_window'){
-      if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(c.startTime||'')||!/^([01]\d|2[0-3]):[0-5]\d$/.test(c.endTime||'')||minutesBetweenTimes(c.startTime,c.endTime)<=0){errors.push(currentLang==='th'?`เวลาของวันที่ ${day} ไม่ถูกต้อง`:`Invalid time window for Day ${day}.`);continue;}
-      itineraryAdjustments.dayWindows[day]={start:c.startTime,end:c.endTime}; applied.push(c); continue;
+      const timeOk=v=>/^([01]\d|2[0-3]):[0-5]\d$/.test(v||'');
+      const current=getDayWindowOverride(day);
+      const newStart=timeOk(c.startTime)?c.startTime:(current&&timeOk(current.start)?current.start:null);
+      const newEnd=timeOk(c.endTime)?c.endTime:(current&&timeOk(current.end)?current.end:null);
+      if(!newStart&&!newEnd){errors.push(currentLang==='th'?`เวลาของวันที่ ${day} ไม่ถูกต้อง`:`Invalid time window for Day ${day}.`);continue;}
+      if(newStart&&newEnd&&minutesBetweenTimes(newStart,newEnd)<=0){errors.push(currentLang==='th'?`เวลาของวันที่ ${day} ไม่ถูกต้อง (เวลาเริ่มต้องมาก่อนเวลาสิ้นสุด)`:`Invalid time window for Day ${day} (start must be before end).`);continue;}
+      itineraryAdjustments.dayWindows[day]={start:newStart,end:newEnd}; c.startTime=newStart; c.endTime=newEnd; applied.push(c); continue;
     }
     if(c.type==='set_buffer'){
       const d=Number(c.bufferDeltaMinutes), next=getDayBufferDelta(day)+d;
@@ -3553,7 +3558,19 @@ async function submitItineraryAdjustmentRequest(text){
     }
     const days=Array.from({length:base.neededDays},(_,i)=>({day:i+1,places:currentDayPlaces(i+1,base).filter(Boolean).map(p=>({id:p.id,name:p.name[currentLang]}))}));
     const places=PLACES.map(p=>({id:p.id,name:p.name[currentLang],axis:p.axis,tags:p.tags||[],boatRequired:!!p.boatRequired,physicalDemand:p.physicalDemand,fullDayActivity:!!p.fullDayActivity,visitWindow:p.visitWindow||null}));
-    const res=await fetch('/api/adjust-itinerary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:trimmed,lang:currentLang,neededDays:base.neededDays,days,places,learnedPreferences:userPreferenceMemory,currentPreferences:itineraryAdjustments.preferenceConstraints||[],conversationHistory:itineraryChatHistory.slice(-12),conversationState:itineraryConversationState})});
+    const requestBody=JSON.stringify({message:trimmed,lang:currentLang,neededDays:base.neededDays,days,places,learnedPreferences:userPreferenceMemory,currentPreferences:itineraryAdjustments.preferenceConstraints||[],conversationHistory:itineraryChatHistory.slice(-12),conversationState:itineraryConversationState});
+    let res;
+    try{
+      res=await fetch('/api/adjust-itinerary',{method:'POST',headers:{'Content-Type':'application/json'},body:requestBody});
+      if(!res.ok) throw new Error('adjust API '+res.status);
+    }catch(firstErr){
+      // One silent retry for transient network hiccups / momentary 5xx before giving up —
+      // this is a different failure mode than a malformed AI response (handled server-side):
+      // this is the whole request failing outright, so retrying it is the correct fix here.
+      console.warn('adjust-itinerary request failed once, retrying', firstErr);
+      await new Promise(r=>setTimeout(r,600));
+      res=await fetch('/api/adjust-itinerary',{method:'POST',headers:{'Content-Type':'application/json'},body:requestBody});
+    }
     if(!res.ok)throw new Error('adjust API '+res.status);
     const data=await res.json();
     const learned=recordLearnedPreferences(data.learnedPreferences||[]);
