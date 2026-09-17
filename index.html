@@ -3503,11 +3503,54 @@ function validateAndApplyAdjustmentCommands(commands){
   if(!applied.length)return {ok:false,errors};
   renderResults(); return {ok:true,applied,errors};
 }
+// Conservative local fallback for the most common, unambiguous request shape:
+// "ไป/เพิ่ม <ชื่อสถานที่ในแคตตาล็อก> วันที่ N" (or the English/remove equivalents).
+// This never touches the AI at all, so it keeps working even if Gemini is slow, down,
+// or misclassifies the request — but it only fires when BOTH the place name and the day
+// number are unambiguous, and it deliberately bails out on any negation wording (ไม่/งด/
+// avoid/don't), since negated requests are preference rules that genuinely need the AI's
+// judgment, not a blind keyword match.
+function findLocalPlaceDayCommand(text, neededDays){
+  const raw=String(text||'');
+  if(!raw.trim()) return null;
+  if(/ไม่|งด|เว้น|ยกเว้น|avoid|don'?t|do not|except/i.test(raw)) return null;
+  const dayMatch=raw.match(/(?:วันที่|day)\s*(\d{1,2})/i);
+  if(!dayMatch) return null;
+  const day=Number(dayMatch[1]);
+  if(!Number.isInteger(day)||day<1||day>neededDays) return null;
+  const isRemove=/ลบ|เอาออก|ตัดออก|remove|delete/i.test(raw);
+  const isAdd=/ไป|เพิ่ม|แวะ|อยากไป|add|visit/i.test(raw);
+  if(!isRemove&&!isAdd) return null;
+  const lowerRaw=raw.toLowerCase();
+  let best=null;
+  for(const p of PLACES){
+    for(const nm of [p.name?.th, p.name?.en]){
+      if(!nm||nm.length<3) continue;
+      if(lowerRaw.includes(nm.toLowerCase())){
+        if(!best||nm.length>best.nameLen) best={place:p, nameLen:nm.length};
+      }
+    }
+  }
+  if(!best) return null;
+  return {type:isRemove?'remove_place':'add_place', day, placeId:best.place.id};
+}
 async function submitItineraryAdjustmentRequest(text){
   const trimmed=String(text||'').trim(); if(!trimmed||itineraryChatBusy)return;
   itineraryChatBusy=true; itineraryChatHistory.push({role:'user',text:trimmed}); renderItineraryChat();
   try{
     const base=filterPlaces();
+    const localCommand=findLocalPlaceDayCommand(trimmed, base.neededDays);
+    if(localCommand){
+      itineraryConversationState={pending:false,question:'',topic:'',lastInterpretation:''};
+      const result=validateAndApplyAdjustmentCommands([localCommand]), lines=[];
+      if(result.applied&&result.applied.length){
+        lines.push(currentLang==='th'?'เข้าใจคำขอแล้วและปรับโปรแกรมให้ (จับคู่ชื่อสถานที่ได้ตรงตัว ไม่ต้องรอ AI)':'Understood and applied (matched the place name directly, no AI round-trip needed).');
+        lines.push(...result.applied.map(summarizeAdjustmentCommand));
+      }
+      if(result.errors&&result.errors.length)lines.push(...result.errors);
+      itineraryChatHistory.push({role:'assistant',text:lines.join('\n')|| (currentLang==='th'?'ยังปรับโปรแกรมจากคำขอนี้ไม่ได้':'I could not apply that request.')});
+      return;
+    }
     const days=Array.from({length:base.neededDays},(_,i)=>({day:i+1,places:currentDayPlaces(i+1,base).filter(Boolean).map(p=>({id:p.id,name:p.name[currentLang]}))}));
     const places=PLACES.map(p=>({id:p.id,name:p.name[currentLang],axis:p.axis,tags:p.tags||[],boatRequired:!!p.boatRequired,physicalDemand:p.physicalDemand,fullDayActivity:!!p.fullDayActivity,visitWindow:p.visitWindow||null}));
     const res=await fetch('/api/adjust-itinerary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:trimmed,lang:currentLang,neededDays:base.neededDays,days,places,learnedPreferences:userPreferenceMemory,currentPreferences:itineraryAdjustments.preferenceConstraints||[],conversationHistory:itineraryChatHistory.slice(-12),conversationState:itineraryConversationState})});
