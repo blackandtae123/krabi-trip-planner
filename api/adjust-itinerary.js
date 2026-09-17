@@ -88,21 +88,36 @@ Other supported edits remain: set_day_window(day,startTime,endTime), set_buffer(
 IMPORTANT — requests naming ONE specific catalog place (e.g. "ไปวัดถ้ำเสือ", "อยากไป [place name]", "เพิ่ม [place name] วันที่ N"): these are add_place requests, not set_preference. Resolve the named place to its exact catalog id by matching name/tags (never invent an id). add_place ALWAYS requires a specific day — if the user gave one, use it; if they did not, do NOT guess a day and do NOT emit a set_preference instead — set status=clarify and ask specifically which day they want that place on. A mentioned time period (เช้า/บ่าย/เย็น) for a named place is informational only; add_place has no period field, so drop the period once the day is resolved — do not try to force it into set_preference.
 set_preference is for category-level or recurring rules (avoid/prefer/require across periods/days), not for a one-off "add this specific place" request.
 
-Worked examples (follow this exact JSON shape for analogous requests — do not copy the sample values, resolve placeId/day from the actual user request and catalog):
+Worked examples (follow this exact JSON shape for analogous requests — do not copy the sample values, resolve placeId/day from the actual user request and catalog. These cover every command type; use the one matching the user's actual intent, not always the same one):
 
-Request: "ไปวัดถ้ำเสือในช่วงเช้าของวันที่ 1" (a named place + a specific day given)
-Correct response shape:
-{"status":"apply","commands":[{"type":"add_place","day":1,"placeId":"<resolved catalog id for the named place>"}],"clarificationQuestion":null,"understanding":"เพิ่มวัดถ้ำเสือในวันที่ 1"}
+Request: "ไปวัดถ้ำเสือในช่วงเช้าของวันที่ 1" (a named place + a specific day given — add_place)
+{"status":"apply","commands":[{"type":"add_place","day":1,"placeId":"<resolved catalog id>"}],"clarificationQuestion":null,"understanding":"เพิ่มวัดถ้ำเสือในวันที่ 1"}
 
 Request: "ไปวัดถ้ำเสือในช่วงเช้า" (a named place, NO day given — do not guess, do not use set_preference)
-Correct response shape:
 {"status":"clarify","commands":[],"clarificationQuestion":"อยากให้จัดวัดถ้ำเสือไว้วันไหนคะ","clarificationContext":{"topic":"add_place","missing":"day","options":[]}}
 
-Request: "บ่ายไม่เอาเปียก" (a category-level recurring rule, no specific place named — this is the set_preference case)
-Correct response shape:
+Request: "เอาเกาะพีพีออกจากวันที่ 2" / "ไม่ไปเกาะพีพีแล้ววันที่ 2" (drop a specific named place from a specific day — remove_place; note this is a removal even though it contains ไม่/เอาออก, because a day+place are both given, unlike a category-level avoid rule)
+{"status":"apply","commands":[{"type":"remove_place","day":2,"placeId":"<resolved catalog id>"}],"clarificationQuestion":null,"understanding":"ลบเกาะพีพีออกจากวันที่ 2"}
+
+Request: "วันที่ 3 เปลี่ยนจากน้ำตกร้อนเป็นสระมรกตแทน" (replace one place with another on the same day — swap_places, not remove+add)
+{"status":"apply","commands":[{"type":"swap_places","day":3,"placeId":"<resolved id of the place being replaced>","toPlaceId":"<resolved id of the new place>"}],"clarificationQuestion":null,"understanding":"สลับน้ำตกร้อนเป็นสระมรกตในวันที่ 3"}
+
+Request: "วันที่ 2 เริ่ม 10 โมง" (only a start time given — leave endTime out entirely, do not invent one; the app keeps the existing end time)
+{"status":"apply","commands":[{"type":"set_day_window","day":2,"startTime":"10:00"}],"clarificationQuestion":null,"understanding":"ปรับเวลาเริ่มวันที่ 2 เป็น 10:00"}
+
+Request: "วันที่ 1 เที่ยวถึง 3 ทุ่ม" (only an end time given)
+{"status":"apply","commands":[{"type":"set_day_window","day":1,"endTime":"21:00"}],"clarificationQuestion":null,"understanding":"ปรับเวลาสิ้นสุดวันที่ 1 เป็น 21:00"}
+
+Request: "วันที่ 2 เพิ่มเวลาพัก 30 นาที" (buffer/rest time between activities — a positive number means add buffer, negative means reduce)
+{"status":"apply","commands":[{"type":"set_buffer","day":2,"bufferDeltaMinutes":30}],"clarificationQuestion":null,"understanding":"เพิ่มเวลาพักวันที่ 2 อีก 30 นาที"}
+
+Request: "บ่ายไม่เอาเปียก" (a category-level recurring rule, no specific place named — set_preference, not add/remove_place)
 {"status":"apply","commands":[{"type":"set_preference","mode":"avoid","targetType":"category","target":"water","placeIds":[],"periods":["afternoon"],"days":[],"strength":"hard"}],"clarificationQuestion":null,"understanding":"หลีกเลี่ยงกิจกรรมทางน้ำช่วงบ่ายทุกวัน"}
 
-Never emit a set_preference command with an empty target or a null mode — if either would be empty, that request did not actually match set_preference; re-classify it as add_place (if a specific place + day were given) or as clarify (if information is missing).
+Request: "วันที่ 2 อยากไปวัด แต่วันที่ 4 ไม่อยากไปวัดแล้ว" (two independent rules in one message — emit BOTH as separate commands in the same array, never merge or drop one)
+{"status":"apply","commands":[{"type":"set_preference","mode":"prefer","targetType":"category","target":"temple","placeIds":[],"periods":["any"],"days":[2],"strength":"soft"},{"type":"set_preference","mode":"avoid","targetType":"category","target":"temple","placeIds":[],"periods":["any"],"days":[4],"strength":"hard"}],"clarificationQuestion":null,"understanding":"อยากไปวัดวันที่ 2 แต่ไม่เอาวัดวันที่ 4"}
+
+Never emit a command with an empty/null required field (set_preference's mode or target; add_place/remove_place/swap_places's day or placeId) — if a required field would be empty, that request did not actually match that command type; re-classify it using the examples above, or fall back to clarify if information is genuinely missing.
 
 Return status=apply when there is a sufficiently clear actionable interpretation; clarify whenever the request is related to the trip but you need more information. Use no_match only for clearly unrelated messages (for example, a weather joke or a greeting that contains no itinerary request), and even then prefer a clarification question if the message could reasonably be an itinerary request.
 
