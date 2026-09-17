@@ -129,14 +129,17 @@ export default async function handler(req,res){
   const conversationHistory=Array.isArray(b.conversationHistory)?b.conversationHistory.slice(-12).map(x=>({role:x?.role==='assistant'?'assistant':'user',text:clean(x?.text,1200)})):[];
   const conversationState=(b.conversationState&&typeof b.conversationState==='object')?{pending:!!b.conversationState.pending,question:clean(b.conversationState.question,700),topic:clean(b.conversationState.topic,300),lastInterpretation:clean(b.conversationState.lastInterpretation,300)}:{};
   const prompt=buildPrompt({message,lang,neededDays,days,places,learnedPreferences:b.learnedPreferences,currentPreferences:b.currentPreferences,conversationHistory,conversationState});
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,{method:"POST",headers:{"x-goog-api-key":GEMINI_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({systemInstruction:{parts:[{text:"Return only JSON matching the supplied schema. Use semantic reasoning, not keyword matching. Never fabricate place IDs or facts."}]},contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:0,responseMimeType:"application/json",responseSchema:schema}})});
-  const raw=await r.text(); if(!r.ok)return send(res,502,{error:"Gemini API request failed"});
-  let outer;try{outer=JSON.parse(raw)}catch{return send(res,502,{error:"Invalid Gemini response"})}
-  const text=outer?.candidates?.[0]?.content?.parts?.map(x=>x.text||"").join("")||""; let result;try{result=JSON.parse(text)}catch{return send(res,502,{error:"Invalid structured response"})}
-  const ids=new Set(places.map(p=>p.id));
-  const cleanCommands=[];
-  for(const c of (Array.isArray(result.commands)?result.commands:[]).slice(0,20)){
-    const type=TYPES.has(c?.type)?c.type:""; if(!type) continue;
+  async function callGemini(contents){
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`,{method:"POST",headers:{"x-goog-api-key":GEMINI_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({systemInstruction:{parts:[{text:"Return only JSON matching the supplied schema. Use semantic reasoning, not keyword matching. Never fabricate place IDs or facts."}]},contents,generationConfig:{temperature:0,responseMimeType:"application/json",responseSchema:schema}})});
+    const raw=await r.text();
+    if(!r.ok) return {error:"Gemini API request failed"};
+    let outer; try{outer=JSON.parse(raw)}catch{return {error:"Invalid Gemini response"}}
+    const rawText=outer?.candidates?.[0]?.content?.parts?.map(x=>x.text||"").join("")||"";
+    let result; try{result=JSON.parse(rawText)}catch{return {error:"Invalid structured response"}}
+    return {result,rawText};
+  }
+  function cleanOneCommand(c,ids,neededDays){
+    const type=TYPES.has(c?.type)?c.type:""; if(!type) return null;
     const out={type,day:finiteInt(c?.day)};
     if(type==='set_day_window'){out.startTime=time(c.startTime);out.endTime=time(c.endTime);}
     else if(type==='set_buffer'){out.bufferDeltaMinutes=Number.isInteger(c.bufferDeltaMinutes)?Math.max(-60,Math.min(120,c.bufferDeltaMinutes)):null;}
@@ -153,7 +156,44 @@ export default async function handler(req,res){
       out.strength=c?.strength==='hard'?'hard':'soft';
       if(out.targetType==='place'&&!out.placeIds.length) out.target=null;
     }
-    cleanCommands.push(out);
+    return out;
+  }
+  // A command is "malformed" when its essential fields are empty — this is exactly the
+  // shape that used to reach the frontend as a silent "preference not specific enough"
+  // error. Catching it here and giving the model one self-correction pass (with its own
+  // prior answer in context) fixes most of these before they ever reach the user.
+  function isMalformedCommand(out){
+    if(out.type==='set_preference') return !out.mode || (!out.target && !(out.placeIds&&out.placeIds.length));
+    if(out.type==='add_place'||out.type==='remove_place') return !Number.isInteger(out.day) || !out.placeId;
+    if(out.type==='swap_places') return !Number.isInteger(out.day) || !out.placeId || !out.toPlaceId;
+    if(out.type==='set_day_window') return !out.startTime && !out.endTime;
+    if(out.type==='set_buffer') return !Number.isInteger(out.bufferDeltaMinutes);
+    return false;
+  }
+
+  const ids=new Set(places.map(p=>p.id));
+  const firstAttempt=await callGemini([{role:"user",parts:[{text:prompt}]}]);
+  if(firstAttempt.error) return send(res,502,{error:firstAttempt.error});
+  let result=firstAttempt.result;
+  let cleanCommands=(Array.isArray(result.commands)?result.commands:[]).slice(0,20).map(c=>cleanOneCommand(c,ids,neededDays)).filter(Boolean);
+  const firstAttemptHadRawCommands=Array.isArray(result.commands)&&result.commands.length>0;
+  const needsRetry=(firstAttemptHadRawCommands&&cleanCommands.length===0)||cleanCommands.some(isMalformedCommand);
+  if(needsRetry){
+    const correction=lang==='th'
+      ? "คำตอบก่อนหน้าของคุณมีคำสั่งที่ไม่สมบูรณ์ (เช่น set_preference ที่ mode หรือ target ว่างเปล่า หรือ add_place ที่ไม่มี day/placeId ที่ถูกต้อง) กรุณาพิจารณาคำขอเดิมอีกครั้งและตอบเป็น JSON ที่ถูกต้องครบถ้วนตาม schema เท่านั้น ถ้าคำขอระบุชื่อสถานที่และวันที่ชัดเจน ให้ใช้ add_place ถ้าขาดข้อมูลวันที่ ให้ตอบ status=clarify แทนการเดา"
+      : "Your previous response contained an incomplete command (e.g. a set_preference with an empty mode or target, or an add_place missing a valid day/placeId). Reconsider the original request and respond with complete, valid JSON matching the schema. If a specific place and day were named, use add_place; if the day is missing, respond with status=clarify instead of guessing.";
+    const retryAttempt=await callGemini([
+      {role:"user",parts:[{text:prompt}]},
+      {role:"model",parts:[{text:firstAttempt.rawText}]},
+      {role:"user",parts:[{text:correction}]}
+    ]);
+    if(!retryAttempt.error){
+      result=retryAttempt.result;
+      cleanCommands=(Array.isArray(result.commands)?result.commands:[]).slice(0,20).map(c=>cleanOneCommand(c,ids,neededDays)).filter(Boolean);
+    }
+    // If the retry itself errors, we fall through and use the first attempt's
+    // (possibly still-malformed) result rather than failing the whole request —
+    // the existing water/afternoon fallback and clarify path below still apply.
   }
   // Backward-compatible fallback for the very common water-afternoon phrase if the model omitted a command.
   if(!cleanCommands.length){
